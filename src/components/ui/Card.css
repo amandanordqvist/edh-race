@@ -1,0 +1,30 @@
+/* Double-bezel: outer shell + machined inner core */
+.card-shell {
+  display: block;
+  padding: 5px;
+  border-radius: var(--radius-shell);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-hairline);
+  box-shadow: var(--shadow-soft);
+}
+
+.card-shell__core {
+  height: 100%;
+  padding: 1.35rem 1.45rem;
+  border-radius: var(--radius-core);
+  background: linear-gradient(
+    165deg,
+    var(--color-surface-raised) 0%,
+    var(--color-supporting-navy) 100%
+  );
+  border: 1px solid var(--color-hairline-strong);
+  box-shadow: var(--shadow-inset-highlight);
+}
+
+/* Legacy class kept for any direct .card usage */
+.card {
+  background: var(--color-supporting-navy);
+  border: var(--border-hairline);
+  box-shadow: var(--shadow-deep);
+  padding: 1.25rem 1.35rem;
+}

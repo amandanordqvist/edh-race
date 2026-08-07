@@ -1,0 +1,39 @@
+.machine-page__intro {
+  position: relative;
+  padding-bottom: clamp(1.5rem, 4vw, 2.5rem) !important;
+}
+
+.machine-page__intro::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 40%;
+  width: min(55vw, 680px);
+  height: min(50vw, 400px);
+  background: radial-gradient(
+    ellipse at 70% 20%,
+    rgba(42, 79, 154, 0.32),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.machine-page__intro .section__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.machine-page__title {
+  font-size: clamp(3.25rem, 11vw, 7rem);
+  letter-spacing: 0.01em;
+  line-height: 0.92;
+  max-width: 10ch;
+  margin-bottom: 1.5rem;
+}
+
+.machine-page__lead {
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  line-height: 1.65;
+  color: rgba(243, 245, 248, 0.78);
+  max-width: 48ch;
+}

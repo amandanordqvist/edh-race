@@ -1,0 +1,30 @@
+.results-page__intro {
+  position: relative;
+}
+
+.results-page__intro::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 30%;
+  width: min(55vw, 640px);
+  height: min(48vw, 380px);
+  background: radial-gradient(
+    ellipse at 60% 20%,
+    rgba(42, 79, 154, 0.3),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.results-page__intro .section__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.results-page__title {
+  font-size: clamp(2.75rem, 9vw, 6.25rem);
+  letter-spacing: 0.01em;
+  line-height: 0.94;
+  max-width: 14ch;
+}

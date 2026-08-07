@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "transcripts": {
+    "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/7f8e30b4-e537-4d7f-a12f-f451e44a3141/7f8e30b4-e537-4d7f-a12f-f451e44a3141.jsonl": {
+      "mtimeMs": 1786020089186,
+      "lastProcessedAt": "2026-08-06T13:41:18.571882+00:00"
+    },
+    "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/b104927b-1087-44f3-bcda-c598edf2ffde/b104927b-1087-44f3-bcda-c598edf2ffde.jsonl": {
+      "mtimeMs": 1786023593558,
+      "lastProcessedAt": "2026-08-06T13:41:18.571882+00:00"
+    },
+    "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/b104927b-1087-44f3-bcda-c598edf2ffde/subagents/2b57121b-167d-4529-98fa-979dd40af454.jsonl": {
+      "mtimeMs": 1786023619639,
+      "lastProcessedAt": "2026-08-06T13:41:18.571882+00:00"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+import { bestTimes } from '../../data/results'
+import { useT } from '../../i18n'
+import { Reveal } from '../ui/Reveal'
+import { Section } from '../ui/Section'
+import './BestTimes.css'
+import './Standings.css'
+
+export function BestTimes() {
+  const t = useT()
+  const featured = bestTimes.filter((row) => row.highlight)
+  const rest = bestTimes.filter((row) => !row.highlight)
+
+  return (
+    <Section wide className="best-times">
+      <Reveal>
+        <h2 className="results-section__heading">{t.results.bestTimesTitle}</h2>
+      </Reveal>
+
+      <ul className="best-times__featured">
+        {featured.map((row, i) => (
+          <Reveal
+            as="li"
+            key={`${row.year}-${row.event}`}
+            className={`best-times__feat ${row.highlight === 'best' ? 'best-times__feat--best' : ''}`}
+            delay={0.05 * i}
+            y={28}
+          >
+            <p className="best-times__feat-tag">
+              {row.highlight === 'best'
+                ? t.results.highlightBest
+                : t.results.highlightLatest}
+            </p>
+            <p className="best-times__feat-et">{row.et}</p>
+            <p className="best-times__feat-speed">{row.speed}</p>
+            <p className="best-times__feat-meta">
+              {row.year} · {row.event}
+            </p>
+          </Reveal>
+        ))}
+      </ul>
+
+      <Reveal className="data-table-shell" delay={0.1} y={28}>
+        <div className="data-table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>{t.results.colYear}</th>
+                <th>{t.results.colEvent}</th>
+                <th>{t.results.colTime}</th>
+                <th>{t.results.colSpeed}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rest.map((row) => (
+                <tr key={`${row.year}-${row.event}`}>
+                  <td>{row.year}</td>
+                  <td>{row.event}</td>
+                  <td className="data-table__mono">{row.et}</td>
+                  <td className="data-table__mono">{row.speed}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Reveal>
+    </Section>
+  )
+}

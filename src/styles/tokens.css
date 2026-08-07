@@ -1,0 +1,61 @@
+:root {
+  /* Surfaces — cool Scandinavian charcoal, not pure black */
+  --color-almost-black: #0a0c10;
+  --color-surface: #10141c;
+  --color-surface-raised: #161c28;
+  --color-primary-blue: #2a4f9a;
+  --color-primary-blue-deep: #1b3e84;
+  --color-supporting-navy: #1a2436;
+  --color-silver-gray: #a8adb8;
+  --color-almost-white: #f3f5f8;
+  --color-hairline: rgba(168, 173, 184, 0.22);
+  --color-hairline-strong: rgba(243, 245, 248, 0.14);
+
+  /* Depth — tinted, never harsh black drops */
+  --shadow-deep:
+    0 28px 56px rgba(6, 10, 18, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow-soft: 0 12px 40px rgba(8, 14, 28, 0.35);
+  --shadow-blue-glow: 0 0 28px rgba(42, 79, 154, 0.35);
+  --shadow-inset-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.12);
+
+  /* Type — brand lock */
+  --font-display: 'Oswald', 'Arial Narrow', sans-serif;
+  --font-ui: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Geometry — machined, not soft SaaS pills */
+  --border-hairline: 1px solid var(--color-hairline);
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --radius-shell: 22px;
+  --radius-core: calc(var(--radius-shell) - 6px);
+
+  /* Layout */
+  --header-height: 72px;
+  --content-max: 1180px;
+  --content-wide: 1360px;
+  --section-pad: clamp(5rem, 12vw, 8.5rem);
+  --section-pad-bottom: clamp(5.5rem, 13vw, 9.5rem);
+
+  /* Motion — strong custom curves; UI stays under 300ms */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1); /* drawer / iOS settle */
+  --duration-press: 140ms;
+  --duration-fast: 200ms;
+  --duration-med: 280ms;
+  --duration-slow: 700ms;
+
+  /* Layers */
+  --z-base: 1;
+  --z-sticky: 40;
+  --z-nav: 50;
+  --z-overlay: 60;
+  --z-grain: 70;
+}

@@ -1,0 +1,83 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.9rem 1.35rem 0.9rem 1.55rem;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    transform var(--duration-press) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+}
+
+.btn--icon {
+  padding-right: 0.55rem;
+}
+
+.btn__label {
+  line-height: 1;
+}
+
+.btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.22);
+  transition: transform var(--duration-press) var(--ease-out);
+}
+
+.btn--primary {
+  background: var(--color-primary-blue);
+  color: var(--color-almost-white);
+  box-shadow: var(--shadow-blue-glow);
+}
+
+.btn--primary:active {
+  transform: scale(0.97);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-almost-white);
+  border: var(--border-hairline);
+}
+
+.btn--ghost:active {
+  transform: scale(0.97);
+}
+
+.btn--ghost .btn__icon {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 36px rgba(42, 79, 154, 0.5);
+  }
+
+  .btn--primary:hover .btn__icon {
+    transform: translate(2px, -1px);
+  }
+
+  .btn--primary:active {
+    transform: scale(0.97);
+  }
+
+  .btn--ghost:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--color-hairline-strong);
+  }
+}

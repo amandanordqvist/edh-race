@@ -1,0 +1,15 @@
+.skew-divider {
+  height: 64px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(42, 79, 154, 0.12) 42%,
+    rgba(26, 36, 54, 0.55) 50%,
+    rgba(42, 79, 154, 0.08) 58%,
+    transparent 100%
+  );
+  transform: skewY(-2.5deg);
+  margin: -1.5rem 0;
+  opacity: 0.9;
+  pointer-events: none;
+}

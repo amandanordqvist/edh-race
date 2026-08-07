@@ -1,0 +1,220 @@
+.ichassis__heading {
+  font-size: clamp(1.85rem, 4vw, 2.75rem);
+  max-width: 16ch;
+  margin-bottom: 1rem;
+}
+
+.ichassis__lead {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: rgba(243, 245, 248, 0.78);
+  max-width: 52ch;
+}
+
+.ichassis__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
+  gap: 1.15rem;
+  margin-top: clamp(2rem, 5vw, 3rem);
+  align-items: stretch;
+}
+
+.ichassis__viewport {
+  min-width: 0;
+  height: 100%;
+}
+
+.ichassis__stage {
+  height: 100%;
+  perspective: 1000px;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border-radius: var(--radius-shell);
+  border: 1px solid var(--color-hairline);
+  background:
+    radial-gradient(
+      ellipse 70% 80% at 15% 15%,
+      rgba(42, 79, 154, 0.22),
+      transparent 55%
+    ),
+    linear-gradient(
+      165deg,
+      var(--color-surface-raised),
+      rgba(10, 12, 16, 0.85)
+    );
+  box-shadow: var(--shadow-inset-highlight), var(--shadow-soft);
+}
+
+.ichassis__tilt {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 280ms var(--ease-out);
+  will-change: transform;
+}
+
+.ichassis__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ichassis__hotspot {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border: 2px solid rgba(243, 245, 248, 0.35);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  background: var(--color-primary-blue);
+  box-shadow: 0 0 0 0 rgba(42, 79, 154, 0.45);
+  animation: ichassis-pulse 2.2s var(--ease-out-quart) infinite;
+  transition:
+    background var(--duration-fast) var(--ease-spring),
+    box-shadow var(--duration-fast) var(--ease-spring),
+    transform var(--duration-fast) var(--ease-spring);
+}
+
+.ichassis__hotspot:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.ichassis__hotspot.is-active {
+  background: var(--color-almost-white);
+  border-color: transparent;
+  box-shadow:
+    0 0 0 5px rgba(42, 79, 154, 0.4),
+    0 0 22px rgba(42, 79, 154, 0.55);
+  animation: none;
+}
+
+.ichassis__hotspot:focus-visible {
+  outline: 2px solid var(--color-almost-white);
+  outline-offset: 3px;
+}
+
+@keyframes ichassis-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(42, 79, 154, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(42, 79, 154, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(42, 79, 154, 0);
+  }
+}
+
+.ichassis__hint {
+  margin-top: 1rem;
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-silver-gray);
+  text-align: center;
+}
+
+.ichassis__panel {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  border-radius: var(--radius-shell);
+  border: 1px solid rgba(42, 79, 154, 0.35);
+  background:
+    radial-gradient(
+      ellipse 100% 80% at 0% 0%,
+      rgba(42, 79, 154, 0.28),
+      transparent 55%
+    ),
+    linear-gradient(
+      165deg,
+      var(--color-surface-raised),
+      var(--color-supporting-navy)
+    );
+  box-shadow: var(--shadow-inset-highlight), var(--shadow-soft);
+}
+
+.ichassis__panel-role {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.45rem, 2.8vw, 1.9rem);
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.ichassis__panel-body {
+  color: rgba(243, 245, 248, 0.8);
+  line-height: 1.65;
+  margin-bottom: 1.75rem;
+  flex: 1;
+}
+
+.ichassis__tabs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+  margin-top: auto;
+}
+
+.ichassis__tab {
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-silver-gray);
+  background: transparent;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.8rem;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-spring);
+}
+
+.ichassis__tab.is-active,
+.ichassis__tab:hover {
+  color: var(--color-almost-white);
+  border-color: rgba(42, 79, 154, 0.5);
+  background: rgba(42, 79, 154, 0.16);
+}
+
+.ichassis__tab:active {
+  transform: scale(0.98);
+}
+
+.ichassis__tab:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .ichassis__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ichassis__tilt {
+    transition: none;
+    transform: none !important;
+  }
+
+  .ichassis__hotspot {
+    animation: none;
+  }
+
+  .machine-page__hero img {
+    transition: none;
+  }
+}
