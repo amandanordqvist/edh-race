@@ -72,3 +72,16 @@
 
 - No unrelated WIP was modified.
 - `AGENTS.md` was not touched.
+
+## Final review fixes
+
+- Removed the static top-level PlayCanvas import from `src/lib/pass/createApp.ts` and now use only the dynamic `const pc = await import('playcanvas')` path for `Application`, `FILLMODE_NONE`, and `RESOLUTION_AUTO`.
+- Threaded `reducedMotion` into `src/lib/pass/audioController.ts` and `src/components/pass/PassCanvas.tsx`; phase-based playback now stays silent in reduced-motion mode, even when the arena is unmuted.
+- Added a `webglcontextlost` listener in `src/components/pass/PassCanvas.tsx` that calls `preventDefault()` and flips the arena to `PassFallback` through `onWebglUnavailable()`, with listener cleanup on destroy.
+- Reviewed the mute toggle semantics in `src/components/pass/PassArena.tsx`; `aria-pressed={!muted}` remains consistent with the current control meaning "sound on".
+
+## Final verification
+
+- `npm run build` passed after the fixes.
+- The previous Vite `INEFFECTIVE_DYNAMIC_IMPORT` warning for `src/lib/pass/createApp.ts` no longer appeared in build output.
+- Remaining build output only included existing non-fatal PlayCanvas worker externalization warnings and the large chunk-size warning.

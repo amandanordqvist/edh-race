@@ -54,7 +54,7 @@ export function PassCanvas(props: PassCanvasProps) {
     let destroyApp: (() => void) | null = null
     let raceController: ReturnType<typeof createRaceController> | null = null
     let cameraDirector: ReturnType<typeof createCameraDirector> | null = null
-    const audio = createPassAudio()
+    const audio = createPassAudio({ reducedMotion: props.reducedMotion })
 
     async function init(canvasEl: HTMLCanvasElement) {
       try {
@@ -65,13 +65,23 @@ export function PassCanvas(props: PassCanvasProps) {
 
         const quality = detectPassQuality()
         const { app, pc, destroy } = await createPassApp(canvasEl, quality)
+        const handleWebglContextLost = (event: Event) => {
+          event.preventDefault()
+          liveRef.current.onWebglUnavailable()
+        }
+
+        canvasEl.addEventListener('webglcontextlost', handleWebglContextLost)
 
         if (cancelled) {
+          canvasEl.removeEventListener('webglcontextlost', handleWebglContextLost)
           destroy()
           return
         }
 
-        destroyApp = destroy
+        destroyApp = () => {
+          canvasEl.removeEventListener('webglcontextlost', handleWebglContextLost)
+          destroy()
+        }
 
         const scene = buildPassScene(app, pc, quality)
         const reducedMotion = liveRef.current.reducedMotion

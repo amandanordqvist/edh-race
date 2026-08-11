@@ -1,5 +1,3 @@
-import { Application, FILLMODE_NONE, RESOLUTION_AUTO } from 'playcanvas'
-
 import type { PassQuality } from './types'
 
 function getCanvasSize(canvas: HTMLCanvasElement): { width: number; height: number } {
@@ -29,7 +27,7 @@ export async function createPassApp(
   destroy: () => void
 }> {
   const pc = await import('playcanvas')
-  const app = new Application(canvas)
+  const app = new pc.Application(canvas)
   const pixelRatioCap = quality === 'low' ? 1.25 : 2
 
   canvas.style.width = '100%'
@@ -42,13 +40,13 @@ export async function createPassApp(
     const { width, height } = getCanvasSize(canvas)
 
     app.resizeCanvas(width, height)
-    app.setCanvasResolution(RESOLUTION_AUTO)
+    app.setCanvasResolution(pc.RESOLUTION_AUTO)
   }
 
   const { width, height } = getCanvasSize(canvas)
 
-  app.setCanvasFillMode(FILLMODE_NONE, width, height)
-  app.setCanvasResolution(RESOLUTION_AUTO)
+  app.setCanvasFillMode(pc.FILLMODE_NONE, width, height)
+  app.setCanvasResolution(pc.RESOLUTION_AUTO)
   resize()
   window.addEventListener('resize', resize)
   app.start()

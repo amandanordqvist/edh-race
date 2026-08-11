@@ -63,7 +63,12 @@ function safeReset(cue: HTMLAudioElement) {
   }
 }
 
-export function createPassAudio() {
+type PassAudioOptions = {
+  reducedMotion?: boolean
+}
+
+export function createPassAudio(options: PassAudioOptions = {}) {
+  const { reducedMotion = false } = options
   const context = createAudioContext()
   const cues: CueMap = {
     treeTick: createCue(AUDIO_PATHS.treeTick, AUDIO_VOLUMES.treeTick),
@@ -85,7 +90,7 @@ export function createPassAudio() {
   }
 
   const playCue = (cueName: CueName) => {
-    if (destroyed || muted) return
+    if (destroyed || muted || reducedMotion) return
 
     const cue = cues[cueName]
 
@@ -103,7 +108,7 @@ export function createPassAudio() {
   }
 
   const startLoop = () => {
-    if (destroyed || muted) return
+    if (destroyed || muted || reducedMotion) return
 
     const cue = cues.passLoop
     cue.muted = muted
@@ -177,6 +182,11 @@ export function createPassAudio() {
 
   const onPhase = (nextPhase: PassPhase) => {
     phase = nextPhase
+
+    if (reducedMotion) {
+      stopLoop()
+      return
+    }
 
     switch (nextPhase) {
       case 'idle':
