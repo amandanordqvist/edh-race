@@ -1,5 +1,6 @@
 import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react'
 
+import { createPassAudio } from '../../lib/pass/audioController'
 import { createCameraDirector } from '../../lib/pass/cameraDirector'
 import { detectPassQuality } from '../../lib/pass/quality'
 import { createRaceController } from '../../lib/pass/raceController'
@@ -25,8 +26,6 @@ export function PassCanvas(props: PassCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const draggingRef = useRef(false)
   const cameraDirectorRef = useRef<ReturnType<typeof createCameraDirector> | null>(null)
-  // Stored for the audio controller landing in a later task; no playback exists yet.
-  const mutedRef = useRef(props.muted)
   const liveRef = useRef<LiveHandlers>({
     reducedMotion: props.reducedMotion,
     onPhase: props.onPhase,
@@ -37,7 +36,6 @@ export function PassCanvas(props: PassCanvasProps) {
   })
 
   useEffect(() => {
-    mutedRef.current = props.muted
     liveRef.current = {
       reducedMotion: props.reducedMotion,
       onPhase: props.onPhase,
@@ -56,6 +54,7 @@ export function PassCanvas(props: PassCanvasProps) {
     let destroyApp: (() => void) | null = null
     let raceController: ReturnType<typeof createRaceController> | null = null
     let cameraDirector: ReturnType<typeof createCameraDirector> | null = null
+    const audio = createPassAudio()
 
     async function init(canvasEl: HTMLCanvasElement) {
       try {
@@ -92,6 +91,7 @@ export function PassCanvas(props: PassCanvasProps) {
           handlers: {
             onPhase: (phase) => {
               cameraDirector?.onPhase(phase)
+              audio.onPhase(phase)
               liveRef.current.onPhase(phase)
             },
             onClock: (seconds) => liveRef.current.onClock(seconds),
@@ -111,15 +111,18 @@ export function PassCanvas(props: PassCanvasProps) {
         }
 
         liveRef.current.onReady({
-          stage: () => raceController?.stage(),
+          stage: () => {
+            void audio.unlock().then(() => raceController?.stage())
+          },
           reset: () => {
             raceController?.reset()
             cameraDirector?.reset()
           },
-          setMuted: () => {
-            // Audio wiring lands in a later task; intentional no-op for now.
+          setMuted: (muted) => {
+            audio.setMuted(muted)
           },
           destroy: () => {
+            audio.destroy()
             raceController?.destroy()
             cameraDirector?.destroy()
             destroyApp?.()
@@ -137,6 +140,7 @@ export function PassCanvas(props: PassCanvasProps) {
 
     return () => {
       cancelled = true
+      audio.destroy()
       raceController?.destroy()
       cameraDirector?.destroy()
       destroyApp?.()
