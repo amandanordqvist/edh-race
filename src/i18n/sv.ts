@@ -99,26 +99,6 @@ export const sv: Dictionary = {
       'Exponering på webb och film',
     ],
     sponsorsCta: 'Hör av er',
-    simulatorTitle: 'Passet',
-    simulatorBody:
-      'Stagea bilen. Vänta på grönt. Se 5.74 sekunder mot Formel 1 och ett passagerarflygplan över 402 meter.',
-    simulatorExplain:
-      'På mindre än sex sekunder accelererar bilen från stillastående till över 400 km/h. Förare, team, motor, växellåda och bana måste fungera tillsammans — det finns inget utrymme för nästan.',
-    simulatorStage: 'Stagea bilen',
-    simulatorAgain: 'Kör igen',
-    simulatorStatus: {
-      idle: 'Redo att stagea',
-      staging: 'Staging…',
-      amber: 'Amber',
-      green: 'Grönt!',
-      racing: 'Lopp pågår',
-      finished: 'Mål. The Beast först.',
-    },
-    simulatorCompare: {
-      camaro: 'The Beast · 5.74s',
-      f1: 'Formel 1',
-      jet: 'Passagerarflygplan',
-    },
     passTeaserTitle: 'Passet',
     passTeaserBody:
       'Se den live jämförelsen: 5.74 sekunder över 402 meter mot Formel 1 och ett passagerarflygplan.',

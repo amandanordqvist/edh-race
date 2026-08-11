@@ -99,26 +99,6 @@ export const en: Dictionary = {
       'Exposure on web and film',
     ],
     sponsorsCta: 'Get in touch',
-    simulatorTitle: 'The pass',
-    simulatorBody:
-      'Stage the car. Wait for green. Watch 5.74 seconds against Formula 1 and a passenger jet over 402 metres.',
-    simulatorExplain:
-      'In under six seconds the car goes from standstill to over 400 km/h. Driver, team, engine, gearbox and track have to work as one — there is no room for almost.',
-    simulatorStage: 'Stage the car',
-    simulatorAgain: 'Race again',
-    simulatorStatus: {
-      idle: 'Ready to stage',
-      staging: 'Staging…',
-      amber: 'Amber',
-      green: 'Green!',
-      racing: 'Race in progress',
-      finished: 'Finish. The Beast first.',
-    },
-    simulatorCompare: {
-      camaro: 'The Beast · 5.74s',
-      f1: 'Formula 1',
-      jet: 'Passenger jet',
-    },
     passTeaserTitle: 'The pass',
     passTeaserBody:
       'See the live comparison: 5.74 seconds over 402 metres against Formula 1 and a passenger jet.',

@@ -86,24 +86,6 @@ export type Dictionary = {
     sponsorsBody: string
     sponsorsBenefits: string[]
     sponsorsCta: string
-    simulatorTitle: string
-    simulatorBody: string
-    simulatorExplain: string
-    simulatorStage: string
-    simulatorAgain: string
-    simulatorStatus: {
-      idle: string
-      staging: string
-      amber: string
-      green: string
-      racing: string
-      finished: string
-    }
-    simulatorCompare: {
-      camaro: string
-      f1: string
-      jet: string
-    }
     passTeaserTitle: string
     passTeaserBody: string
     passTeaserCta: string
