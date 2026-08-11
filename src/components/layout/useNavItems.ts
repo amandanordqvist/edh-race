@@ -1,18 +1,8 @@
 import { useLocale, useT } from '../../i18n'
-import { localePath, type PageId } from '../../lib/paths'
+import { getPageIds, localePath, type PageId } from '../../lib/paths'
 
 const PRIMARY: PageId[] = ['journey', 'machine', 'contact']
 const SECONDARY: PageId[] = ['pass', 'results', 'team', 'media']
-const ALL: PageId[] = [
-  'home',
-  'journey',
-  'machine',
-  'pass',
-  'results',
-  'team',
-  'media',
-  'contact',
-]
 
 export type NavItem = { id: PageId; label: string; to: string }
 
@@ -42,7 +32,7 @@ export function useSecondaryNavItems(): NavItem[] {
 export function useNavItems(): NavItem[] {
   const locale = useLocale()
   const t = useT()
-  return ALL.map((id) => ({
+  return getPageIds().map((id) => ({
     id,
     label: t.nav[id],
     to: localePath(locale, id),
