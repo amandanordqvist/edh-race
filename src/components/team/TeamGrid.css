@@ -37,10 +37,6 @@
   transition: transform 1.1s var(--ease-out-expo);
 }
 
-.team-featured:hover .team-featured__media img {
-  transform: scale(1.04);
-}
-
 .team-featured__wash {
   position: absolute;
   inset: 0;
@@ -131,9 +127,19 @@
     border-color var(--duration-med) var(--ease-spring);
 }
 
-.team-crew__card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(42, 79, 154, 0.45);
+@media (hover: hover) and (pointer: fine) {
+  .team-crew__card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(42, 79, 154, 0.45);
+  }
+
+  .team-crew__card:hover .team-crew__media img {
+    transform: scale(1.05);
+  }
+
+  .team-featured:hover .team-featured__media img {
+    transform: scale(1.04);
+  }
 }
 
 .team-crew__media {
@@ -149,10 +155,6 @@
   object-fit: cover;
   object-position: center top;
   transition: transform 1s var(--ease-out-expo);
-}
-
-.team-crew__card:hover .team-crew__media img {
-  transform: scale(1.05);
 }
 
 .team-crew__body {

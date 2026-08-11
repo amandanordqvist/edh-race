@@ -25,4 +25,10 @@
   overflow-x: hidden;
   width: 100%;
   max-width: 100%;
+  /* Space for fixed header; home hero goes edge-to-edge instead */
+  padding-top: calc(var(--header-height) + 1rem);
+}
+
+.site-main:has(.hero) {
+  padding-top: 0;
 }

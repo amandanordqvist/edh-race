@@ -18,6 +18,7 @@ const initial: ContactFormValues = {
 export function ContactForm() {
   const t = useT()
   const [values, setValues] = useState<ContactFormValues>(initial)
+  const [sent, setSent] = useState(false)
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -39,6 +40,7 @@ export function ContactForm() {
       },
     )
 
+    setSent(true)
     window.location.href = href
   }
 
@@ -47,6 +49,7 @@ export function ContactForm() {
       <Reveal>
         <div className="contact-form">
           <h2 className="contact-form__title">{t.contact.formTitle}</h2>
+          <p className="contact-form__hint">{t.contact.formHint}</p>
           <form onSubmit={onSubmit}>
             <div className="contact-form__grid">
               <label>
@@ -115,6 +118,11 @@ export function ContactForm() {
             <Button type="submit" icon>
               {t.contact.submit}
             </Button>
+            {sent ? (
+              <p className="contact-form__after" role="status">
+                {t.contact.afterSend}
+              </p>
+            ) : null}
           </form>
         </div>
       </Reveal>

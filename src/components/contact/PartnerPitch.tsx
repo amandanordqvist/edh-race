@@ -13,20 +13,33 @@ export function PartnerPitch() {
 
   return (
     <Section wide className="partner-pitch page-intro">
-      <Reveal>
-        <h1 className="partner-pitch__title">{t.contact.title}</h1>
-        <p className="partner-pitch__lead">{t.contact.pitchLead}</p>
-        <p className="partner-pitch__body">{t.contact.pitch}</p>
-      </Reveal>
+      <div className="partner-pitch__layout">
+        <Reveal className="partner-pitch__copy">
+          <p className="partner-pitch__proof">{t.contact.proof}</p>
+          <h1 className="partner-pitch__title">{t.contact.title}</h1>
+          <p className="partner-pitch__lead">{t.contact.pitchLead}</p>
+          <p className="partner-pitch__body">{t.contact.pitch}</p>
+        </Reveal>
+
+        <Reveal className="partner-pitch__media" delay={0.1} y={32} variant="media">
+          <div className="partner-pitch__shell">
+            <img
+              src="/images/pricing.JPG"
+              alt={t.contact.pitchAlt}
+              width={1200}
+              height={1600}
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+        </Reveal>
+      </div>
 
       <Reveal className="partner-pitch__values" delay={0.08}>
         <h2 className="partner-pitch__values-title">{t.contact.valuesTitle}</h2>
         <ul className="partner-pitch__list">
-          {values.map((value, i) => (
-            <li
-              key={value.title}
-              className={`partner-pitch__item ${i === 0 ? 'partner-pitch__item--lead' : ''}`}
-            >
+          {values.map((value) => (
+            <li key={value.title} className="partner-pitch__item">
               <h3>{value.title}</h3>
               <p>{value.body}</p>
             </li>

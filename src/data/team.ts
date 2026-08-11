@@ -35,5 +35,5 @@ export const team: TeamMember[] = [
   { id: 'olle', name: 'Olle Edh', group: 'support' },
   { id: 'marie', name: 'Marie Andersson Hållen', group: 'support' },
   { id: 'amanda', name: 'Amanda Nordqvist Ed', group: 'support' },
-
+  { id: 'siggi', name: 'Siggi', group: 'support' },
 ]

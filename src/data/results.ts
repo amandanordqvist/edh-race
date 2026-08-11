@@ -10,6 +10,7 @@ export type BestTime = {
   et: string
   speed: string
   highlight?: 'best' | 'latest'
+  image?: string
 }
 
 export const standings: Standing[] = [
@@ -29,6 +30,7 @@ export const bestTimes: BestTime[] = [
     et: '3.859 s',
     speed: '326.71 km/h',
     highlight: 'latest',
+    image: '/images/journey/2024-santapod2.png',
   },
   {
     year: 2025,
@@ -36,6 +38,7 @@ export const bestTimes: BestTime[] = [
     et: '3.803 s',
     speed: '327.07 km/h',
     highlight: 'best',
+    image: '/images/journey/2024-santapod5.JPG',
   },
   {
     year: 2024,
@@ -77,3 +80,8 @@ export const bestTimes: BestTime[] = [
     speed: '249.19 km/h',
   },
 ]
+
+/** Landmark quarter-mile pass — Results hero */
+export const landmarkPass = {
+  image: '/images/journey/2024-santapod4.JPG',
+}

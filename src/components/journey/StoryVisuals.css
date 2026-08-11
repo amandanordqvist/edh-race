@@ -12,12 +12,21 @@
   grid-column: span 3;
   position: relative;
   overflow: hidden;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-hairline);
-  box-shadow: var(--shadow-deep);
-  aspect-ratio: 3 / 4;
+  padding: 0.35rem;
+  border-radius: var(--radius-shell);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
   list-style: none;
+  aspect-ratio: 3 / 4;
+}
+
+.story-visuals__shell {
+  position: absolute;
+  inset: 0.35rem;
+  overflow: hidden;
+  border-radius: var(--radius-core);
   background: var(--color-supporting-navy);
+  box-shadow: var(--shadow-inset-highlight);
 }
 
 .story-visuals__frame--lead {
@@ -30,7 +39,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 1s var(--ease-out-expo);
+  transition: transform 1s var(--ease-spring);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -42,6 +51,7 @@
 .story-visuals__meta {
   position: absolute;
   inset: auto 0 0 0;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;

@@ -11,7 +11,11 @@ type RevealProps = {
   className?: string
   delay?: number
   y?: number
-  as?: 'div' | 'li' | 'article' | 'section' | 'figure'
+  /** Stagger direct children instead of the wrapper */
+  stagger?: number
+  /** Media reveal: slight scale instead of only rise */
+  variant?: 'rise' | 'media'
+  as?: 'div' | 'li' | 'article' | 'section' | 'figure' | 'ul'
   style?: CSSProperties
 }
 
@@ -19,7 +23,9 @@ export function Reveal({
   children,
   className = '',
   delay = 0,
-  y = 40,
+  y = 48,
+  stagger,
+  variant = 'rise',
   as: Tag = 'div',
   style,
 }: RevealProps) {
@@ -32,20 +38,27 @@ export function Reveal({
 
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       if (reduced) {
-        gsap.set(el, { clearProps: 'opacity,transform', opacity: 1, y: 0 })
+        gsap.set(el, { clearProps: 'opacity,transform', opacity: 1, y: 0, scale: 1 })
+        if (stagger) gsap.set(el.children, { clearProps: 'opacity,transform', opacity: 1, y: 0 })
         return
       }
 
       const ctx = gsap.context(() => {
-        gsap.from(el, {
-          opacity: 0,
-          y,
-          duration: 0.7,
+        const targets = stagger != null ? el.children : el
+        const fromVars =
+          variant === 'media'
+            ? { opacity: 0, scale: 1.06, y: y * 0.35 }
+            : { opacity: 0, y }
+
+        gsap.from(targets, {
+          ...fromVars,
+          duration: variant === 'media' ? 1.05 : 0.85,
           delay,
+          stagger: stagger ?? 0,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: el,
-            start: 'top 90%',
+            start: 'top 88%',
             once: true,
           },
         })
@@ -55,7 +68,7 @@ export function Reveal({
 
       return () => ctx.revert()
     },
-    { dependencies: [delay, y] },
+    { dependencies: [delay, y, stagger, variant] },
   )
 
   return (

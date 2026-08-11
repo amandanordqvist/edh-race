@@ -49,7 +49,49 @@ export const mediaItems: MediaItem[] = [
   {
     id: 'archive',
     type: 'image',
-    src: '/images/2009 - Anders.jpeg',
+    src: '/images/journey/2009 - Anders.jpeg',
     aspect: '4/3',
+  },
+  {
+    id: 'santapodLane',
+    type: 'image',
+    src: '/images/santapod.jpeg',
+    aspect: '16/9',
+  },
+  {
+    id: 'stripNight',
+    type: 'image',
+    src: '/images/IMG_4640.JPG',
+    aspect: '3/4',
+  },
+  {
+    id: 'burnoutClose',
+    type: 'image',
+    src: '/images/IMG_4727.JPG',
+    aspect: '4/3',
+  },
+  {
+    id: 'crewMoment',
+    type: 'image',
+    src: '/images/IMG_4729.JPG',
+    aspect: '4/3',
+  },
+  {
+    id: 'garageEra',
+    type: 'image',
+    src: '/images/old_camaro.JPG',
+    aspect: '4/3',
+  },
+  {
+    id: 'earlyCamaro',
+    type: 'image',
+    src: '/images/camaro70.jpg',
+    aspect: '4/3',
+  },
+  {
+    id: 'recordFrame',
+    type: 'image',
+    src: '/images/IMG_5378.JPG',
+    aspect: '16/9',
   },
 ]

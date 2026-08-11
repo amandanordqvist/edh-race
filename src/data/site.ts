@@ -3,7 +3,7 @@ export const SITE = {
   phone: '+46 70 207 32 55',
   phoneHref: 'tel:+46702073255',
   social: {
-    facebook: 'https://www.facebook.com/',
+    facebook: 'https://www.facebook.com/edhracing',
     instagram: 'https://www.instagram.com/',
     youtube: 'https://www.youtube.com/',
   },

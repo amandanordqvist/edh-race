@@ -30,6 +30,7 @@ export function Standings() {
     <Section wide className="standings">
       <Reveal>
         <h2 className="results-section__heading">{t.results.standingsTitle}</h2>
+        <p className="results-section__lead">{t.results.standingsLead}</p>
       </Reveal>
 
       <ul className="standings__podium">

@@ -7,6 +7,14 @@ export type CalendarRound = {
   isFinal?: boolean
 }
 
+/** Atmosphere plates per venue — honest reuse when no dedicated shoot exists */
+export const venueImages: Record<string, string> = {
+  'Tierp Arena': '/images/IMG_4819.JPG',
+  'Orsa (Tallhed)': '/images/IMG_4823.JPG',
+  Sundsvall: '/images/IMG_4828.JPG',
+  Piteå: '/images/IMG_4727.JPG',
+}
+
 export const calendar2026: CalendarRound[] = [
   { round: 1, dates: '5–7 Jun', venue: 'Tierp Arena', startDate: '2026-06-05' },
   { round: 2, dates: '19–21 Jun', venue: 'Orsa (Tallhed)', startDate: '2026-06-19' },
@@ -30,4 +38,8 @@ export function getNextCalendarRound(
   const today = new Date(from)
   today.setHours(0, 0, 0, 0)
   return rounds.find((round) => new Date(round.startDate) >= today)
+}
+
+export function getVenueImage(venue: string): string {
+  return venueImages[venue] ?? '/images/IMG_1860.JPG'
 }

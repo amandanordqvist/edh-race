@@ -1,6 +1,8 @@
 import { BentoGrid } from '../components/media/BentoGrid'
+import { FacebookFeed } from '../components/media/FacebookFeed'
 import { Reveal } from '../components/ui/Reveal'
 import { Section } from '../components/ui/Section'
+import { SkewDivider } from '../components/ui/SkewDivider'
 import { useT } from '../i18n'
 import './MediaPage.css'
 
@@ -16,6 +18,8 @@ export function MediaPage() {
         </Reveal>
       </Section>
       <BentoGrid />
+      <SkewDivider />
+      <FacebookFeed />
     </div>
   )
 }

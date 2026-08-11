@@ -6,7 +6,7 @@
   --color-primary-blue: #2a4f9a;
   --color-primary-blue-deep: #1b3e84;
   --color-supporting-navy: #1a2436;
-  --color-silver-gray: #a8adb8;
+  --color-silver-gray: #c4c9d4;
   --color-almost-white: #f3f5f8;
   --color-hairline: rgba(168, 173, 184, 0.22);
   --color-hairline-strong: rgba(243, 245, 248, 0.14);
@@ -38,8 +38,8 @@
   --header-height: 72px;
   --content-max: 1180px;
   --content-wide: 1360px;
-  --section-pad: clamp(5rem, 12vw, 8.5rem);
-  --section-pad-bottom: clamp(5.5rem, 13vw, 9.5rem);
+  --section-pad: clamp(3.25rem, 7vw, 5.5rem);
+  --section-pad-bottom: clamp(3.5rem, 8vw, 6rem);
 
   /* Motion — strong custom curves; UI stays under 300ms */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);

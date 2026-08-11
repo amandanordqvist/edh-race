@@ -2,22 +2,15 @@
   position: relative;
 }
 
-.team-page__intro::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto auto 0;
-  width: min(52vw, 640px);
-  height: min(52vw, 420px);
-  background: radial-gradient(
-    ellipse at 20% 30%,
-    rgba(42, 79, 154, 0.28),
-    transparent 70%
-  );
-  pointer-events: none;
-  z-index: 0;
+.team-page__intro .section__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 2rem;
+  align-items: end;
 }
 
-.team-page__intro .section__inner {
+.team-page__copy {
   position: relative;
   z-index: 1;
 }
@@ -35,4 +28,32 @@
   line-height: 1.65;
   color: rgba(243, 245, 248, 0.78);
   max-width: 42ch;
+}
+
+.team-page__photo {
+  margin: 0;
+}
+
+.team-page__photo-shell {
+  padding: 0.35rem;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-shell);
+  overflow: hidden;
+}
+
+.team-page__photo-shell img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: center 40%;
+  border-radius: var(--radius-core);
+}
+
+@media (min-width: 960px) {
+  .team-page__intro .section__inner {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 2.5rem;
+  }
 }

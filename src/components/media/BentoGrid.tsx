@@ -96,11 +96,11 @@ export function BentoGrid() {
                   poster={item.poster}
                 />
               ) : (
-                <img src={item.src} alt={copy.title} loading="lazy" />
+                <img src={item.src} alt={copy?.title ?? ''} loading="lazy" />
               )}
               <div className="bento__caption">
-                <h3>{copy.title}</h3>
-                <p>{copy.caption}</p>
+                <h3>{copy?.title}</h3>
+                <p>{copy?.caption}</p>
                 {item.credit ? (
                   <p className="bento__credit">{item.credit}</p>
                 ) : null}

@@ -16,7 +16,22 @@
   font-size: clamp(1.35rem, 2.5vw, 1.75rem);
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.contact-form__hint {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(243, 245, 248, 0.65);
+  max-width: 42ch;
+}
+
+.contact-form__after {
+  margin: 0.35rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--color-silver-gray);
 }
 
 .contact-form form {

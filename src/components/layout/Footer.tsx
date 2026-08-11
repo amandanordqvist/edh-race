@@ -3,19 +3,23 @@ import { useLocale, useT } from '../../i18n'
 import { SITE } from '../../data/site'
 import { localePath } from '../../lib/paths'
 import { Button } from '../ui/Button'
-import { useNavItems } from './useNavItems'
+import {
+  usePrimaryNavItems,
+  useSecondaryNavItems,
+} from './useNavItems'
 import './Footer.css'
 
 export function Footer() {
   const t = useT()
   const locale = useLocale()
-  const items = useNavItems()
+  const primary = usePrimaryNavItems()
+  const secondary = useSecondaryNavItems()
 
   return (
     <footer className="site-footer">
       <div className="site-footer__cta">
-        <h2 className="site-footer__cta-title">{t.meta.siteName}</h2>
-        <p className="site-footer__cta-body">{t.meta.tagline}</p>
+        <h2 className="site-footer__cta-title">{t.footer.ctaTitle}</h2>
+        <p className="site-footer__cta-body">{t.footer.ctaBody}</p>
         <Button to={localePath(locale, 'contact')} icon>
           {t.nav.contact}
         </Button>
@@ -25,7 +29,21 @@ export function Footer() {
         <div className="site-footer__col">
           <h3>{t.footer.quickLinks}</h3>
           <ul>
-            {items.map((item) => (
+            <li>
+              <Link to={localePath(locale, 'home')}>{t.nav.home}</Link>
+            </li>
+            {primary.map((item) => (
+              <li key={item.id}>
+                <Link to={item.to}>{item.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="site-footer__col">
+          <h3>{t.footer.more}</h3>
+          <ul>
+            {secondary.map((item) => (
               <li key={item.id}>
                 <Link to={item.to}>{item.label}</Link>
               </li>

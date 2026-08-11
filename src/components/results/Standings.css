@@ -1,7 +1,15 @@
 .results-section__heading {
   font-size: clamp(1.85rem, 4vw, 2.75rem);
   max-width: 22ch;
-  margin-bottom: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 0.75rem;
+}
+
+.results-section__lead {
+  margin: 0 0 clamp(2rem, 5vw, 3rem);
+  max-width: 42ch;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-silver-gray);
 }
 
 .standings__podium {
@@ -29,9 +37,11 @@
     border-color var(--duration-med) var(--ease-spring);
 }
 
-.standings__podium-item:hover {
-  transform: translateY(-4px);
-  border-color: rgba(42, 79, 154, 0.45);
+@media (hover: hover) and (pointer: fine) {
+  .standings__podium-item:hover {
+    transform: translateY(-4px);
+    border-color: rgba(42, 79, 154, 0.45);
+  }
 }
 
 .standings__podium-item--gold {
@@ -127,8 +137,10 @@
   transition: background var(--duration-fast) var(--ease-spring);
 }
 
-.data-table tbody tr:hover td {
-  background: rgba(42, 79, 154, 0.08);
+@media (hover: hover) and (pointer: fine) {
+  .data-table tbody tr:hover td {
+    background: rgba(42, 79, 154, 0.08);
+  }
 }
 
 .data-table__mono {

@@ -3,13 +3,14 @@ import { Link, NavLink } from 'react-router-dom'
 import { useLocale, useT } from '../../i18n'
 import { localePath } from '../../lib/paths'
 import { LanguageSwitcher } from './LanguageSwitcher'
-import { useNavItems } from './useNavItems'
+import { usePrimaryNavItems, useSecondaryNavItems } from './useNavItems'
 import './Header.css'
 
 export function Header() {
   const t = useT()
   const locale = useLocale()
-  const items = useNavItems()
+  const primary = usePrimaryNavItems()
+  const secondary = useSecondaryNavItems()
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -35,17 +36,21 @@ export function Header() {
           className="site-header__brand"
           onClick={() => setOpen(false)}
         >
-          <img src="/logo/logo.png" alt="" width={36} height={36} aria-hidden="true" />
-          <span>{t.meta.siteName}</span>
+          <img
+            src="/logo/logo-grey-png.png"
+            alt=""
+            width={64}
+            height={64}
+            aria-hidden="true"
+          />
+        
         </Link>
 
         <nav className="site-header__desktop" aria-label="Primary">
           <ul>
-            {items.map((item) => (
+            {primary.map((item) => (
               <li key={item.id}>
-                <NavLink to={item.to} end={item.id === 'home'}>
-                  {item.label}
-                </NavLink>
+                <NavLink to={item.to}>{item.label}</NavLink>
               </li>
             ))}
           </ul>
@@ -74,14 +79,27 @@ export function Header() {
       >
         <nav className="site-header__overlay-nav" aria-label="Mobile">
           <ul>
-            {items.map((item, i) => (
+            {primary.map((item, i) => (
+              <li key={item.id} style={{ '--i': i } as CSSProperties}>
+                <NavLink
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  tabIndex={open ? 0 : -1}
+                >
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+          <p className="site-header__overlay-more-label">{t.footer.more}</p>
+          <ul className="site-header__overlay-secondary">
+            {secondary.map((item, i) => (
               <li
                 key={item.id}
-                style={{ '--i': i } as CSSProperties}
+                style={{ '--i': primary.length + i } as CSSProperties}
               >
                 <NavLink
                   to={item.to}
-                  end={item.id === 'home'}
                   onClick={() => setOpen(false)}
                   tabIndex={open ? 0 : -1}
                 >
