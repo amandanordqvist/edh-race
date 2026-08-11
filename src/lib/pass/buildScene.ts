@@ -45,12 +45,13 @@ export function buildPassScene(
   const camera = new pc.Entity('pass-camera')
   camera.addComponent('camera', {
     clearColor: new pc.Color(0.027, 0.035, 0.05),
-    fov: quality === 'high' ? 42 : 50,
-    nearClip: 0.1,
-    farClip: environment.trackLength * 2.2,
+    fov: quality === 'high' ? 48 : 54,
+    nearClip: 0.5,
+    farClip: environment.trackLength * 3,
   })
-  camera.setLocalPosition(-18, 9.2, 14)
-  camera.lookAt(environment.trackLength * 0.55, 1.6, 0)
+  // Wide establishing shot — full strip readable at idle
+  camera.setLocalPosition(environment.trackLength * 0.28, 38, 52)
+  camera.lookAt(environment.trackLength * 0.48, 0.4, 0)
   sceneRoot.addChild(camera)
 
   const keyLight = new pc.Entity('key-light')

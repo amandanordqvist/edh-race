@@ -2,20 +2,55 @@ import type { Entity } from 'playcanvas'
 
 import type { PassPhase } from './types'
 
-const IDLE_YAW_CLAMP_DEG = 12
-const IDLE_YAW_SENSITIVITY_DEG = 40
+const IDLE_YAW_CLAMP_DEG = 10
+const IDLE_YAW_SENSITIVITY_DEG = 28
 const IDLE_RETURN_LERP = 0.06
 
-const STAGE_POSITION: [number, number, number] = [-9.5, 5.8, 9.2]
-const STAGE_LOOK: [number, number, number] = [3.2, 2.2, -0.4]
+/** Elevated 3/4 overview — full strip in frame. */
+function overviewPose(trackLength: number): {
+  position: [number, number, number]
+  look: [number, number, number]
+} {
+  return {
+    position: [trackLength * 0.28, 38, 52],
+    look: [trackLength * 0.48, 0.4, 0],
+  }
+}
 
-const RACE_HEIGHT = 4.4
-const RACE_SIDE_OFFSET = 9
-const RACE_LAG = 5
-const RACE_LOOKAHEAD = 16
-const RACE_FOLLOW_LERP = 0.12
+function stagingPose(trackLength: number): {
+  position: [number, number, number]
+  look: [number, number, number]
+} {
+  return {
+    position: [-6, 22, 34],
+    look: [trackLength * 0.22, 1.2, 0],
+  }
+}
 
-const FINISHED_PULLBACK: [number, number, number] = [0, 1.1, 4.5]
+function racePose(
+  trackLength: number,
+  progress01: number,
+): {
+  position: [number, number, number]
+  look: [number, number, number]
+} {
+  // Keep the whole strip readable; ease camera slightly along the pass.
+  const x = trackLength * (0.22 + progress01 * 0.28)
+  return {
+    position: [x, 34, 48],
+    look: [trackLength * (0.42 + progress01 * 0.28), 0.6, 0],
+  }
+}
+
+function finishedPose(trackLength: number): {
+  position: [number, number, number]
+  look: [number, number, number]
+} {
+  return {
+    position: [trackLength * 0.55, 32, 46],
+    look: [trackLength * 0.78, 1.2, 0],
+  }
+}
 
 function lerp(from: number, to: number, t: number): number {
   return from + (to - from) * t
@@ -29,20 +64,26 @@ type CameraDirectorOptions = {
 }
 
 export function createCameraDirector(opts: CameraDirectorOptions) {
-  const { camera, camaro, trackLength, reducedMotion } = opts
+  const { camera, trackLength, reducedMotion } = opts
+
+  const idle = overviewPose(trackLength)
+  camera.setLocalPosition(...idle.position)
+  camera.lookAt(...idle.look)
 
   const basePosition = camera.getLocalPosition().clone()
   const baseEulers = camera.getLocalEulerAngles().clone()
 
   let currentPhase: PassPhase = 'idle'
   let idleYaw = 0
-  let followX = basePosition.x
-  let followY = basePosition.y
-  let followZ = basePosition.z
 
   const applyIdleFrame = () => {
     camera.setLocalPosition(basePosition)
     camera.setLocalEulerAngles(baseEulers.x, baseEulers.y + idleYaw, baseEulers.z)
+  }
+
+  const applyPose = (pose: { position: [number, number, number]; look: [number, number, number] }) => {
+    camera.setLocalPosition(...pose.position)
+    camera.lookAt(...pose.look)
   }
 
   const onIdleLook = (dx: number, dy: number) => {
@@ -59,7 +100,10 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   const onPhase = (phase: PassPhase) => {
     currentPhase = phase
 
-    if (reducedMotion) return
+    if (reducedMotion) {
+      applyPose(overviewPose(trackLength))
+      return
+    }
 
     switch (phase) {
       case 'idle':
@@ -67,21 +111,15 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
         applyIdleFrame()
         break
       case 'staging':
-        camera.setLocalPosition(...STAGE_POSITION)
-        camera.lookAt(...STAGE_LOOK)
-        break
       case 'amber':
       case 'green':
+        applyPose(stagingPose(trackLength))
         break
       case 'racing':
-        followX = camaro.getLocalPosition().x - RACE_LAG
-        followY = RACE_HEIGHT
-        followZ = RACE_SIDE_OFFSET
-        camera.setLocalPosition(followX, followY, followZ)
-        camera.lookAt(camaro.getLocalPosition().x + RACE_LOOKAHEAD, 1.2, 0)
+        applyPose(racePose(trackLength, 0))
         break
       case 'finished':
-        camera.translateLocal(...FINISHED_PULLBACK)
+        applyPose(finishedPose(trackLength))
         break
       default: {
         const exhaustiveCheck: never = phase
@@ -91,31 +129,20 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   }
 
   const onRaceProgress = (t01: number) => {
-    void t01
     if (reducedMotion || currentPhase !== 'racing') return
-
-    const camaroPos = camaro.getLocalPosition()
-    const targetX = camaroPos.x - RACE_LAG
-
-    followX = lerp(followX, targetX, RACE_FOLLOW_LERP)
-    camera.setLocalPosition(followX, followY, followZ)
-
-    const lookX = Math.min(trackLength, camaroPos.x + RACE_LOOKAHEAD)
-    camera.lookAt(lookX, 1.2, 0)
+    applyPose(racePose(trackLength, Math.min(1, Math.max(0, t01))))
   }
 
   const reset = () => {
     currentPhase = 'idle'
     idleYaw = 0
-    followX = basePosition.x
-    followY = basePosition.y
-    followZ = basePosition.z
-    camera.setLocalPosition(basePosition)
-    camera.setLocalEulerAngles(baseEulers)
+    applyPose(overviewPose(trackLength))
+    basePosition.copy(camera.getLocalPosition())
+    baseEulers.copy(camera.getLocalEulerAngles())
   }
 
   const destroy = () => {
-    // No external listeners owned by the camera director yet; kept for interface symmetry.
+    // No external listeners.
   }
 
   return { onIdleLook, onPhase, onRaceProgress, reset, destroy }
