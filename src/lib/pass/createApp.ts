@@ -1,0 +1,64 @@
+import { Application, FILLMODE_NONE, RESOLUTION_AUTO } from 'playcanvas'
+
+import type { PassQuality } from './types'
+
+function getCanvasSize(canvas: HTMLCanvasElement): { width: number; height: number } {
+  const parent = canvas.parentElement
+
+  if (parent) {
+    const { width, height } = parent.getBoundingClientRect()
+
+    return {
+      width: Math.max(1, Math.round(width)),
+      height: Math.max(1, Math.round(height)),
+    }
+  }
+
+  return {
+    width: Math.max(1, canvas.clientWidth || canvas.width || 1),
+    height: Math.max(1, canvas.clientHeight || canvas.height || 1),
+  }
+}
+
+export async function createPassApp(
+  canvas: HTMLCanvasElement,
+  quality: PassQuality,
+): Promise<{
+  app: import('playcanvas').Application
+  pc: typeof import('playcanvas')
+  destroy: () => void
+}> {
+  const pc = await import('playcanvas')
+  const app = new Application(canvas)
+  const pixelRatioCap = quality === 'low' ? 1.25 : 2
+
+  canvas.style.width = '100%'
+  canvas.style.height = '100%'
+  canvas.style.display = 'block'
+
+  app.graphicsDevice.maxPixelRatio = pixelRatioCap
+
+  const resize = () => {
+    const { width, height } = getCanvasSize(canvas)
+
+    app.resizeCanvas(width, height)
+    app.setCanvasResolution(RESOLUTION_AUTO)
+  }
+
+  const { width, height } = getCanvasSize(canvas)
+
+  app.setCanvasFillMode(FILLMODE_NONE, width, height)
+  app.setCanvasResolution(RESOLUTION_AUTO)
+  resize()
+  window.addEventListener('resize', resize)
+  app.start()
+
+  return {
+    app,
+    pc,
+    destroy: () => {
+      window.removeEventListener('resize', resize)
+      app.destroy()
+    },
+  }
+}
