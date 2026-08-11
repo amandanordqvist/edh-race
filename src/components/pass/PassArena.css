@@ -1,0 +1,228 @@
+.pass-arena {
+  position: relative;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-shell);
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(9, 12, 18, 0.86) 0%, rgba(9, 12, 18, 0.3) 36%, rgba(9, 12, 18, 0.84) 100%),
+    linear-gradient(180deg, #07090d 0%, #10141c 100%);
+  box-shadow: var(--shadow-deep);
+}
+
+.pass-arena__viewport {
+  position: relative;
+  height: clamp(420px, 72vh, 820px);
+}
+
+.pass-arena__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(6, 8, 12, 0.88) 0%, rgba(6, 8, 12, 0.15) 28%, rgba(6, 8, 12, 0.72) 100%),
+    radial-gradient(circle at 18% 72%, rgba(42, 79, 154, 0.22), transparent 34%);
+  pointer-events: none;
+}
+
+.pass-arena__hud {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  pointer-events: none;
+}
+
+.pass-arena__topbar,
+.pass-arena__footer {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pass-arena__status,
+.pass-arena__results-panel {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  background: rgba(7, 9, 13, 0.84);
+  box-shadow: 0 18px 48px rgba(6, 10, 18, 0.35);
+}
+
+.pass-arena__status {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.1rem;
+  align-items: baseline;
+}
+
+.pass-arena__status-text,
+.pass-arena__clock {
+  margin: 0;
+}
+
+.pass-arena__status-text {
+  font-family: var(--font-ui);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.88);
+}
+
+.pass-arena__clock {
+  font-size: 1.05rem;
+  color: var(--color-almost-white);
+  font-family: var(--font-mono);
+}
+
+.pass-arena__actions,
+.pass-arena__results-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  pointer-events: auto;
+}
+
+.pass-arena__mute,
+.pass-arena__stage {
+  pointer-events: auto;
+}
+
+.pass-arena__footer {
+  align-items: end;
+}
+
+.pass-arena__results-panel {
+  width: min(100%, 34rem);
+}
+
+.pass-arena__results-actions {
+  margin-top: 1rem;
+}
+
+.pass-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.pass-results__item {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr) auto auto;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.8rem 0.9rem;
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.pass-results__item--hero {
+  border-color: rgba(42, 79, 154, 0.56);
+  background:
+    linear-gradient(90deg, rgba(42, 79, 154, 0.2) 0%, rgba(42, 79, 154, 0) 54%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.pass-results__place {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--color-primary-blue);
+}
+
+.pass-results__name {
+  min-width: 0;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pass-results__et,
+.pass-results__speed {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: rgba(243, 245, 248, 0.82);
+  white-space: nowrap;
+}
+
+.pass-fallback {
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1.1rem, 2.5vw, 1.5rem);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-shell);
+  background: linear-gradient(180deg, rgba(8, 10, 15, 0.96) 0%, rgba(16, 20, 28, 0.96) 100%);
+  box-shadow: var(--shadow-soft);
+}
+
+.pass-fallback__message {
+  max-width: 58ch;
+  margin: 0;
+  color: rgba(243, 245, 248, 0.8);
+  line-height: 1.65;
+}
+
+.pass-fallback__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@media (max-width: 820px) {
+  .pass-arena__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pass-arena__results-panel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .pass-arena__viewport {
+    height: clamp(420px, 78vh, 640px);
+  }
+
+  .pass-arena__hud {
+    padding: 0.9rem;
+  }
+
+  .pass-arena__topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pass-arena__status {
+    gap: 0.3rem 0.8rem;
+  }
+
+  .pass-arena__status-text {
+    font-size: 0.84rem;
+  }
+
+  .pass-results__item {
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+  }
+
+  .pass-results__et,
+  .pass-results__speed {
+    grid-column: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pass-arena,
+  .pass-fallback {
+    scroll-behavior: auto;
+  }
+}
