@@ -1,0 +1,19 @@
+.pass-page {
+  width: min(100%, var(--content-max));
+  margin: 0 auto;
+  padding: clamp(4rem, 10vw, 6rem) 1.25rem var(--section-pad-bottom);
+}
+
+.pass-page__title {
+  max-width: 12ch;
+  margin-bottom: 1.35rem;
+  font-size: clamp(2.15rem, 5.5vw, 3.6rem);
+  letter-spacing: 0.015em;
+}
+
+.pass-page__lead {
+  max-width: 62ch;
+  color: rgba(243, 245, 248, 0.88);
+  font-size: 1rem;
+  line-height: 1.65;
+}

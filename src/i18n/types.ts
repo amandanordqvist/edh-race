@@ -4,6 +4,7 @@ export type NavKey =
   | 'home'
   | 'journey'
   | 'machine'
+  | 'pass'
   | 'results'
   | 'team'
   | 'media'
@@ -22,9 +23,12 @@ export type Dictionary = {
   }
   footer: {
     quickLinks: string
+    more: string
     contact: string
     social: string
     rights: string
+    ctaTitle: string
+    ctaBody: string
   }
   common: {
     comingSoon: string
@@ -36,20 +40,55 @@ export type Dictionary = {
   }
   home: {
     brand: string
-    tagline: string
-    cta: string
+    headline: string
+    heroKicker: string
+    heroClass: string
+    lead: string
+    ctaTeam: string
+    ctaMachine: string
     statsTitle: string
     statsLead: string
     stats: {
       quarter: { value: string; label: string }
       topSpeed: { value: string; label: string }
       eighth: { value: string; label: string }
-      hp: { value: string; label: string }
+      base: { value: string; label: string }
     }
+    driverLabel: string
+    driverTitle: string
+    driverBody: string
+    driverQuote: string
+    driverCta: string
+    driverAlt: string
+    machineLabel: string
+    machineTitle: string
+    machineBody: string
+    machineCta: string
+    machineAlt: string
+    teamLabel: string
+    teamTitle: string
+    teamBody: string
+    teamQuote: string
+    teamCta: string
+    teamPhotoAlt: string
+    storyLabel: string
+    storyTitle: string
+    storyBody: string
+    storyCta: string
+    nextRaceLabel: string
+    nextRaceTitle: string
+    nextRaceClassLabel: string
+    nextRaceClass: string
+    nextRaceStatus: string
+    nextRaceSeasonDone: string
+    nextRaceCta: string
     sponsorsTitle: string
     sponsorsBody: string
+    sponsorsBenefits: string[]
+    sponsorsCta: string
     simulatorTitle: string
     simulatorBody: string
+    simulatorExplain: string
     simulatorStage: string
     simulatorAgain: string
     simulatorStatus: {
@@ -61,6 +100,33 @@ export type Dictionary = {
       finished: string
     }
     simulatorCompare: {
+      camaro: string
+      f1: string
+      jet: string
+    }
+    passTeaserTitle: string
+    passTeaserBody: string
+    passTeaserCta: string
+    imageFallback: string
+  }
+  pass: {
+    title: string
+    lead: string
+    stage: string
+    again: string
+    mute: string
+    unmute: string
+    webglFallback: string
+    continueJourney: string
+    status: {
+      idle: string
+      staging: string
+      amber: string
+      green: string
+      racing: string
+      finished: string
+    }
+    compare: {
       camaro: string
       f1: string
       jet: string
@@ -79,6 +145,12 @@ export type Dictionary = {
     quote2: string
     quote2Attr: string
     timelineTitle: string
+    chapters: {
+      roots: string
+      build: string
+      elite: string
+      record: string
+    }
     timeline: Record<string, string>
   }
   machine: {
@@ -109,8 +181,15 @@ export type Dictionary = {
   }
   results: {
     title: string
+    heroEt: string
+    heroSpeed: string
+    heroCaption: string
+    heroCta: string
+    heroAlt: string
     standingsTitle: string
+    standingsLead: string
     bestTimesTitle: string
+    bestTimesLead: string
     calendarTitle: string
     nextStart: string
     highlightBest: string
@@ -128,17 +207,22 @@ export type Dictionary = {
     intro: string
     crewTitle: string
     supportTitle: string
+    groupPhotoAlt: string
     members: Record<string, { role: string; bio: string }>
   }
   media: {
     title: string
     intro: string
+    feedTitle: string
+    feedLead: string
+    feedCta: string
     items: Record<string, { title: string; caption: string }>
   }
   contact: {
     title: string
     pitchLead: string
     pitch: string
+    proof: string
     valuesTitle: string
     values: {
       exposure: { title: string; body: string }
@@ -146,6 +230,7 @@ export type Dictionary = {
       precision: { title: string; body: string }
     }
     formTitle: string
+    formHint: string
     name: string
     company: string
     email: string
@@ -159,6 +244,8 @@ export type Dictionary = {
       material: string
     }
     submit: string
+    afterSend: string
     mailtoSubject: string
+    pitchAlt: string
   }
 }

@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { isLocale } from './lib/paths'
@@ -8,6 +9,8 @@ import { MachinePage } from './pages/MachinePage'
 import { MediaPage } from './pages/MediaPage'
 import { ResultsPage } from './pages/ResultsPage'
 import { TeamPage } from './pages/TeamPage'
+
+const PassPage = lazy(() => import('./pages/PassPage'))
 
 function LocaleLayout() {
   const { lang } = useParams()
@@ -27,6 +30,22 @@ export default function App() {
         <Route path="journey" element={<JourneyPage />} />
         <Route path="maskinen" element={<MachinePage />} />
         <Route path="machine" element={<MachinePage />} />
+        <Route
+          path="passet"
+          element={
+            <Suspense fallback={null}>
+              <PassPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="pass"
+          element={
+            <Suspense fallback={null}>
+              <PassPage />
+            </Suspense>
+          }
+        />
         <Route path="resultat" element={<ResultsPage />} />
         <Route path="results" element={<ResultsPage />} />
         <Route path="teamet" element={<TeamPage />} />

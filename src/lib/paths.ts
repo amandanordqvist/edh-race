@@ -4,6 +4,7 @@ export type PageId =
   | 'home'
   | 'journey'
   | 'machine'
+  | 'pass'
   | 'results'
   | 'team'
   | 'media'
@@ -14,6 +15,7 @@ const SLUGS: Record<Locale, Record<PageId, string>> = {
     home: '',
     journey: 'resa',
     machine: 'maskinen',
+    pass: 'passet',
     results: 'resultat',
     team: 'teamet',
     media: 'media',
@@ -23,6 +25,7 @@ const SLUGS: Record<Locale, Record<PageId, string>> = {
     home: '',
     journey: 'journey',
     machine: 'machine',
+    pass: 'pass',
     results: 'results',
     team: 'team',
     media: 'media',
@@ -36,6 +39,8 @@ const SLUG_TO_PAGE: Record<string, PageId> = {
   journey: 'journey',
   maskinen: 'machine',
   machine: 'machine',
+  passet: 'pass',
+  pass: 'pass',
   resultat: 'results',
   results: 'results',
   teamet: 'team',
@@ -64,5 +69,5 @@ export function switchLocalePath(targetLang: Locale, page: PageId): string {
 }
 
 export function getPageIds(): PageId[] {
-  return ['home', 'journey', 'machine', 'results', 'team', 'media', 'contact']
+  return ['home', 'journey', 'machine', 'pass', 'results', 'team', 'media', 'contact']
 }
