@@ -6,8 +6,8 @@ const IDLE_YAW_CLAMP_DEG = 12
 const IDLE_YAW_SENSITIVITY_DEG = 40
 const IDLE_RETURN_LERP = 0.06
 
-const STAGE_POSITION: [number, number, number] = [-10, 5.4, 8.5]
-const STAGE_LOOK: [number, number, number] = [4, 2.1, -0.6]
+const STAGE_POSITION: [number, number, number] = [-9.5, 5.8, 9.2]
+const STAGE_LOOK: [number, number, number] = [3.2, 2.2, -0.4]
 
 const RACE_HEIGHT = 4.4
 const RACE_SIDE_OFFSET = 9

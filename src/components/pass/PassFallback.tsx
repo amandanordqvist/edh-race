@@ -21,27 +21,48 @@ function getCompareLabel(t: Dictionary, racerId: SimulatorRacerId) {
   }
 }
 
-export function PassResultsList() {
+export function PassTimeslip() {
   const t = useT()
+  const hero = orderedRacers[0]
 
   return (
-    <ol className="pass-results">
-      {orderedRacers.map((racer, index) => {
-        const isHero = racer.id === 'camaro'
+    <article className="pass-timeslip" aria-label={t.pass.timeslipTitle}>
+      <header className="pass-timeslip__header">
+        <p className="pass-timeslip__eyebrow">{t.pass.timeslipTitle}</p>
+        <p className="pass-timeslip__distance">{t.pass.timeslipDistance}</p>
+      </header>
 
-        return (
-          <li
-            key={racer.id}
-            className={`pass-results__item ${isHero ? 'pass-results__item--hero' : ''}`.trim()}
-          >
-            <span className="pass-results__place">{index + 1}</span>
-            <span className="pass-results__name">{getCompareLabel(t, racer.id)}</span>
-            <span className="pass-results__et">{racer.et.toFixed(2)}s</span>
-            <span className="pass-results__speed">{racer.speedLabel}</span>
-          </li>
-        )
-      })}
-    </ol>
+      {hero ? (
+        <div className="pass-timeslip__hero">
+          <p className="pass-timeslip__hero-et">{hero.et.toFixed(2)}</p>
+          <p className="pass-timeslip__hero-unit">s</p>
+          <p className="pass-timeslip__hero-meta">
+            <span>{getCompareLabel(t, hero.id)}</span>
+            <span>{hero.speedLabel}</span>
+          </p>
+        </div>
+      ) : null}
+
+      <ol className="pass-timeslip__rows">
+        {orderedRacers.map((racer, index) => {
+          const isHero = racer.id === 'camaro'
+
+          return (
+            <li
+              key={racer.id}
+              className={`pass-timeslip__row ${isHero ? 'pass-timeslip__row--hero' : ''}`.trim()}
+            >
+              <span className="pass-timeslip__place" aria-label={t.pass.timeslipPlace}>
+                {index + 1}
+              </span>
+              <span className="pass-timeslip__name">{getCompareLabel(t, racer.id)}</span>
+              <span className="pass-timeslip__et">{racer.et.toFixed(2)}s</span>
+              <span className="pass-timeslip__speed">{racer.speedLabel}</span>
+            </li>
+          )
+        })}
+      </ol>
+    </article>
   )
 }
 
@@ -54,7 +75,7 @@ export function PassFallback() {
       <p className="pass-fallback__message" role="status">
         {t.pass.webglFallback}
       </p>
-      <PassResultsList />
+      <PassTimeslip />
       <div className="pass-fallback__actions">
         <Button to={localePath(locale, 'journey')} variant="ghost" icon>
           {t.pass.continueJourney}

@@ -48,11 +48,12 @@ export type Dictionary = {
     ctaMachine: string
     statsTitle: string
     statsLead: string
+    statsMeta: string
     stats: {
-      quarter: { value: string; label: string }
-      topSpeed: { value: string; label: string }
-      eighth: { value: string; label: string }
-      base: { value: string; label: string }
+      quarter: { code: string; value: string; unit: string; label: string }
+      topSpeed: { code: string; value: string; unit: string; label: string }
+      eighth: { code: string; value: string; unit: string; label: string }
+      base: { code: string; value: string; unit: string; label: string }
     }
     driverLabel: string
     driverTitle: string
@@ -114,6 +115,9 @@ export type Dictionary = {
       f1: string
       jet: string
     }
+    timeslipTitle: string
+    timeslipDistance: string
+    timeslipPlace: string
   }
   journey: {
     title: string

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { PassCanvas } from './PassCanvas'
-import { PassFallback, PassResultsList } from './PassFallback'
+import { PassFallback, PassTimeslip } from './PassFallback'
 import { Button } from '../ui/Button'
 import { useLocale, useT } from '../../i18n'
 import { localePath } from '../../lib/paths'
@@ -95,7 +95,7 @@ export function PassArena() {
 
             {phase === 'finished' ? (
               <div className="pass-arena__results-panel">
-                <PassResultsList />
+                <PassTimeslip />
 
                 <div className="pass-arena__results-actions">
                   <Button to={localePath(locale, 'journey')} variant="ghost" icon>
