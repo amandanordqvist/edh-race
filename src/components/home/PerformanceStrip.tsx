@@ -9,20 +9,18 @@ import './PerformanceStrip.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-type StatCard = { value: string; label: string }
+type StatCard = { code: string; value: string; unit: string; label: string }
 
 function parseStat(
   value: string,
-): { prefix: string; num: number; decimals: number; suffix: string } | null {
-  const match = value.replace(/\s/g, ' ').match(/^([^0-9]*)([0-9]+(?:[.,][0-9]+)?)(.*)$/)
+): { num: number; decimals: number } | null {
+  const match = value.replace(/\s/g, ' ').match(/^([0-9]+(?:[.,][0-9]+)?)$/)
   if (!match) return null
-  const raw = match[2].replace(',', '.')
+  const raw = match[1].replace(',', '.')
   const decimals = raw.includes('.') ? raw.split('.')[1].length : 0
   return {
-    prefix: match[1],
     num: Number(raw),
     decimals,
-    suffix: match[3],
   }
 }
 
@@ -31,20 +29,20 @@ export function PerformanceStrip() {
   const locale = useLocale()
   const { quarter, topSpeed, eighth, base } = t.home.stats
   const cards: StatCard[] = [quarter, topSpeed, eighth, base]
-  const gridRef = useRef<HTMLDivElement>(null)
+  const boardRef = useRef<HTMLDivElement>(null)
   const decimalSep = locale === 'sv' ? ',' : '.'
 
   useGSAP(
     () => {
-      const grid = gridRef.current
-      if (!grid) return
+      const board = boardRef.current
+      if (!board) return
 
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       if (reduced) return
 
-      const values = grid.querySelectorAll<HTMLElement>('[data-stat-value]')
+      const values = board.querySelectorAll<HTMLElement>('[data-stat-value]')
 
-      values.forEach((el) => {
+      values.forEach((el, index) => {
         const raw = el.dataset.statValue ?? ''
         const parsed = parseStat(raw)
         if (!parsed || Number.isNaN(parsed.num)) return
@@ -55,43 +53,53 @@ export function PerformanceStrip() {
           { n: 0 },
           {
             n: parsed.num,
-            duration: 1.2,
+            duration: 1.15,
+            delay: index * 0.06,
             ease: 'power2.out',
             scrollTrigger: {
-              trigger: el,
-              start: 'top 85%',
+              trigger: board,
+              start: 'top 80%',
               once: true,
             },
             onUpdate: () => {
-              const formatted =
+              el.textContent =
                 parsed.decimals > 0
                   ? state.n.toFixed(parsed.decimals).replace('.', decimalSep)
                   : String(Math.round(state.n))
-              el.textContent = `${parsed.prefix}${formatted}${parsed.suffix}`
             },
           },
         )
       })
     },
     {
-      scope: gridRef,
+      scope: boardRef,
       dependencies: [quarter.value, topSpeed.value, eighth.value, decimalSep],
     },
   )
 
   return (
-    <Section className="perf-strip">
+    <Section className="perf-strip" wide>
       <Reveal className="perf-strip__intro">
+        <p className="perf-strip__meta">{t.home.statsMeta}</p>
         <h2 className="perf-strip__title">{t.home.statsTitle}</h2>
         <p className="perf-strip__lead">{t.home.statsLead}</p>
       </Reveal>
 
-      <div ref={gridRef}>
-        <Reveal className="perf-strip__grid" delay={0.06} stagger={0.1} y={36}>
+      <div ref={boardRef}>
+        <Reveal className="perf-strip__board" delay={0.08} stagger={0.08} y={28}>
           {cards.map((card) => (
-            <article className="perf-strip__card" key={card.label}>
-              <p className="perf-strip__value" data-stat-value={card.value}>
-                {card.value}
+            <article className="perf-strip__cell" key={card.code}>
+              <p className="perf-strip__code">{card.code}</p>
+              <p className="perf-strip__readout">
+                <span
+                  className="perf-strip__value"
+                  data-stat-value={parseStat(card.value) ? card.value : undefined}
+                >
+                  {locale === 'sv' && parseStat(card.value)
+                    ? card.value.replace('.', ',')
+                    : card.value}
+                </span>
+                {card.unit ? <span className="perf-strip__unit">{card.unit}</span> : null}
               </p>
               <p className="perf-strip__label">{card.label}</p>
             </article>
