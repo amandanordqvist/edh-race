@@ -123,6 +123,7 @@ export const sv: Dictionary = {
     passTeaserBody:
       'Se den live jämförelsen: 5.74 sekunder över 402 meter mot Formel 1 och ett passagerarflygplan.',
     passTeaserCta: 'Öppna passet',
+    passTeaserAlt: 'Santa Pod Raceway dragbana i skymning',
     imageFallback: 'Bilden kunde inte laddas',
   },
   pass: {

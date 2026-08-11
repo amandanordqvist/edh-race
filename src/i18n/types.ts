@@ -107,6 +107,7 @@ export type Dictionary = {
     passTeaserTitle: string
     passTeaserBody: string
     passTeaserCta: string
+    passTeaserAlt: string
     imageFallback: string
   }
   pass: {

@@ -88,6 +88,18 @@
   border-radius: var(--radius-core);
 }
 
+.pass-teaser__fallback {
+  min-height: inherit;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  color: var(--color-silver-gray);
+  font-size: 1rem;
+  line-height: 1.5;
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-core);
+}
+
 @media (min-width: 960px) {
   .pass-teaser__frame {
     grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);

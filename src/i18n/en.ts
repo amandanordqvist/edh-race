@@ -123,6 +123,7 @@ export const en: Dictionary = {
     passTeaserBody:
       'See the live comparison: 5.74 seconds over 402 metres against Formula 1 and a passenger jet.',
     passTeaserCta: 'Open the pass',
+    passTeaserAlt: 'Santa Pod Raceway drag strip at dusk',
     imageFallback: 'Image could not be loaded',
   },
   pass: {
