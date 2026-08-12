@@ -110,16 +110,25 @@ export const en: Dictionary = {
   pass: {
     title: 'The pass',
     lead:
-      'Stage the car. Wait for green. Watch 5.74 seconds against Formula 1 and a passenger jet over 402 metres.',
+      'Pick an opponent. Stage the car. Wait for green. Watch 5.74 seconds in a two-lane comparison over 402 metres.',
     stage: 'Stage the car',
     again: 'Race again',
     mute: 'Mute',
     unmute: 'Unmute',
+    followCar: 'Follow car',
+    zoomOut: 'Zoom out',
+    loading: 'Loading Pass Arena…',
+    modelCredit: '3D car: Camaro scan (Tripo3D)',
+    modelCreditHref: 'https://tripo3d.ai',
     webglFallback:
       'Your device could not show the interactive comparison. The times below still show how quick the pass is over 402 metres.',
     continueJourney: 'Continue the journey',
+    openTimeslip: 'Open the timeslip',
+    closeTimeslip: 'Close timeslip',
+    readTimeslip: 'Read the timeslip — decode the numbers',
+    pickOpponent: 'Race against',
     status: {
-      idle: 'Ready to stage',
+      idle: 'Pick opponent — inspect — stage',
       staging: 'Staging…',
       amber: 'Amber',
       green: 'Green!',
@@ -131,28 +140,107 @@ export const en: Dictionary = {
       f1: 'Formula 1',
       jet: 'Passenger jet',
     },
+    compareMeaning: {
+      camaro:
+        'A real Doorslammers pass from a standing start: 5.75 s and about 415 km/h over 402 m.',
+      f1:
+        'Approximate time for an F1 car from a standing start over the same 402 m. Slower hook at 60′ — built for circuit laps, not a drag launch.',
+      jet:
+        'Approximate time for a passenger jet from a standing start. Almost stationary at 60′; jet engines build speed slowly from the ground.',
+    },
     timeslipTitle: 'Timeslip',
-    timeslipDistance: '402 m · quarter mile',
+    timeslipDistance: '402 m · 1320 ft · quarter mile',
     timeslipPlace: 'Place',
+    timeslipEvent: 'Doorslammers · 19 May 2024 · E2',
+    timeslipGuide: 'How to read the slip — each row is a timing mark along the strip.',
+    timeslipCompareTitle: 'Why F1 and the jet?',
+    timeslipCompareLead:
+      'This is not a real race between the vehicles. It is an educational comparison: the same 402 m, standing start, one rival in the other lane. The point is how extreme doorslammer acceleration really is.',
+    primerLead:
+      'EDH usually races 201 m in the European Drag Racing Series. Here you run a quarter-mile pass (402 m) from Santa Pod — the full acceleration, from zero to 415 km/h.',
+    inspectHint: 'Drag to spin the car · scroll to zoom',
+    context201: {
+      title: '201 m vs 402 m — two different yardsticks',
+      body:
+        'In Scandinavia and the EDRS, series times are measured over 201 metres (660 ft). The quarter mile (402 m) is the classic distance — and the one that produced the Santa Pod record pass. Same pass, same car — different distance, different numbers.',
+      edrsStat: 'At 201 m on this pass: 3.83 s · 326 km/h — EDH’s usual race distance.',
+      quarterStat: 'At 402 m (finish): 5.75 s · 415 km/h — the quarter-mile reference.',
+    },
+    sportWhy: {
+      title: 'Why the numbers matter',
+      body:
+        'Drag racing is about controlled acceleration — not top speed alone. Every hundredth on the slip is garage work: grip, engine, chassis and setup. In Top Doorslammer, 201 m is the series benchmark; the quarter mile puts the car in a global context. Teams chase both — it is the same craft behind them.',
+    },
+    anchorsTitle: 'Everyday reference points',
+    anchors: {
+      distance: '402 m ≈ a football pitch plus both penalty boxes in length.',
+      time: '5.75 s — shorter than one deep breath (~4–6 s).',
+      speed: '415 km/h — faster than a regional train at full speed.',
+      trap: 'Trap speed = speed at the finish line, not average speed. The car is fastest just before the chutes.',
+    },
+    splitCallouts: {
+      sixty: '60′ · ~18 m · launch and grip are decided here',
+      threeThirty: '330′ · ~100 m · already faster than most cars ever go',
+      eighth: '660′ · 201 m · EDH’s usual distance · 326 km/h',
+      thousand: '1000′ · ~305 m · final push to the quarter-mile finish',
+      quarter: '1320′ · 402 m · Santa Pod pace · 415 km/h',
+    },
+    racingHud: {
+      reaction: 'Reaction time',
+      elapsed: 'Elapsed time',
+      speedUnit: 'km/h',
+      rpmUnit: 'RPM',
+      tireLabel: 'Slick',
+    },
+    timeslipSplits: {
+      reaction: {
+        label: 'Reaction',
+        meaning: 'Time from green light until the car moves. Quicker reaction = better leave.',
+      },
+      sixty: {
+        label: '60′ ET',
+        meaning: 'Time to 60 feet (~18 m). Shows how hard the car hooks off the line.',
+      },
+      threeThirty: {
+        label: '330′ ET',
+        meaning: 'Time to 330 feet (~100 m). Measures pull just after the launch.',
+      },
+      eighth: {
+        label: '1/8 ET',
+        meaning:
+          '660 ft = 201 m — EDH’s usual race distance in the EDRS. On this pass: 3.83 s and 326 km/h. Halfway on a quarter mile.',
+      },
+      thousand: {
+        label: '1000′ ET',
+        meaning: 'Time and speed at 1000 feet (~305 m), just before the traps.',
+      },
+      quarter: {
+        label: '1320′ ET',
+        meaning: 'Elapsed time for the full quarter mile (402 m) — the board time.',
+      },
+      trapMph: {
+        label: '1320′ MPH',
+        meaning: 'Trap speed at the finish. 258 mph ≈ 415 km/h.',
+      },
+    },
   },
   journey: {
-    title: 'Anders’ journey',
+    title: 'From an impulse buy to a record',
     intro:
       'From the vibration in a mini-moped handlebar in Hudiksvall to the start line in Europe. Still the same garage. Still the same curiosity.',
     beatChildhood: 'The beginning',
-    beatTurning: 'The turning point',
     beatPhilosophy: 'The philosophy',
     quote1:
       'I still remember the feeling when the engine started and the vibrations went through the bars. That feeling has never left me.',
     quote1Attr: 'Anders Edh',
-    turningPoint:
-      'At sixteen, Anders bought his first Chevrolet Camaro (1971) for SEK 14,800. On New Year’s Eve 2004 came a spontaneous eBay purchase of a 1970 Camaro from New Jersey. That changed the direction.',
     philosophy:
       'Anders does not buy ready-made answers. He builds, develops and tunes in the garage in Hudiksvall, and digs into details others often skip.',
     quote2:
       'Anyone can look up the information. The hard part is knowing what to look up.',
     quote2Attr: 'Anders Edh',
-    timelineTitle: 'The timeline',
+    heroAlt: 'Anders Edh in the pits beside his blue Camaro',
+    spineLabel: 'Chapters in the journey',
+    crossroadsLabel: 'The crossroads',
     chapters: {
       roots: 'Roots',
       build: 'Build',
@@ -162,15 +250,17 @@ export const en: Dictionary = {
     timeline: {
       '1970s-first-camaro':
         'Buys his first Camaro (1971) for SEK 14,800 at age sixteen.',
-      '2004-ebay': 'Spontaneous New Year’s Eve purchase of a 1970 Camaro on eBay.',
+      '2004-ebay':
+        'Spontaneous New Year’s Eve purchase of a 1970 Camaro from New Jersey on eBay.',
       '2005-license':
         'Introduced to drag racing by Kjell-Åke Kring (Norrbo) and earns his licence in Söderhamn. Mechanic Martin Ekstedt appears in the garage.',
       '2006-10s': 'Runs 10.0 seconds over 402 metres (the quarter mile).',
       '2010-nitrous': 'Reaches 7.8 seconds over 402 metres with a nitrous engine.',
       '2013-chassis':
         'Strips the car completely and builds a tube chassis from scratch. The street car becomes a pure race machine.',
-      '2016-680':
-        'Runs 6.80 seconds over 402 metres. Stands at a crossroads and considers selling everything.',
+      '2016-680': 'Runs 6.80 seconds over 402 metres.',
+      '2016-crossroads':
+        'Stands at a crossroads and considers selling everything.',
       '2016-2017-blower':
         'Switches to a blower Chevrolet engine. A new direction.',
       '2017-edrs6':
@@ -189,6 +279,17 @@ export const en: Dictionary = {
         'Andreas Gröning joins the team. 3rd place overall in Top Doorslammer European Drag Racing Series.',
       '2026-season':
         'Win in the first race at Santa Pod. 3.87 seconds on the asphalt track in Hudiksvall after four-link and weight-balance work.',
+    },
+    marks: {
+      '2006-10s': '10.0 s',
+      '2010-nitrous': '7.8 s',
+      '2016-680': '6.80 s',
+      '2017-edrs6': '4.15 s',
+      '2018-runnerup': '2nd EDRS',
+      '2019-champion': '1st EDRS',
+      '2021-record': '3.89 s',
+      '2024-santapod': '5.74 s',
+      '2026-season': '3.87 s',
     },
   },
   machine: {

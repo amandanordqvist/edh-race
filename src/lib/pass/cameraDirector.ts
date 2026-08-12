@@ -1,59 +1,127 @@
 import type { Entity } from 'playcanvas'
 
-import type { PassPhase } from './types'
+import type { PassCameraView, PassPhase } from './types'
 
-const IDLE_YAW_CLAMP_DEG = 10
-const IDLE_YAW_SENSITIVITY_DEG = 28
-const IDLE_RETURN_LERP = 0.06
+const CAMERA_LERP = 7.5
+const ZOOM_LERP = 5.5
 
-/** Elevated 3/4 overview — full strip in frame. */
-function overviewPose(trackLength: number): {
+/** Idle inspect orbit — full car readable before stage. */
+const INSPECT_RADIUS_DEFAULT = 10.2
+const INSPECT_RADIUS_MIN = 6.5
+const INSPECT_RADIUS_MAX = 14
+const INSPECT_PITCH_MIN = 6
+const INSPECT_PITCH_MAX = 38
+const INSPECT_YAW_SENS = 95
+const INSPECT_PITCH_SENS = 55
+const INSPECT_AUTO_YAW_DEG = 10
+const INSPECT_IDLE_RESUME_S = 2.6
+const INSPECT_START_YAW = 42
+const INSPECT_START_PITCH = 12
+
+type Pose = {
   position: [number, number, number]
   look: [number, number, number]
-} {
+  fov: number
+}
+
+/** Closer idle establishing shot — soft jump into tree insert. */
+function overviewPose(trackLength: number): Pose {
   return {
-    position: [trackLength * 0.28, 38, 52],
-    look: [trackLength * 0.48, 0.4, 0],
+    position: [trackLength * 0.1, 14, 18],
+    look: [1.6, 0.7, 0],
+    fov: 46,
   }
 }
 
-function stagingPose(trackLength: number): {
-  position: [number, number, number]
-  look: [number, number, number]
-} {
+/**
+ * Orbit around the Camaro so the whole body reads.
+ * Yaw 0 ≈ rear 3/4; increases orbit counterclockwise around the car.
+ */
+function inspectPose(
+  heroX: number,
+  heroZ: number,
+  yawDeg: number,
+  pitchDeg: number,
+  radius: number,
+): Pose {
+  const lookY = 0.95
+  const yaw = (yawDeg * Math.PI) / 180
+  const pitch = (pitchDeg * Math.PI) / 180
+  const cosPitch = Math.cos(pitch)
+
   return {
-    position: [-6, 22, 34],
-    look: [trackLength * 0.22, 1.2, 0],
+    position: [
+      heroX + Math.sin(yaw) * cosPitch * radius,
+      lookY + Math.sin(pitch) * radius,
+      heroZ + Math.cos(yaw) * cosPitch * radius,
+    ],
+    look: [heroX, lookY, heroZ],
+    fov: 42,
   }
 }
 
-function racePose(
-  trackLength: number,
-  progress01: number,
-): {
-  position: [number, number, number]
-  look: [number, number, number]
-} {
-  // Keep the whole strip readable; ease camera slightly along the pass.
-  const x = trackLength * (0.22 + progress01 * 0.28)
+/** Tree insert — low 3/4 rear at the Christmas tree / burnout. */
+function treeInsertPose(heroX: number, heroZ: number): Pose {
   return {
-    position: [x, 34, 48],
-    look: [trackLength * (0.42 + progress01 * 0.28), 0.6, 0],
+    position: [heroX - 5.4, 1.55, heroZ + 7.2],
+    look: [heroX + 1.2, 0.65, heroZ - 0.15],
+    fov: 32,
   }
 }
 
-function finishedPose(trackLength: number): {
-  position: [number, number, number]
-  look: [number, number, number]
-} {
+/** Chase camera — tight 3/4 rear, lower to the asphalt. */
+function followPose(heroX: number, heroZ: number, speed01: number): Pose {
   return {
-    position: [trackLength * 0.55, 32, 46],
-    look: [trackLength * 0.78, 1.2, 0],
+    position: [
+      heroX - 5.8 - speed01 * 1.4,
+      1.55 + speed01 * 0.35,
+      heroZ + 5.8 + speed01 * 0.7,
+    ],
+    look: [heroX + 4.2 + speed01 * 4.5, 0.85 + speed01 * 0.1, heroZ],
+    fov: 36 + speed01 * 6,
   }
 }
 
-function lerp(from: number, to: number, t: number): number {
-  return from + (to - from) * t
+/** Elevated side-rail looking across both lanes. */
+function sideRailPose(heroX: number, trackLength: number): Pose {
+  const x = Math.min(trackLength * 0.72, Math.max(18, heroX + 10))
+  return {
+    position: [x, 11, 22],
+    look: [x - 6, 0.4, 0],
+    fov: 44,
+  }
+}
+
+function finishWidePose(trackLength: number): Pose {
+  return {
+    position: [trackLength * 0.58, 22, 34],
+    look: [trackLength * 0.88, 1, 0],
+    fov: 48,
+  }
+}
+
+function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t
+}
+
+function mixPose(a: Pose, b: Pose, t: number): Pose {
+  return {
+    position: [
+      lerp(a.position[0], b.position[0], t),
+      lerp(a.position[1], b.position[1], t),
+      lerp(a.position[2], b.position[2], t),
+    ],
+    look: [
+      lerp(a.look[0], b.look[0], t),
+      lerp(a.look[1], b.look[1], t),
+      lerp(a.look[2], b.look[2], t),
+    ],
+    fov: lerp(a.fov, b.fov, t),
+  }
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value))
 }
 
 type CameraDirectorOptions = {
@@ -61,89 +129,274 @@ type CameraDirectorOptions = {
   camaro: Entity
   trackLength: number
   reducedMotion: boolean
+  onViewChange?: (view: PassCameraView) => void
 }
 
 export function createCameraDirector(opts: CameraDirectorOptions) {
-  const { camera, trackLength, reducedMotion } = opts
+  const { camera, camaro, trackLength, reducedMotion, onViewChange } = opts
+  const cameraComponent = camera.camera
 
-  const idle = overviewPose(trackLength)
-  camera.setLocalPosition(...idle.position)
-  camera.lookAt(...idle.look)
-
-  const basePosition = camera.getLocalPosition().clone()
-  const baseEulers = camera.getLocalEulerAngles().clone()
-
-  let currentPhase: PassPhase = 'idle'
-  let idleYaw = 0
-
-  const applyIdleFrame = () => {
-    camera.setLocalPosition(basePosition)
-    camera.setLocalEulerAngles(baseEulers.x, baseEulers.y + idleYaw, baseEulers.z)
+  if (!cameraComponent) {
+    throw new Error('Pass camera entity is missing a camera component')
   }
 
-  const applyPose = (pose: { position: [number, number, number]; look: [number, number, number] }) => {
-    camera.setLocalPosition(...pose.position)
-    camera.lookAt(...pose.look)
+  let currentPhase: PassPhase = 'idle'
+  let raceSpeed = 0
+  let heroX = camaro.getLocalPosition().x
+  let heroZ = camaro.getLocalPosition().z
+
+  /** Idle inspect orbit state */
+  let inspectYaw = INSPECT_START_YAW
+  let inspectPitch = INSPECT_START_PITCH
+  let inspectRadius = INSPECT_RADIUS_DEFAULT
+  let inspectIdleTimer = 0
+  let inspectDragging = false
+
+  /** 0 = follow car, 1 = zoomed out to full strip */
+  let zoomTarget = 0
+  let zoomCurrent = 0
+  let view: PassCameraView = 'follow'
+  let launchShake = 0
+  let shakePhase = 0
+
+  const initialInspect = inspectPose(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius)
+  let currentPos: [number, number, number] = [...initialInspect.position]
+  let currentLook: [number, number, number] = [...initialInspect.look]
+  let currentFov = initialInspect.fov
+
+  const emitView = () => {
+    const next: PassCameraView = zoomTarget >= 0.5 ? 'wide' : 'follow'
+    if (next === view) return
+    view = next
+    onViewChange?.(view)
+  }
+
+  const applyPoseImmediate = (pose: Pose) => {
+    currentPos = [...pose.position]
+    currentLook = [...pose.look]
+    currentFov = pose.fov
+    camera.setLocalPosition(...currentPos)
+    camera.lookAt(...currentLook)
+    cameraComponent.fov = currentFov
+  }
+
+  applyPoseImmediate(initialInspect)
+
+  const resolveTargetPose = (): Pose => {
+    switch (currentPhase) {
+      case 'idle':
+        return inspectPose(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius)
+
+      case 'staging':
+      case 'amber':
+        return treeInsertPose(heroX, heroZ)
+
+      case 'green': {
+        const insert = treeInsertPose(heroX, heroZ)
+        const follow = followPose(heroX, heroZ, 0.08)
+        return mixPose(insert, follow, 0.4)
+      }
+
+      case 'racing': {
+        const follow = followPose(heroX, heroZ, raceSpeed)
+        const wide = sideRailPose(heroX, trackLength)
+        return mixPose(follow, wide, zoomCurrent)
+      }
+
+      case 'finished': {
+        const follow = followPose(heroX, heroZ, 0)
+        const wide = finishWidePose(trackLength)
+        return mixPose(follow, wide, zoomCurrent)
+      }
+
+      default: {
+        const exhaustiveCheck: never = currentPhase
+        return exhaustiveCheck
+      }
+    }
+  }
+
+  const onUpdate = (dt: number) => {
+    if (reducedMotion) return
+
+    const camPos = camaro.getLocalPosition()
+    heroX = camPos.x
+    heroZ = camPos.z
+    zoomCurrent = lerp(zoomCurrent, zoomTarget, 1 - Math.exp(-ZOOM_LERP * dt))
+
+    if (currentPhase === 'idle') {
+      if (inspectDragging) {
+        inspectIdleTimer = 0
+      } else {
+        inspectIdleTimer += dt
+        if (inspectIdleTimer > INSPECT_IDLE_RESUME_S) {
+          inspectYaw += INSPECT_AUTO_YAW_DEG * dt
+        }
+      }
+    }
+
+    const blend =
+      currentPhase === 'idle'
+        ? 1 - Math.exp(-10.5 * dt)
+        : 1 - Math.exp(-CAMERA_LERP * dt)
+
+    const pose = resolveTargetPose()
+
+    currentPos = [
+      lerp(currentPos[0], pose.position[0], blend),
+      lerp(currentPos[1], pose.position[1], blend),
+      lerp(currentPos[2], pose.position[2], blend),
+    ]
+    currentLook = [
+      lerp(currentLook[0], pose.look[0], blend),
+      lerp(currentLook[1], pose.look[1], blend),
+      lerp(currentLook[2], pose.look[2], blend),
+    ]
+    currentFov = lerp(currentFov, pose.fov, blend)
+
+    camera.setLocalPosition(...currentPos)
+    camera.lookAt(...currentLook)
+
+    if (launchShake > 0) {
+      launchShake = Math.max(0, launchShake - dt * 3.8)
+      shakePhase += dt * 38
+      const amp = launchShake * 0.28
+      const sx = Math.sin(shakePhase * 1.7) * amp
+      const sy = Math.sin(shakePhase * 2.3 + 1.1) * amp * 0.45
+      const sz = Math.cos(shakePhase * 1.9) * amp * 0.55
+      camera.setLocalPosition(currentPos[0] + sx, currentPos[1] + sy, currentPos[2] + sz)
+    }
+
+    cameraComponent.fov = currentFov
   }
 
   const onIdleLook = (dx: number, dy: number) => {
     if (reducedMotion || currentPhase !== 'idle') return
 
-    idleYaw = Math.max(
-      -IDLE_YAW_CLAMP_DEG,
-      Math.min(IDLE_YAW_CLAMP_DEG, idleYaw - dx * IDLE_YAW_SENSITIVITY_DEG),
-    )
-    void dy
-    applyIdleFrame()
+    inspectDragging = true
+    inspectIdleTimer = 0
+    inspectYaw -= dx * INSPECT_YAW_SENS
+    inspectPitch = clamp(inspectPitch + dy * INSPECT_PITCH_SENS, INSPECT_PITCH_MIN, INSPECT_PITCH_MAX)
   }
+
+  const onIdleLookEnd = () => {
+    inspectDragging = false
+  }
+
+  /** Scroll: idle = orbit zoom; race/finish = follow↔wide. */
+  const onZoomDelta = (deltaY: number) => {
+    if (reducedMotion) return
+
+    if (currentPhase === 'idle') {
+      inspectRadius = clamp(
+        inspectRadius + deltaY * 0.008,
+        INSPECT_RADIUS_MIN,
+        INSPECT_RADIUS_MAX,
+      )
+      inspectIdleTimer = 0
+      return
+    }
+
+    if (currentPhase !== 'racing' && currentPhase !== 'finished') return
+
+    zoomTarget = Math.min(1, Math.max(0, zoomTarget + deltaY * 0.0018))
+    emitView()
+  }
+
+  const setView = (next: PassCameraView) => {
+    zoomTarget = next === 'wide' ? 1 : 0
+    emitView()
+  }
+
+  const getView = () => view
 
   const onPhase = (phase: PassPhase) => {
     currentPhase = phase
 
-    if (reducedMotion) {
-      applyPose(overviewPose(trackLength))
-      return
+    if (phase === 'staging' || phase === 'amber' || phase === 'green') {
+      zoomTarget = 0
+      zoomCurrent = 0
+      view = 'follow'
+      onViewChange?.(view)
     }
 
-    switch (phase) {
-      case 'idle':
-        idleYaw = lerp(idleYaw, 0, IDLE_RETURN_LERP)
-        applyIdleFrame()
-        break
-      case 'staging':
-      case 'amber':
-      case 'green':
-        applyPose(stagingPose(trackLength))
-        break
-      case 'racing':
-        applyPose(racePose(trackLength, 0))
-        break
-      case 'finished':
-        applyPose(finishedPose(trackLength))
-        break
-      default: {
-        const exhaustiveCheck: never = phase
-        void exhaustiveCheck
+    if (phase === 'green') {
+      launchShake = 1
+      shakePhase = 0
+    }
+
+    if (phase === 'idle') {
+      zoomTarget = 0
+      zoomCurrent = 0
+      view = 'follow'
+      inspectYaw = INSPECT_START_YAW
+      inspectPitch = INSPECT_START_PITCH
+      inspectRadius = INSPECT_RADIUS_DEFAULT
+      inspectIdleTimer = 0
+      inspectDragging = false
+      onViewChange?.(view)
+    }
+
+    if (phase === 'racing') {
+      if (zoomTarget <= 0.5) {
+        zoomTarget = 0
+        view = 'follow'
+        onViewChange?.(view)
+      }
+    }
+
+    if (reducedMotion) {
+      if (phase === 'idle') {
+        applyPoseImmediate(
+          inspectPose(heroX, heroZ, INSPECT_START_YAW, INSPECT_START_PITCH, INSPECT_RADIUS_DEFAULT),
+        )
+      } else {
+        applyPoseImmediate(overviewPose(trackLength))
       }
     }
   }
 
-  const onRaceProgress = (t01: number) => {
-    if (reducedMotion || currentPhase !== 'racing') return
-    applyPose(racePose(trackLength, Math.min(1, Math.max(0, t01))))
+  const onRaceProgress = (progress01: number, speed01 = 0, nextHeroX?: number) => {
+    void progress01
+    raceSpeed = Math.min(1, Math.max(0, speed01))
+    if (typeof nextHeroX === 'number') {
+      heroX = nextHeroX
+    }
   }
 
   const reset = () => {
     currentPhase = 'idle'
-    idleYaw = 0
-    applyPose(overviewPose(trackLength))
-    basePosition.copy(camera.getLocalPosition())
-    baseEulers.copy(camera.getLocalEulerAngles())
+    raceSpeed = 0
+    heroX = camaro.getLocalPosition().x
+    heroZ = camaro.getLocalPosition().z
+    inspectYaw = INSPECT_START_YAW
+    inspectPitch = INSPECT_START_PITCH
+    inspectRadius = INSPECT_RADIUS_DEFAULT
+    inspectIdleTimer = 0
+    inspectDragging = false
+    zoomTarget = 0
+    zoomCurrent = 0
+    view = 'follow'
+    launchShake = 0
+    shakePhase = 0
+    onViewChange?.(view)
+    applyPoseImmediate(inspectPose(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius))
   }
 
   const destroy = () => {
     // No external listeners.
   }
 
-  return { onIdleLook, onPhase, onRaceProgress, reset, destroy }
+  return {
+    onIdleLook,
+    onIdleLookEnd,
+    onZoomDelta,
+    setView,
+    getView,
+    onPhase,
+    onRaceProgress,
+    onUpdate,
+    reset,
+    destroy,
+  }
 }

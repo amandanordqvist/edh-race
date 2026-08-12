@@ -15,6 +15,18 @@
   height: clamp(420px, 72vh, 820px);
 }
 
+.pass-arena__viewport::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  background:
+    radial-gradient(120% 90% at 50% 55%, transparent 40%, rgba(4, 6, 10, 0.42) 100%);
+  mix-blend-mode: multiply;
+}
+
 .pass-arena__shade {
   position: absolute;
   inset: 0;
@@ -42,6 +54,28 @@
   align-items: flex-start;
 }
 
+.pass-arena__top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: flex-end;
+  align-items: flex-start;
+  pointer-events: auto;
+}
+
+.pass-arena__cam {
+  display: inline-flex;
+  gap: 0.35rem;
+  padding: 0.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  background: rgba(6, 8, 12, 0.72);
+}
+
+.pass-arena__cam-btn {
+  pointer-events: auto;
+}
+
 .pass-arena__status {
   display: inline-flex;
   flex-wrap: wrap;
@@ -54,16 +88,6 @@
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 }
 
-.pass-arena__clock {
-  margin: 0;
-  font-size: clamp(1.85rem, 4.5vw, 2.75rem);
-  line-height: 1;
-  letter-spacing: 0.04em;
-  color: var(--color-almost-white);
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-}
-
 .pass-arena__status-text {
   margin: 0;
   font-family: var(--font-ui);
@@ -72,13 +96,213 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(243, 245, 248, 0.72);
+  transition: color 0.35s ease;
+}
+
+.pass-arena--green .pass-arena__status-text {
+  color: rgba(120, 220, 150, 0.95);
+}
+
+.pass-arena--racing .pass-arena__status-text {
+  color: rgba(243, 245, 248, 0.92);
+}
+
+.pass-arena__clock {
+  margin: 0;
+  font-size: clamp(1.85rem, 4.5vw, 2.75rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--color-almost-white);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.pass-arena--green .pass-arena__clock {
+  color: rgba(140, 235, 170, 0.98);
+  transform: scale(1.04);
+}
+
+.pass-arena--racing .pass-arena__clock {
+  color: var(--color-almost-white);
+  animation: pass-clock-pulse 0.85s ease-in-out infinite;
+}
+
+.pass-arena__speed {
+  margin: 0;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--color-primary-blue);
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-arena__pace {
+  margin: 0;
+  width: 100%;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: baseline;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.6);
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-arena__pace-sep {
+  color: rgba(243, 245, 248, 0.28);
+}
+
+.pass-arena__pace-hero {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-primary-blue);
+  letter-spacing: 0.06em;
+}
+
+.pass-arena__callout {
+  margin: 0.35rem 0 0;
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  color: rgba(243, 245, 248, 0.88);
+}
+
+.pass-arena__idle-hints {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.pass-arena__inspect-hint {
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(6, 10, 22, 0.5);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.7);
+  pointer-events: none;
+}
+
+.pass-arena__timeslip-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  margin: 0;
+  border: 1px solid rgba(42, 79, 154, 0.4);
+  border-radius: 999px;
+  background: rgba(42, 79, 154, 0.14);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(230, 240, 255, 0.92);
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+  pointer-events: auto;
+}
+
+.pass-arena__timeslip-link:hover,
+.pass-arena__timeslip-link:focus-visible {
+  background: rgba(42, 79, 154, 0.28);
+  border-color: rgba(42, 79, 154, 0.7);
+  transform: translateY(-1px);
+}
+
+.pass-arena__timeslip-link:focus-visible {
+  outline: 2px solid rgba(140, 180, 255, 0.7);
+  outline-offset: 2px;
+}
+
+.pass-arena__timeslip-link svg {
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.pass-arena--idle .pass-arena__shade {
+  background:
+    linear-gradient(180deg, rgba(6, 8, 12, 0.28) 0%, transparent 24%, transparent 62%, rgba(6, 8, 12, 0.55) 100%);
+}
+
+@keyframes pass-clock-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.82;
+  }
+}
+
+.pass-arena--racing .pass-arena__status {
+  border-color: rgba(42, 79, 154, 0.35);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(42, 79, 154, 0.12) inset;
+}
+
+.pass-arena--finished .pass-arena__clock {
+  color: var(--color-primary-blue);
 }
 
 .pass-arena__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+  align-items: flex-end;
   pointer-events: auto;
+}
+
+.pass-arena__opponent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.35rem 0.45rem 0.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  background: rgba(6, 8, 12, 0.55);
+}
+
+.pass-arena__opponent-label {
+  padding: 0 0.25rem;
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.55);
+}
+
+.pass-arena__opponent-btns {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.pass-arena__opponent-btn {
+  min-height: 2.15rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.72rem;
 }
 
 .pass-arena__mute,
@@ -90,25 +314,117 @@
   align-items: end;
 }
 
-.pass-arena__results-panel {
-  width: min(100%, 26rem);
-  padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-md);
-  background:
-    linear-gradient(165deg, rgba(18, 22, 30, 0.96) 0%, rgba(8, 10, 14, 0.94) 100%);
-  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.45);
-  overflow: hidden;
-}
-
-.pass-arena__results-actions {
+.pass-arena__finish {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin: 0;
-  padding: 0.85rem 1rem 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 0.55rem 0.85rem;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.6rem 0.75rem 0.6rem 0.85rem;
+  border: 1px solid rgba(42, 79, 154, 0.32);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(90deg, rgba(42, 79, 154, 0.18) 0%, rgba(10, 14, 22, 0.72) 55%, rgba(10, 14, 22, 0.82) 100%);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(8px);
   pointer-events: auto;
+  animation: pass-finish-in 260ms ease-out;
+}
+
+.pass-arena__finish-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+}
+
+.pass-arena__finish-stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.pass-arena__finish-stat-label {
+  font-family: var(--font-ui);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.5);
+}
+
+.pass-arena__finish-stat-value {
+  font-family: var(--font-mono);
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: rgba(243, 245, 248, 0.94);
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-arena__finish-stat-unit {
+  margin-left: 0.15rem;
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: rgba(243, 245, 248, 0.55);
+}
+
+.pass-arena__finish-stat--hero .pass-arena__finish-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-almost-white);
+}
+
+.pass-arena__finish-stat--hero .pass-arena__finish-stat-label {
+  color: var(--color-primary-blue);
+}
+
+.pass-arena__finish-actions {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pass-arena__finish-actions .pass-arena__stage {
+  min-height: 2.2rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.72rem;
+}
+
+.pass-arena__finish-secondary {
+  min-height: 2.2rem;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.7rem;
+}
+
+@keyframes pass-finish-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pass-arena--finished .pass-arena__status {
+  padding: 0.4rem 0.7rem;
+  background: rgba(6, 8, 12, 0.42);
+  box-shadow: none;
+}
+
+.pass-arena--finished .pass-arena__clock {
+  font-size: clamp(1.4rem, 3.4vw, 1.9rem);
 }
 
 .pass-timeslip {
@@ -119,14 +435,15 @@
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
-  align-items: baseline;
+  align-items: flex-start;
   margin-bottom: 0.85rem;
   padding-bottom: 0.65rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .pass-timeslip__eyebrow,
-.pass-timeslip__distance {
+.pass-timeslip__distance,
+.pass-timeslip__event {
   margin: 0;
   font-family: var(--font-ui);
   font-size: 0.72rem;
@@ -139,8 +456,15 @@
   color: var(--color-primary-blue);
 }
 
+.pass-timeslip__event {
+  margin-top: 0.25rem;
+  letter-spacing: 0.08em;
+  color: rgba(243, 245, 248, 0.55);
+}
+
 .pass-timeslip__distance {
   color: rgba(243, 245, 248, 0.55);
+  text-align: right;
 }
 
 .pass-timeslip__hero {
@@ -148,13 +472,13 @@
   grid-template-columns: auto auto 1fr;
   gap: 0.15rem 0.35rem;
   align-items: end;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
 }
 
 .pass-timeslip__hero-et {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.6rem, 7vw, 3.4rem);
+  font-size: clamp(2.2rem, 6vw, 3rem);
   font-weight: 600;
   line-height: 0.9;
   letter-spacing: 0.02em;
@@ -178,11 +502,49 @@
   justify-items: end;
   gap: 0.15rem;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: rgba(243, 245, 248, 0.78);
 }
 
-.pass-timeslip__rows {
+.pass-timeslip__guide {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(243, 245, 248, 0.68);
+}
+
+.pass-timeslip__context,
+.pass-timeslip__anchors,
+.pass-timeslip__sport {
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pass-timeslip__context-title,
+.pass-timeslip__anchors-title,
+.pass-timeslip__sport-title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-primary-blue);
+}
+
+.pass-timeslip__context-body,
+.pass-timeslip__sport-body {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(243, 245, 248, 0.72);
+}
+
+.pass-timeslip__context-stats,
+.pass-timeslip__anchor-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -190,22 +552,133 @@
   gap: 0.35rem;
 }
 
-.pass-timeslip__row {
-  display: grid;
-  grid-template-columns: 1.5rem minmax(0, 1fr) auto auto;
-  gap: 0.65rem;
-  align-items: center;
-  padding: 0.55rem 0.45rem;
-  border-radius: var(--radius-sm);
+.pass-timeslip__context-stats li,
+.pass-timeslip__anchor-list li {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: rgba(243, 245, 248, 0.82);
 }
 
-.pass-timeslip__row--hero {
+.pass-timeslip__splits {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.pass-timeslip__split {
+  padding: 0.55rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pass-timeslip__split--hero {
+  border-color: rgba(42, 79, 154, 0.35);
   background: linear-gradient(
     90deg,
     rgba(42, 79, 154, 0.28) 0%,
     rgba(42, 79, 154, 0.06) 70%,
     transparent 100%
   );
+}
+
+.pass-timeslip__split-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: baseline;
+  margin-bottom: 0.25rem;
+}
+
+.pass-timeslip__split-label {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.88);
+}
+
+.pass-timeslip__split-value {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-almost-white);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-timeslip__split-alt {
+  color: rgba(243, 245, 248, 0.55);
+}
+
+.pass-timeslip__split-meaning {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: rgba(243, 245, 248, 0.62);
+}
+
+.pass-timeslip__compare-title {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.55);
+}
+
+.pass-timeslip__compare-lead {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(243, 245, 248, 0.68);
+}
+
+.pass-timeslip__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.pass-timeslip__row {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.55rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pass-timeslip__row-main {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto auto;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.pass-timeslip__row--hero {
+  border-color: rgba(42, 79, 154, 0.35);
+  background: linear-gradient(
+    90deg,
+    rgba(42, 79, 154, 0.28) 0%,
+    rgba(42, 79, 154, 0.06) 70%,
+    transparent 100%
+  );
+}
+
+.pass-timeslip__row-meaning {
+  margin: 0;
+  grid-column: 1 / -1;
+  padding-left: 2.15rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: rgba(243, 245, 248, 0.62);
 }
 
 .pass-timeslip__place {
@@ -261,8 +734,17 @@
     align-items: stretch;
   }
 
-  .pass-arena__results-panel {
+  .pass-arena__finish {
+    justify-content: flex-start;
+  }
+
+  .pass-arena__finish-stats {
     width: 100%;
+  }
+
+  .pass-arena__finish-actions {
+    width: 100%;
+    justify-content: flex-end;
   }
 }
 
@@ -280,6 +762,10 @@
     align-items: stretch;
   }
 
+  .pass-arena__top-actions {
+    justify-content: space-between;
+  }
+
   .pass-arena__status {
     gap: 0.3rem 0.8rem;
   }
@@ -288,7 +774,7 @@
     font-size: 0.72rem;
   }
 
-  .pass-timeslip__row {
+  .pass-timeslip__row-main {
     grid-template-columns: 1.35rem minmax(0, 1fr);
   }
 
@@ -296,11 +782,361 @@
   .pass-timeslip__speed {
     grid-column: 2;
   }
+
+  .pass-timeslip__row-meaning {
+    padding-left: 1.85rem;
+  }
+}
+
+.pass-arena__split-banner {
+  position: absolute;
+  top: clamp(0.65rem, 1.5vw, 1rem);
+  left: 50%;
+  z-index: 3;
+  max-width: min(28rem, 70vw);
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(6, 10, 22, 0.55);
+  backdrop-filter: blur(6px);
+  box-shadow: none;
+  font-family: var(--font-ui);
+  font-size: clamp(0.62rem, 1.4vw, 0.72rem);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.82);
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: pass-split-banner-in 220ms ease-out;
+}
+
+@keyframes pass-split-banner-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-0.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.pass-arena__model-credit {
+  position: absolute;
+  right: clamp(0.75rem, 2vw, 1.25rem);
+  bottom: 0.45rem;
+  z-index: 2;
+  margin: 0;
+  pointer-events: auto;
+}
+
+.pass-arena__model-credit a {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.42);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.pass-arena__model-credit a:hover {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.pass-arena--racing-hud .pass-arena__model-credit {
+  bottom: 0.35rem;
+}
+
+.pass-arena--finished .pass-arena__model-credit {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .pass-arena__model-credit {
+    position: static;
+    padding: 0 1rem 0.65rem;
+    text-align: right;
+  }
+}
+
+.pass-arena--racing-hud .pass-arena__shade {
+  background:
+    linear-gradient(180deg, rgba(6, 8, 12, 0.22) 0%, transparent 18%, transparent 72%, rgba(6, 8, 12, 0.28) 100%);
+}
+
+.pass-arena--racing-hud .pass-arena__hud {
+  padding: clamp(0.65rem, 1.5vw, 1rem);
+}
+
+.pass-arena--racing-hud .pass-arena__status {
+  padding: 0.4rem 0.7rem;
+  background: rgba(6, 8, 12, 0.42);
+  box-shadow: none;
+}
+
+.pass-arena--racing-hud .pass-arena__cam {
+  padding: 0.12rem;
+  background: rgba(6, 8, 12, 0.45);
+}
+
+.pass-arena--racing-hud .pass-arena__cam-btn,
+.pass-arena--racing-hud .pass-arena__mute {
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.68rem;
+}
+
+.pass-arena--racing-hud .pass-arena__topbar {
+  position: relative;
+  z-index: 4;
+  /* Leave center clear for split banner + car */
+  gap: 0.5rem;
+}
+
+.pass-arena--racing-hud .pass-arena__split-banner {
+  /* Keep pedagogy at the top edge — center of the frame stays free for the car. */
+  top: clamp(3.1rem, 7vh, 3.75rem);
+  bottom: auto;
+}
+
+.pass-racing-hud {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(0.55rem, 1.5vw, 0.9rem);
+  z-index: 2;
+  width: min(36rem, calc(100% - 1.5rem));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.pass-racing-hud__rail {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.35rem 0.55rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(6, 10, 22, 0.48);
+  backdrop-filter: blur(8px);
+}
+
+.pass-racing-hud__chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.1rem 0.35rem;
+}
+
+.pass-racing-hud__chip--speed {
+  margin-left: 0.15rem;
+  padding-left: 0.55rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pass-racing-hud__chip-label {
+  font-family: var(--font-ui);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.pass-racing-hud__chip-value {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.92);
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-racing-hud__chip-value--sm {
+  font-size: 0.92rem;
+}
+
+.pass-racing-hud__chip-value--speed {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 640px) {
+  .pass-arena--racing-hud .pass-arena__split-banner {
+    top: clamp(5.5rem, 14vh, 6.5rem);
+    max-width: calc(100% - 1.25rem);
+  }
+
+  .pass-racing-hud__rail {
+    gap: 0.2rem 0.4rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .pass-racing-hud__chip-value {
+    font-size: 0.92rem;
+  }
+
+  .pass-racing-hud__chip-value--speed {
+    font-size: 1.15rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pass-arena,
   .pass-fallback {
     scroll-behavior: auto;
+  }
+
+  .pass-arena__clock,
+  .pass-arena__status-text {
+    transition: none;
+  }
+
+  .pass-arena--green .pass-arena__clock {
+    transform: none;
+  }
+
+  .pass-arena--racing .pass-arena__clock {
+    animation: none;
+  }
+
+  .pass-arena__speed {
+    font-size: 1rem;
+  }
+}
+
+/* Timeslip dialog — full pedagogical timeslip in a modal */
+.pass-timeslip-dialog {
+  width: min(38rem, 100vw);
+  max-height: min(88vh, 900px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-shell);
+  background:
+    linear-gradient(165deg, rgba(18, 22, 30, 0.98) 0%, rgba(8, 10, 14, 0.98) 100%);
+  color: var(--color-almost-white);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: pass-dialog-in 240ms ease-out;
+}
+
+.pass-timeslip-dialog::backdrop {
+  background: rgba(4, 6, 10, 0.72);
+  backdrop-filter: blur(6px);
+  animation: pass-dialog-backdrop-in 240ms ease-out;
+}
+
+.pass-timeslip-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.pass-timeslip-dialog__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: min(88vh, 900px);
+}
+
+.pass-timeslip-dialog__close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 2;
+  width: 2.2rem;
+  height: 2.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(6, 10, 22, 0.65);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.pass-timeslip-dialog__close:hover,
+.pass-timeslip-dialog__close:focus-visible {
+  background: rgba(42, 79, 154, 0.35);
+  border-color: rgba(42, 79, 154, 0.7);
+  transform: scale(1.05);
+}
+
+.pass-timeslip-dialog__close:focus-visible {
+  outline: 2px solid rgba(140, 180, 255, 0.7);
+  outline-offset: 2px;
+}
+
+.pass-timeslip-dialog__body {
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.pass-timeslip-dialog__body .pass-timeslip {
+  padding: 1.4rem 1.35rem 1.5rem;
+}
+
+@keyframes pass-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pass-dialog-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .pass-timeslip-dialog {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 100vh;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+
+  .pass-timeslip-dialog__panel {
+    max-height: 100vh;
+    height: 100vh;
+  }
+
+  .pass-timeslip-dialog__body .pass-timeslip {
+    padding: 3.5rem 1rem 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pass-timeslip-dialog,
+  .pass-timeslip-dialog::backdrop {
+    animation: none;
   }
 }

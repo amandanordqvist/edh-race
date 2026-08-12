@@ -31,10 +31,15 @@ function addWheel(
   parent.addChild(wheel)
 }
 
+export type PassVehicles = {
+  racers: Record<VehicleId, Entity>
+  camaroBodyMaterial: import('playcanvas').StandardMaterial
+}
+
 export function buildPassVehicles(
   pc: PlayCanvasNamespace,
   quality: PassQuality,
-): Record<VehicleId, Entity> {
+): PassVehicles {
   const cast = shadowsEnabled(quality)
 
   const camaroBlue = createMaterial(pc, {
@@ -130,12 +135,71 @@ export function buildPassVehicles(
   )
   camaro.addChild(
     createPrimitive(pc, {
-      name: 'camaro-chute',
+      name: 'camaro-chute-l',
       type: 'cylinder',
-      position: [-1.85, 0.55, 0],
-      scale: [0.28, 0.35, 0.28],
+      position: [-1.82, 0.58, 0.42],
+      scale: [0.22, 0.38, 0.22],
       material: chute,
       castShadows: cast,
+    }),
+  )
+  camaro.addChild(
+    createPrimitive(pc, {
+      name: 'camaro-chute-r',
+      type: 'cylinder',
+      position: [-1.82, 0.58, -0.42],
+      scale: [0.22, 0.38, 0.22],
+      material: chute,
+      castShadows: cast,
+    }),
+  )
+  ;([-0.55, 0.55] as number[]).forEach((z, index) => {
+    camaro.addChild(
+      createPrimitive(pc, {
+        name: `camaro-cage-${index}`,
+        type: 'box',
+        position: [-0.2, 0.82, z],
+        scale: [1.35, 0.08, 0.08],
+        material: camaroDark,
+        castShadows: cast,
+      }),
+    )
+  })
+  camaro.addChild(
+    createPrimitive(pc, {
+      name: 'camaro-spoiler',
+      type: 'box',
+      position: [-1.45, 0.78, 0],
+      scale: [0.14, 0.22, 1.72],
+      material: camaroDark,
+      castShadows: cast,
+    }),
+  )
+  const exhaustGlow = createMaterial(pc, {
+    diffuse: [0.35, 0.12, 0.05],
+    emissive: [0.95, 0.35, 0.08],
+    emissiveIntensity: quality === 'high' ? 0.55 : 0.32,
+    metalness: 0.2,
+    gloss: 0.4,
+  })
+  camaro.addChild(
+    createPrimitive(pc, {
+      name: 'camaro-exhaust-l',
+      type: 'cylinder',
+      position: [-1.72, 0.38, 0.52],
+      scale: [0.12, 0.28, 0.12],
+      material: exhaustGlow,
+      castShadows: false,
+    }),
+  )
+  camaro.addChild(
+    createPrimitive(pc, {
+      name: 'camaro-exhaust-r',
+      type: 'cylinder',
+      position: [-1.72, 0.38, -0.52],
+      scale: [0.12, 0.28, 0.12],
+      material: exhaustGlow,
+      castShadows: false,
     }),
   )
   addWheel(pc, camaro, 'camaro-wheel-fl', [1.15, 0.18, 0.78], [0.32, 0.16, 0.32], rubber, cast)
@@ -259,5 +323,8 @@ export function buildPassVehicles(
     }),
   )
 
-  return { camaro, f1, jet }
+  return {
+    racers: { camaro, f1, jet },
+    camaroBodyMaterial: camaroBlue,
+  }
 }

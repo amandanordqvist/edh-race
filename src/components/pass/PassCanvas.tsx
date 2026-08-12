@@ -1,10 +1,19 @@
-import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+  type WheelEvent as ReactWheelEvent,
+} from 'react'
 
 import { createPassAudio } from '../../lib/pass/audioController'
 import { createCameraDirector } from '../../lib/pass/cameraDirector'
+import { createPassEffects } from '../../lib/pass/passEffects'
 import { detectPassQuality } from '../../lib/pass/quality'
 import { createRaceController } from '../../lib/pass/raceController'
-import type { PassCommands, PassPhase } from '../../lib/pass/types'
+import type { HudSplitId } from '../../data/simulator'
+import { useT } from '../../i18n'
+import type { PassCameraView, PassCommands, PassPhase, PassSceneMeta } from '../../lib/pass/types'
 import './PassCanvas.css'
 
 type PassCanvasProps = {
@@ -12,24 +21,40 @@ type PassCanvasProps = {
   reducedMotion: boolean
   onPhase: (phase: PassPhase) => void
   onClock: (seconds: number) => void
+  onSpeed?: (speedKmh: number) => void
+  onSplitCallout?: (splitId: HudSplitId) => void
+  onCameraView?: (view: PassCameraView) => void
   onFinished: () => void
   onWebglUnavailable: () => void
-  onReady: (commands: PassCommands) => void
+  onReady: (commands: PassCommands, meta: PassSceneMeta) => void
 }
 
 type LiveHandlers = Pick<
   PassCanvasProps,
-  'reducedMotion' | 'onPhase' | 'onClock' | 'onFinished' | 'onWebglUnavailable' | 'onReady'
+  | 'reducedMotion'
+  | 'onPhase'
+  | 'onClock'
+  | 'onSpeed'
+  | 'onSplitCallout'
+  | 'onCameraView'
+  | 'onFinished'
+  | 'onWebglUnavailable'
+  | 'onReady'
 >
 
 export function PassCanvas(props: PassCanvasProps) {
+  const t = useT()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const draggingRef = useRef(false)
   const cameraDirectorRef = useRef<ReturnType<typeof createCameraDirector> | null>(null)
+  const [loading, setLoading] = useState(true)
   const liveRef = useRef<LiveHandlers>({
     reducedMotion: props.reducedMotion,
     onPhase: props.onPhase,
     onClock: props.onClock,
+    onSpeed: props.onSpeed,
+    onSplitCallout: props.onSplitCallout,
+    onCameraView: props.onCameraView,
     onFinished: props.onFinished,
     onWebglUnavailable: props.onWebglUnavailable,
     onReady: props.onReady,
@@ -40,6 +65,9 @@ export function PassCanvas(props: PassCanvasProps) {
       reducedMotion: props.reducedMotion,
       onPhase: props.onPhase,
       onClock: props.onClock,
+      onSpeed: props.onSpeed,
+      onSplitCallout: props.onSplitCallout,
+      onCameraView: props.onCameraView,
       onFinished: props.onFinished,
       onWebglUnavailable: props.onWebglUnavailable,
       onReady: props.onReady,
@@ -54,9 +82,13 @@ export function PassCanvas(props: PassCanvasProps) {
     let destroyApp: (() => void) | null = null
     let raceController: ReturnType<typeof createRaceController> | null = null
     let cameraDirector: ReturnType<typeof createCameraDirector> | null = null
+    let passEffects: ReturnType<typeof createPassEffects> | null = null
+    let frameHandler: ((dt: number) => void) | null = null
+    let appInstance: import('playcanvas').Application | null = null
     const audio = createPassAudio({ reducedMotion: props.reducedMotion })
 
     async function init(canvasEl: HTMLCanvasElement) {
+      setLoading(true)
       try {
         const [{ createPassApp }, { buildPassScene }] = await Promise.all([
           import('../../lib/pass/createApp'),
@@ -65,6 +97,7 @@ export function PassCanvas(props: PassCanvasProps) {
 
         const quality = detectPassQuality()
         const { app, pc, destroy } = await createPassApp(canvasEl, quality)
+        appInstance = app
         const handleWebglContextLost = (event: Event) => {
           event.preventDefault()
           liveRef.current.onWebglUnavailable()
@@ -83,7 +116,7 @@ export function PassCanvas(props: PassCanvasProps) {
           destroy()
         }
 
-        const scene = buildPassScene(app, pc, quality)
+        const scene = await buildPassScene(app, pc, quality)
         const reducedMotion = liveRef.current.reducedMotion
 
         cameraDirector = createCameraDirector({
@@ -91,8 +124,28 @@ export function PassCanvas(props: PassCanvasProps) {
           camaro: scene.racers.camaro,
           trackLength: scene.trackLength,
           reducedMotion,
+          onViewChange: (view) => liveRef.current.onCameraView?.(view),
         })
         cameraDirectorRef.current = cameraDirector
+
+        passEffects = createPassEffects({
+          app,
+          pc,
+          sceneRoot: scene.sceneRoot,
+          trackLength: scene.trackLength,
+          quality,
+          stripLightMaterials: scene.stripLightMaterials,
+          camaro: scene.racers.camaro,
+          camaroBodyMaterial: scene.camaroBodyMaterial,
+          camaroHasTextures: scene.camaroHasTextures,
+          reducedMotion,
+          isWideView: () => cameraDirector?.getView() === 'wide',
+        })
+
+        frameHandler = (dt: number) => {
+          cameraDirector?.onUpdate(dt)
+        }
+        app.on('update', frameHandler)
 
         raceController = createRaceController({
           app,
@@ -101,6 +154,7 @@ export function PassCanvas(props: PassCanvasProps) {
           handlers: {
             onPhase: (phase) => {
               cameraDirector?.onPhase(phase)
+              passEffects?.onPhase(phase)
               audio.onPhase(phase)
               liveRef.current.onPhase(phase)
             },
@@ -108,38 +162,65 @@ export function PassCanvas(props: PassCanvasProps) {
             onFinished: () => liveRef.current.onFinished(),
             onWebglUnavailable: () => liveRef.current.onWebglUnavailable(),
           },
-          onRaceFrame: (progress01) => {
-            cameraDirector?.onRaceProgress(progress01)
+          onRaceFrame: (frame) => {
+            cameraDirector?.onRaceProgress(frame.progress01, frame.speed01, frame.heroX)
+            passEffects?.onRaceFrame(frame.progress01, frame.speed01, frame.heroX)
+            audio.onRaceSpeed(frame.speed01)
+            liveRef.current.onSpeed?.(frame.speedKmh)
+            if (frame.splitHit) {
+              liveRef.current.onSplitCallout?.(frame.splitHit)
+            }
           },
         })
 
         if (cancelled) {
+          if (frameHandler) app.off('update', frameHandler)
+          passEffects?.destroy()
           raceController.destroy()
           cameraDirector.destroy()
           destroyApp()
           return
         }
 
-        liveRef.current.onReady({
-          stage: () => {
-            void audio.unlock().then(() => raceController?.stage())
+        liveRef.current.onReady(
+          {
+            stage: () => {
+              void audio.unlock().then(() => raceController?.stage())
+            },
+            reset: () => {
+              raceController?.reset()
+              cameraDirector?.reset()
+              passEffects?.reset()
+            },
+            setMuted: (muted) => {
+              audio.setMuted(muted)
+            },
+            setCameraView: (view) => {
+              cameraDirector?.setView(view)
+            },
+            setOpponent: (opponent) => {
+              scene.setOpponent(opponent)
+            },
+            destroy: () => {
+              if (frameHandler) app.off('update', frameHandler)
+              audio.destroy()
+              passEffects?.destroy()
+              raceController?.destroy()
+              cameraDirector?.destroy()
+              destroyApp?.()
+            },
           },
-          reset: () => {
-            raceController?.reset()
-            cameraDirector?.reset()
+          {
+            camaroUsesGlb: scene.camaroUsesGlb,
+            camaroHasTextures: scene.camaroHasTextures,
           },
-          setMuted: (muted) => {
-            audio.setMuted(muted)
-          },
-          destroy: () => {
-            audio.destroy()
-            raceController?.destroy()
-            cameraDirector?.destroy()
-            destroyApp?.()
-          },
-        })
+        )
+        if (!cancelled) {
+          setLoading(false)
+        }
       } catch (error) {
         if (!cancelled) {
+          setLoading(false)
           console.error('[pass] failed to start the PlayCanvas scene', error)
           liveRef.current.onWebglUnavailable()
         }
@@ -150,7 +231,11 @@ export function PassCanvas(props: PassCanvasProps) {
 
     return () => {
       cancelled = true
+      if (frameHandler && appInstance) {
+        appInstance.off('update', frameHandler)
+      }
       audio.destroy()
+      passEffects?.destroy()
       raceController?.destroy()
       cameraDirector?.destroy()
       destroyApp?.()
@@ -180,13 +265,26 @@ export function PassCanvas(props: PassCanvasProps) {
 
   const handlePointerUp = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     draggingRef.current = false
+    cameraDirectorRef.current?.onIdleLookEnd()
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId)
     }
   }
 
+  const handleWheel = (event: ReactWheelEvent<HTMLCanvasElement>) => {
+    if (liveRef.current.reducedMotion) return
+    event.preventDefault()
+    cameraDirectorRef.current?.onZoomDelta(event.deltaY)
+  }
+
   return (
-    <div className="pass-canvas" aria-hidden="true">
+    <div className="pass-canvas" aria-hidden={loading ? 'true' : undefined}>
+      {loading ? (
+        <div className="pass-canvas__loading" role="status" aria-live="polite">
+          <span className="pass-canvas__loading-spinner" aria-hidden="true" />
+          <span className="pass-canvas__loading-text">{t.pass.loading}</span>
+        </div>
+      ) : null}
       <canvas
         ref={canvasRef}
         className="pass-canvas__surface"
@@ -194,6 +292,7 @@ export function PassCanvas(props: PassCanvasProps) {
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onWheel={handleWheel}
       />
     </div>
   )

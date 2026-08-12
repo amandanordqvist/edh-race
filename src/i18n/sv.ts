@@ -110,16 +110,25 @@ export const sv: Dictionary = {
   pass: {
     title: 'Passet',
     lead:
-      'Stagea bilen. Vänta på grönt. Se 5.74 sekunder mot Formel 1 och ett passagerarflygplan över 402 meter.',
+      'Välj motståndare. Stagea bilen. Vänta på grönt. Se 5.74 sekunder i en tvåfils jämförelse över 402 meter.',
     stage: 'Stagea bilen',
     again: 'Kör igen',
     mute: 'Stäng av ljud',
     unmute: 'Slå på ljud',
+    followCar: 'Följ bilen',
+    zoomOut: 'Zooma ut',
+    loading: 'Laddar Pass Arena…',
+    modelCredit: '3D-bil: Camaro-scan (Tripo3D)',
+    modelCreditHref: 'https://tripo3d.ai',
     webglFallback:
       'Din enhet kunde inte visa den interaktiva jämförelsen. Tiderna nedan visar ändå hur snabbt passet är över 402 meter.',
     continueJourney: 'Fortsätt resan',
+    openTimeslip: 'Öppna tidkortet',
+    closeTimeslip: 'Stäng tidkortet',
+    readTimeslip: 'Läs tidkortet — förstå siffrorna',
+    pickOpponent: 'Racea mot',
     status: {
-      idle: 'Redo att stagea',
+      idle: 'Välj motståndare — snurra bilen — stagea',
       staging: 'Staging…',
       amber: 'Amber',
       green: 'Grönt!',
@@ -129,30 +138,109 @@ export const sv: Dictionary = {
     compare: {
       camaro: 'The Beast',
       f1: 'Formel 1',
-      jet: 'Passagerarflygplan',
+      jet: 'Passagerarflyg',
+    },
+    compareMeaning: {
+      camaro:
+        'Verkligt Doorslammers-pass från stillastående: 5,75 s och cirka 415 km/h över 402 m.',
+      f1:
+        'Ungefärlig tid för en F1-bil från stillastående över samma 402 m. Långsammare hook vid 60′ — bilen är byggd för banvarv, inte dragstart.',
+      jet:
+        'Ungefärlig tid för ett passagerarflygplan från stillastående. Nästan stilla vid 60′; jetmotorer bygger fart långsamt från marken.',
     },
     timeslipTitle: 'Timeslip',
-    timeslipDistance: '402 m · kvarts mile',
+    timeslipDistance: '402 m · 1320 ft · quarter mile',
     timeslipPlace: 'Plats',
+    timeslipEvent: 'Doorslammers · 19 maj 2024 · E2',
+    timeslipGuide: 'Så läser du tidkortet — varje rad är en mätpunkt längs banan.',
+    timeslipCompareTitle: 'Varför F1 och flygplanet?',
+    timeslipCompareLead:
+      'Det här är ingen riktig race mellan fordonen. Det är en pedagogisk jämförelse: samma sträcka (402 m), från stillastående, en rival i andra filen. Poängen är att visa hur extrem acceleration ett doorslammer-pass är.',
+    primerLead:
+      'EDH tävlar oftast 201 m i European Drag Racing Series. Här kör du ett kvarts-mile-pass (402 m) från Santa Pod — hela accelerationen, från noll till 415 km/h.',
+    inspectHint: 'Dra för att snurra bilen · scrolla för att zooma',
+    context201: {
+      title: '201 m vs 402 m — två olika måttstockar',
+      body:
+        'I Norden och EDRS räknas serietider på 201 meter (660 ft). Kvarts mile (402 m) är den klassiska distansen — och den som gav rekordtempot på Santa Pod. Samma pass, samma bil — men olika distans ger olika siffror.',
+      edrsStat: 'Vid 201 m på detta pass: 3,83 s · 326 km/h — EDH:s vanliga tävlingsdistans.',
+      quarterStat: 'Vid 402 m (mål): 5,75 s · 415 km/h — kvarts-mile-referensen.',
+    },
+    sportWhy: {
+      title: 'Varför siffrorna betyder något',
+      body:
+        'Drag racing handlar om acceleration under kontroll — inte bara toppfart. Varje hundradel på tidkortet är garagearbete: grepp, motor, chassi och setup. I Top Doorslammer är 201 m seriens måttstock; kvarts mile sätter bilen i ett världssammanhang. Därför jagar teamen båda — men det är samma hantverk bakom.',
+    },
+    anchorsTitle: 'Så kan man tänka',
+    anchors: {
+      distance: '402 m ≈ en fotbollsplan plus straffområden i längd.',
+      time: '5,75 s — kortare än ett djupt andetag (~4–6 s).',
+      speed: '415 km/h — snabbare än regionaltåg i full fart.',
+      trap: 'Trap speed = farten i mål, inte medelhastighet. Bilen är som snabbast precis innan bromsarna.',
+    },
+    splitCallouts: {
+      sixty: '60′ · ~18 m · launch och grepp avgörs här',
+      threeThirty: '330′ · ~100 m · redan snabbare än de flesta bilar någonsin kör',
+      eighth: '660′ · 201 m · EDH:s vanliga distans · 326 km/h',
+      thousand: '1000′ · ~305 m · sista accelerationen mot kvarts-mile-mål',
+      quarter: '1320′ · 402 m · Santa Pod-tempo · 415 km/h',
+    },
+    racingHud: {
+      reaction: 'Reaktionstid',
+      elapsed: 'Elapsed time',
+      speedUnit: 'km/h',
+      rpmUnit: 'RPM',
+      tireLabel: 'Slick',
+    },
+    timeslipSplits: {
+      reaction: {
+        label: 'Reaction',
+        meaning: 'Tid från grönt ljus till bilen rör sig. Snabbare reaktion = bättre start.',
+      },
+      sixty: {
+        label: '60′ ET',
+        meaning: 'Tid till 60 fot (~18 m). Visar hur bra greppet och starten är.',
+      },
+      threeThirty: {
+        label: '330′ ET',
+        meaning: 'Tid till 330 fot (~100 m). Mäter hur bilen drar efter starten.',
+      },
+      eighth: {
+        label: '1/8 ET',
+        meaning:
+          '660 ft = 201 m — EDH:s vanliga tävlingsdistans i EDRS. På detta pass: 3,83 s och 326 km/h. Halvvägs på en kvarts mile.',
+      },
+      thousand: {
+        label: '1000′ ET',
+        meaning: 'Tid och fart vid 1000 fot (~305 m), strax innan mål.',
+      },
+      quarter: {
+        label: '1320′ ET',
+        meaning: 'Sluttiden över hela kvarts milen (402 m) — den siffra som står på tavlan.',
+      },
+      trapMph: {
+        label: '1320′ MPH',
+        meaning: 'Farten i mål (trap speed). 258 mph ≈ 415 km/h.',
+      },
+    },
   },
   journey: {
-    title: 'Resan från ett spontantköp på Ebay till ett rekord på Santa Pod',
+    title: 'Från ett spontanköp till ett rekord',
     intro:
       'Från vibrationen i ett mini-mopedstyre i Hudiksvall till startlinjen i Europa. Fortfarande samma garage. Fortfarande samma nyfikenhet.',
     beatChildhood: 'Början',
-    beatTurning: 'Vändpunkten',
     beatPhilosophy: 'Filosofin',
     quote1:
       'Jag minns fortfarande känslan när motorn startade och vibrationerna gick genom styret. Den känslan har aldrig lämnat mig.',
     quote1Attr: 'Anders Edh',
-    turningPoint:
-      'Som 16-åring köpte Anders sin första Chevrolet Camaro (1971) för 14 800 kr. På nyårsafton 2004 blev det ett spontant eBay-köp av en 1970 Camaro från New Jersey. Det ändrade riktningen.',
     philosophy:
       'Anders köper inte färdiga lösningar. Han bygger, utvecklar och tunar i garaget i Hudiksvall, och gräver i detaljer som andra ofta hoppar över.',
     quote2:
       'Vem som helst kan ta reda på informationen. Svårigheten är att veta vad man ska ta reda på.',
     quote2Attr: 'Anders Edh',
-    timelineTitle: 'Tidslinjen',
+    heroAlt: 'Anders Edh i depån vid sin blå Camaro',
+    spineLabel: 'Kapitel i resan',
+    crossroadsLabel: 'Vägskälet',
     chapters: {
       roots: 'Rötter',
       build: 'Bygget',
@@ -162,15 +250,16 @@ export const sv: Dictionary = {
     timeline: {
       '1970s-first-camaro':
         'Köper sin första Camaro (1971) för 14 800 kr som 16-åring.',
-      '2004-ebay': 'Spontanköp av 1970 Camaro på eBay på nyårsafton.',
+      '2004-ebay':
+        'Spontanköp av en 1970 Camaro från New Jersey på eBay på nyårsafton.',
       '2005-license':
         'Introduceras till dragracing av Kjell-Åke Kring (Norrbo) och tar licens i Söderhamn. Mekanikern Martin Ekstedt dyker upp i garaget.',
       '2006-10s': 'Kör 10,0 sekunder på 402 meter (kvartsmilen).',
       '2010-nitrous': 'Når 7,8 sekunder på 402 meter med en lustgasmotor.',
       '2013-chassis':
         'River bilen helt och bygger rörchassi från grunden. Gatubilen är nu en ren tävlingsmaskin.',
-      '2016-680':
-        'Kör 6,80 sekunder på 402 meter. Står vid ett vägskäl och överväger att sälja allt.',
+      '2016-680': 'Kör 6,80 sekunder på 402 meter.',
+      '2016-crossroads': 'Står vid ett vägskäl och överväger att sälja allt.',
       '2016-2017-blower':
         'Byter till kompressormotor (Chevrolet). En ny riktning.',
       '2017-edrs6':
@@ -189,6 +278,17 @@ export const sv: Dictionary = {
         'Andreas Gröning kommer in i teamet. 3:e plats totalt i Top Doorslammer European Drag Racing Series.',
       '2026-season':
         'Vinst i första tävlingen på Santa Pod. 3,87 sekunder på asfaltsbanan i Hudiksvall efter arbete med fyrlänk och viktbalans.',
+    },
+    marks: {
+      '2006-10s': '10,0 s',
+      '2010-nitrous': '7,8 s',
+      '2016-680': '6,80 s',
+      '2017-edrs6': '4,15 s',
+      '2018-runnerup': '2:a EDRS',
+      '2019-champion': '1:a EDRS',
+      '2021-record': '3,89 s',
+      '2024-santapod': '5,74 s',
+      '2026-season': '3,87 s',
     },
   },
   machine: {

@@ -9,6 +9,12 @@ import {
 } from './useNavItems'
 import './Footer.css'
 
+const SOCIAL = [
+  { id: 'facebook', label: 'Facebook', href: SITE.social.facebook },
+  { id: 'instagram', label: 'Instagram', href: SITE.social.instagram },
+  { id: 'youtube', label: 'YouTube', href: SITE.social.youtube },
+] as const
+
 export function Footer() {
   const t = useT()
   const locale = useLocale()
@@ -26,66 +32,78 @@ export function Footer() {
       </div>
 
       <div className="site-footer__inner">
-        <div className="site-footer__col">
-          <h3>{t.footer.quickLinks}</h3>
-          <ul>
-            <li>
-              <Link to={localePath(locale, 'home')}>{t.nav.home}</Link>
-            </li>
-            {primary.map((item) => (
-              <li key={item.id}>
-                <Link to={item.to}>{item.label}</Link>
+        <div className="site-footer__brand">
+          <Link
+            to={localePath(locale, 'home')}
+            className="site-footer__brand-link"
+          >
+            <img
+              src="/logo/logo-grey-png.png"
+              alt=""
+              width={56}
+              height={56}
+              aria-hidden="true"
+            />
+            <span className="site-footer__brand-copy">
+              <span className="site-footer__brand-name">{t.meta.siteName}</span>
+              <span className="site-footer__brand-tag">{t.meta.tagline}</span>
+            </span>
+          </Link>
+        </div>
+
+        <nav className="site-footer__nav" aria-label={t.footer.quickLinks}>
+          <div className="site-footer__col">
+            <h3>{t.footer.quickLinks}</h3>
+            <ul>
+              <li>
+                <Link to={localePath(locale, 'home')}>{t.nav.home}</Link>
               </li>
-            ))}
-          </ul>
-        </div>
+              {primary.map((item) => (
+                <li key={item.id}>
+                  <Link to={item.to}>{item.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div className="site-footer__col">
-          <h3>{t.footer.more}</h3>
-          <ul>
-            {secondary.map((item) => (
-              <li key={item.id}>
-                <Link to={item.to}>{item.label}</Link>
+          <div className="site-footer__col">
+            <h3>{t.footer.more}</h3>
+            <ul>
+              {secondary.map((item) => (
+                <li key={item.id}>
+                  <Link to={item.to}>{item.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="site-footer__col">
+            <h3>{t.footer.contact}</h3>
+            <ul className="site-footer__contact">
+              <li>
+                <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
               </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="site-footer__col">
-          <h3>{t.footer.contact}</h3>
-          <ul>
-            <li>
-              <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
-            </li>
-            <li>
-              <a href={SITE.phoneHref}>{SITE.phone}</a>
-            </li>
-            <li>{t.common.locationValue}</li>
-          </ul>
-        </div>
-
-        <div className="site-footer__col">
-          <h3>{t.footer.social}</h3>
-          <ul className="site-footer__social">
-            <li>
-              <a href={SITE.social.facebook} target="_blank" rel="noreferrer">
-                Facebook
-              </a>
-            </li>
-            <li>
-              <a href={SITE.social.instagram} target="_blank" rel="noreferrer">
-                Instagram
-              </a>
-            </li>
-            <li>
-              <a href={SITE.social.youtube} target="_blank" rel="noreferrer">
-                YouTube
-              </a>
-            </li>
-          </ul>
-        </div>
+              <li>
+                <a href={SITE.phoneHref}>{SITE.phone}</a>
+              </li>
+              <li>{t.common.locationValue}</li>
+            </ul>
+          </div>
+        </nav>
       </div>
-      <p className="site-footer__rights">{t.footer.rights}</p>
+
+      <div className="site-footer__bar">
+        <p className="site-footer__rights">{t.footer.rights}</p>
+        <ul className="site-footer__social" aria-label={t.footer.social}>
+          {SOCIAL.map((item) => (
+            <li key={item.id}>
+              <a href={item.href} target="_blank" rel="noreferrer">
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </footer>
   )
 }

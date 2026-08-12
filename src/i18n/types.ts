@@ -1,3 +1,5 @@
+import type { TimelineId } from '../data/timeline'
+
 export type Locale = 'sv' | 'en'
 
 export type NavKey =
@@ -100,8 +102,16 @@ export type Dictionary = {
     again: string
     mute: string
     unmute: string
+    followCar: string
+    zoomOut: string
+    loading: string
+    modelCredit: string
+    modelCreditHref: string
     webglFallback: string
     continueJourney: string
+    openTimeslip: string
+    closeTimeslip: string
+    readTimeslip: string
     status: {
       idle: string
       staging: string
@@ -115,30 +125,86 @@ export type Dictionary = {
       f1: string
       jet: string
     }
+    compareMeaning: {
+      camaro: string
+      f1: string
+      jet: string
+    }
     timeslipTitle: string
     timeslipDistance: string
     timeslipPlace: string
+    timeslipEvent: string
+    timeslipGuide: string
+    timeslipCompareTitle: string
+    timeslipCompareLead: string
+    pickOpponent: string
+    primerLead: string
+    inspectHint: string
+    context201: {
+      title: string
+      body: string
+      edrsStat: string
+      quarterStat: string
+    }
+    sportWhy: {
+      title: string
+      body: string
+    }
+    anchorsTitle: string
+    anchors: {
+      distance: string
+      time: string
+      speed: string
+      trap: string
+    }
+    splitCallouts: {
+      sixty: string
+      threeThirty: string
+      eighth: string
+      thousand: string
+      quarter: string
+    }
+    racingHud: {
+      reaction: string
+      elapsed: string
+      speedUnit: string
+      rpmUnit: string
+      tireLabel: string
+    }
+    timeslipSplits: {
+      reaction: { label: string; meaning: string }
+      sixty: { label: string; meaning: string }
+      threeThirty: { label: string; meaning: string }
+      eighth: { label: string; meaning: string }
+      thousand: { label: string; meaning: string }
+      quarter: { label: string; meaning: string }
+      trapMph: { label: string; meaning: string }
+    }
   }
   journey: {
     title: string
     intro: string
     beatChildhood: string
-    beatTurning: string
     beatPhilosophy: string
     quote1: string
     quote1Attr: string
-    turningPoint: string
     philosophy: string
     quote2: string
     quote2Attr: string
-    timelineTitle: string
+    heroAlt: string
+    /** aria-label for the sticky chapter navigator */
+    spineLabel: string
+    crossroadsLabel: string
     chapters: {
       roots: string
       build: string
       elite: string
       record: string
     }
-    timeline: Record<string, string>
+    /** Keyed by timeline id, so a missing translation is a compile error. */
+    timeline: Record<TimelineId, string>
+    /** Pulled-out headline figure; localised because decimal separators differ. */
+    marks: Partial<Record<TimelineId, string>>
   }
   machine: {
     title: string

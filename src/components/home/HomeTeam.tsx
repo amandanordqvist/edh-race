@@ -11,9 +11,7 @@ export function HomeTeam() {
   const t = useT()
   const locale = useLocale()
   const [photoFailed, setPhotoFailed] = useState(false)
-  const crew = team.filter((member) => member.group === 'crew' && member.image).slice(0, 3)
-  const marie = team.find((member) => member.id === 'marie')
-  const members = marie ? [...crew, marie] : crew
+  const members = team.filter((member) => member.group === 'crew' && member.image).slice(0, 4)
 
   return (
     <Section className="home-team" wide>
@@ -44,38 +42,40 @@ export function HomeTeam() {
         )}
       </Reveal>
 
-      <Reveal className="home-team__grid" delay={0.12} stagger={0.08} y={32}>
-        {members.map((member) => {
-          const copy = t.team.members[member.id]
-          return (
-            <article className="home-team__card" key={member.id}>
-              {member.image ? (
-                <img
-                  className="home-team__avatar"
-                  src={member.image}
-                  alt=""
-                  width={120}
-                  height={120}
-                  loading="lazy"
-                  decoding="async"
-                />
-              ) : (
-                <div className="home-team__avatar home-team__avatar--initials" aria-hidden="true">
-                  {member.name
-                    .split(' ')
-                    .filter(Boolean)
-                    .slice(0, 2)
-                    .map((part) => part[0])
-                    .join('')}
+      <Reveal delay={0.12} y={28}>
+        <div className="home-team__grid">
+          {members.map((member) => {
+            const copy = t.team.members[member.id]
+            return (
+              <article className="home-team__card" key={member.id}>
+                {member.image ? (
+                  <img
+                    className="home-team__avatar"
+                    src={member.image}
+                    alt=""
+                    width={120}
+                    height={120}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <div className="home-team__avatar home-team__avatar--initials" aria-hidden="true">
+                    {member.name
+                      .split(' ')
+                      .filter(Boolean)
+                      .slice(0, 2)
+                      .map((part) => part[0])
+                      .join('')}
+                  </div>
+                )}
+                <div>
+                  <h3 className="home-team__name">{member.name}</h3>
+                  <p className="home-team__role">{copy?.role ?? ''}</p>
                 </div>
-              )}
-              <div>
-                <h3 className="home-team__name">{member.name}</h3>
-                <p className="home-team__role">{copy?.role ?? ''}</p>
-              </div>
-            </article>
-          )
-        })}
+              </article>
+            )
+          })}
+        </div>
       </Reveal>
 
       <Reveal className="home-team__cta" delay={0.18}>

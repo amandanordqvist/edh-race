@@ -30,7 +30,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* Soft center wash for logo readability */
+  /* Soft center wash for logo + long fade into next section */
   background:
     radial-gradient(
       ellipse 65% 50% at 50% 48%,
@@ -41,10 +41,29 @@
     linear-gradient(
       180deg,
       rgba(10, 12, 16, 0.28) 0%,
-      transparent 30%,
-      transparent 58%,
-      rgba(10, 12, 16, 0.72) 100%
+      transparent 26%,
+      transparent 42%,
+      rgba(10, 12, 16, 0.45) 68%,
+      rgba(10, 12, 16, 0.88) 86%,
+      var(--color-almost-black) 100%
     );
+}
+
+/* Extra soft bottom veil so the cut into PerformanceStrip disappears */
+.hero__media::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: min(38vh, 18rem);
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(10, 12, 16, 0.25) 35%,
+    rgba(10, 12, 16, 0.7) 70%,
+    var(--color-almost-black) 100%
+  );
 }
 
 .hero__veil {

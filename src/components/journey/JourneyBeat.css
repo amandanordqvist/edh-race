@@ -1,0 +1,195 @@
+/*
+ * The weight language. Each weight only re-declares custom properties; the
+ * shared rules below consume them. Carried by rhythm, measure and accent rather
+ * than by motion, so it survives prefers-reduced-motion untouched.
+ */
+.journey-beat {
+  --beat-space-before: clamp(2.25rem, 5vw, 3.25rem);
+  --beat-measure: 58ch;
+  --beat-accent: var(--color-primary-blue);
+  --beat-rule-width: 100%;
+  /* Overridden inline per beat with the plate's intrinsic ratio. */
+  --beat-media-ratio: 3 / 2;
+  --beat-media-max: 16.5rem;
+  --beat-media-filter: none;
+  --beat-media-shadow: none;
+  --beat-media-border: rgba(255, 255, 255, 0.08);
+  --beat-mark-size: clamp(1.5rem, 2.6vw, 1.9rem);
+  --beat-text-size: 1.01rem;
+  --beat-text-color: rgba(243, 245, 248, 0.84);
+
+  position: relative;
+  list-style: none;
+  margin-top: var(--beat-space-before);
+  padding-top: clamp(1.1rem, 2.2vw, 1.5rem);
+  scroll-margin-top: calc(var(--header-height) + 1.5rem);
+}
+
+/* Years of steady work: full opacity, tight rhythm, text-led, no card. */
+.journey-beat--quiet {
+  --beat-space-before: clamp(2rem, 4vw, 2.75rem);
+}
+
+/*
+ * The low point. The blue accent withdraws to grey, the measure narrows so the
+ * text feels held in, the rule above stops short of full width, and the air
+ * roughly doubles. No red, no downward arrows.
+ */
+.journey-beat--valley {
+  --beat-space-before: clamp(4.5rem, 10vw, 7rem);
+  --beat-measure: 44ch;
+  --beat-accent: var(--color-silver-gray);
+  --beat-rule-width: 3.5rem;
+  --beat-media-filter: saturate(0.4) contrast(0.96);
+  --beat-media-max: 14rem;
+  --beat-text-size: 1.12rem;
+  --beat-text-color: rgba(243, 245, 248, 0.7);
+}
+
+/* Blue returns, the image steps up, more air than a quiet year. */
+.journey-beat--peak {
+  --beat-space-before: clamp(3.25rem, 7vw, 4.5rem);
+  --beat-media-max: 31rem;
+  --beat-media-shadow: var(--shadow-soft);
+  --beat-mark-size: clamp(1.9rem, 3.4vw, 2.6rem);
+}
+
+/*
+ * The record. Source plate is only 720px wide, so the image is capped at its
+ * native size and the elapsed time carries the finale instead.
+ */
+.journey-beat--climax {
+  --beat-space-before: clamp(5rem, 11vw, 8rem);
+  --beat-media-max: 45rem;
+  --beat-media-shadow: var(--shadow-deep);
+  --beat-media-border: rgba(42, 79, 154, 0.55);
+  --beat-mark-size: clamp(3.25rem, 8vw, 5.75rem);
+  --beat-text-size: 1.15rem;
+  --beat-text-color: rgba(243, 245, 248, 0.92);
+}
+
+.journey-beat__rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1px;
+  width: var(--beat-rule-width);
+  background: linear-gradient(
+    90deg,
+    var(--beat-accent),
+    var(--color-hairline) 60%,
+    transparent
+  );
+}
+
+.journey-beat--valley .journey-beat__rule {
+  background: var(--color-silver-gray);
+  opacity: 0.4;
+}
+
+.journey-beat__year {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.76rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--beat-accent);
+  margin: 0 0 0.5rem;
+}
+
+.journey-beat__mark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--beat-mark-size);
+  line-height: 0.95;
+  letter-spacing: 0.005em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-almost-white);
+  margin: 0 0 0.6rem;
+}
+
+.journey-beat__text {
+  font-size: var(--beat-text-size);
+  line-height: 1.65;
+  color: var(--beat-text-color);
+  max-width: var(--beat-measure);
+  margin: 0;
+}
+
+.journey-beat__media {
+  margin: 1.1rem 0 0;
+  width: 100%;
+  max-width: var(--beat-media-max);
+}
+
+.journey-beat__media img {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--beat-media-ratio);
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--beat-media-border);
+  box-shadow: var(--beat-media-shadow);
+  filter: var(--beat-media-filter);
+  background: var(--color-supporting-navy);
+}
+
+.journey-beat--climax .journey-beat__mark {
+  color: var(--color-almost-white);
+  text-shadow: 0 0 60px rgba(42, 79, 154, 0.45);
+}
+
+@media (min-width: 900px) {
+  .journey-beat {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+    column-gap: clamp(1.75rem, 4vw, 3rem);
+    align-items: start;
+  }
+
+  .journey-beat__media {
+    margin-top: 0;
+    width: var(--beat-media-max);
+  }
+
+  /* Valley and climax read as single, centred statements. */
+  .journey-beat--valley,
+  .journey-beat--climax {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .journey-beat--climax {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .journey-beat--climax .journey-beat__text {
+    margin-inline: auto;
+    max-width: 46ch;
+  }
+
+  .journey-beat--climax .journey-beat__media {
+    margin-top: 2rem;
+  }
+
+  .journey-beat--valley .journey-beat__media {
+    margin-top: 1.5rem;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .journey-beat__media img {
+    transition: transform var(--duration-slow) var(--ease-out-expo);
+  }
+
+  .journey-beat--peak:hover .journey-beat__media img,
+  .journey-beat--climax:hover .journey-beat__media img {
+    transform: scale(1.02);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-beat__media img {
+    transition: none;
+  }
+}

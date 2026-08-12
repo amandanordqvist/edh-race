@@ -1,6 +1,7 @@
 import { useId } from 'react'
 
 import { PassArena } from '../components/pass/PassArena'
+import { PassContextSection } from '../components/pass/PassContextSection'
 import { useT } from '../i18n'
 import './PassPage.css'
 
@@ -22,6 +23,8 @@ export default function PassPage() {
           <PassArena />
         </div>
       </section>
+
+      <PassContextSection />
     </main>
   )
 }

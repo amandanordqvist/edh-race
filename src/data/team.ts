@@ -32,8 +32,4 @@ export const team: TeamMember[] = [
     group: 'crew',
     image: '/images/team/john.png',
   },
-  { id: 'olle', name: 'Olle Edh', group: 'support' },
-  { id: 'marie', name: 'Marie Andersson Hållen', group: 'support' },
-  { id: 'amanda', name: 'Amanda Nordqvist Ed', group: 'support' },
-  { id: 'siggi', name: 'Siggi', group: 'support' },
 ]

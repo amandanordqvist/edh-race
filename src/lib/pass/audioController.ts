@@ -82,6 +82,7 @@ export function createPassAudio(options: PassAudioOptions = {}) {
   let destroyed = false
   let phase: PassPhase = 'idle'
   let unlockPromise: Promise<void> | null = null
+  let loopRate = 1
 
   const syncMuted = () => {
     Object.values(cues).forEach((cue) => {
@@ -112,6 +113,7 @@ export function createPassAudio(options: PassAudioOptions = {}) {
 
     const cue = cues.passLoop
     cue.muted = muted
+    cue.playbackRate = loopRate
     safeReset(cue)
     void cue.play().catch(() => {
       // Missing files or autoplay rejections should keep the race silent.
@@ -191,6 +193,7 @@ export function createPassAudio(options: PassAudioOptions = {}) {
     switch (nextPhase) {
       case 'idle':
         stopLoop()
+        loopRate = 1
         return
 
       case 'staging':
@@ -204,6 +207,7 @@ export function createPassAudio(options: PassAudioOptions = {}) {
 
       case 'green':
         stopLoop()
+        loopRate = 0.95
         playCue('green')
         playCue('launch')
         return
@@ -214,6 +218,8 @@ export function createPassAudio(options: PassAudioOptions = {}) {
 
       case 'finished':
         stopLoop()
+        loopRate = 1
+        cues.passLoop.playbackRate = 1
         playCue('finish')
         return
 
@@ -222,6 +228,13 @@ export function createPassAudio(options: PassAudioOptions = {}) {
         return exhaustivePhase
       }
     }
+  }
+
+  const onRaceSpeed = (speed01: number) => {
+    if (destroyed || muted || reducedMotion || phase !== 'racing') return
+
+    loopRate = 0.88 + speed01 * 0.82
+    cues.passLoop.playbackRate = loopRate
   }
 
   const destroy = () => {
@@ -238,5 +251,5 @@ export function createPassAudio(options: PassAudioOptions = {}) {
     })
   }
 
-  return { setMuted, unlock, onPhase, destroy }
+  return { setMuted, unlock, onPhase, onRaceSpeed, destroy }
 }

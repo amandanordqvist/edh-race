@@ -1,0 +1,32 @@
+/*
+ * Restraint is what makes this land. No image, no accent, and more air than
+ * anywhere else on the page.
+ */
+.journey-crossroads {
+  padding-block: clamp(5rem, 13vw, 9rem);
+}
+
+.journey-crossroads__label {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.76rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-silver-gray);
+  margin: 0;
+}
+
+/* The label already carries the year, so drop the beat's own repeat of it. */
+.journey-crossroads .journey-beat__year {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.journey-crossroads .journey-beat {
+  margin-top: clamp(1.5rem, 3vw, 2rem);
+  padding-top: clamp(1.5rem, 3vw, 2rem);
+}

@@ -26,3 +26,7 @@ dist-ssr
 # Local tooling
 .specstory/
 .cursorindexingignore
+
+# Heavy 3D source backups (runtime uses optimized camaro.glb)
+public/models/pass/camaro.source.glb
+

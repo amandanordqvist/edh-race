@@ -55,6 +55,7 @@ export function createPrimitive(pc: PlayCanvasNamespace, options: PrimitiveOptio
   return entity
 }
 
-export function shadowsEnabled(quality: PassQuality): boolean {
-  return quality === 'high'
+export function shadowsEnabled(_quality: PassQuality): boolean {
+  // Always cast on hero Camaro — key light shadows are on for both quality tiers.
+  return true
 }

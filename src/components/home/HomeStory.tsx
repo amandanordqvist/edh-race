@@ -2,7 +2,7 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useRef, useState } from 'react'
-import { timeline } from '../../data/timeline'
+import { type JourneyMedia, timeline } from '../../data/timeline'
 import { useLocale, useT } from '../../i18n'
 import { localePath } from '../../lib/paths'
 import { Button } from '../ui/Button'
@@ -109,8 +109,8 @@ export function HomeStory() {
                 index={index}
                 total={beats.length}
                 year={beat.year}
-                text={t.journey.timeline[beat.id] ?? ''}
-                image={beat.image}
+                text={t.journey.timeline[beat.id]}
+                media={beat.media}
                 fallback={t.home.imageFallback}
                 eager={index === 0}
               />
@@ -137,7 +137,7 @@ function StoryBeat({
   total,
   year,
   text,
-  image,
+  media,
   fallback,
   eager,
 }: {
@@ -145,7 +145,7 @@ function StoryBeat({
   total: number
   year: string
   text: string
-  image?: string
+  media?: JourneyMedia
   fallback: string
   eager?: boolean
 }) {
@@ -159,18 +159,20 @@ function StoryBeat({
         <p className="home-story__year">{year}</p>
       </header>
 
-      {image && !failed ? (
+      {media && !failed ? (
         <img
           className="home-story__img"
-          src={image}
+          src={media.src}
+          srcSet={media.srcSet}
+          sizes="(min-width: 900px) 26rem, 78vw"
           alt=""
-          width={640}
-          height={400}
+          width={media.width}
+          height={media.height}
           loading={eager ? 'eager' : 'lazy'}
           decoding="async"
           onError={() => setFailed(true)}
         />
-      ) : image ? (
+      ) : media ? (
         <div className="home-story__fallback">{fallback}</div>
       ) : null}
 

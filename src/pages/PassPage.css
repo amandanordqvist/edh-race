@@ -1,10 +1,15 @@
 .pass-page {
   padding: clamp(3.75rem, 8vw, 5.5rem) 1rem var(--section-pad-bottom);
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+.pass-page > * {
+  width: min(100%, var(--content-wide));
+  margin-inline: auto;
 }
 
 .pass-page__hero {
-  width: min(100%, var(--content-wide));
-  margin: 0 auto;
   display: grid;
   gap: 1.5rem;
 }
