@@ -1,0 +1,29 @@
+/*
+ * Silent moment between chapters. Hairline everything: no accent, no rule, no
+ * media. It exists so the eye and the timeslip cursor can rest.
+ */
+.journey-bookend {
+  padding-block: clamp(3.75rem, 8vw, 5.5rem);
+  scroll-margin-top: calc(var(--header-height) + 1.5rem);
+  max-width: 42rem;
+}
+
+.journey-bookend__year {
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: clamp(2.75rem, 8vw, 5rem);
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+  font-variant-numeric: tabular-nums;
+  color: rgba(243, 245, 248, 0.55);
+  margin: 0 0 0.85rem;
+}
+
+.journey-bookend__caption {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(243, 245, 248, 0.6);
+  max-width: 42ch;
+  margin: 0;
+}

@@ -1,0 +1,189 @@
+.journey-hero {
+  position: relative;
+}
+
+.journey-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 40%;
+  width: min(60vw, 720px);
+  height: min(48vw, 420px);
+  background: radial-gradient(
+    ellipse at 55% 20%,
+    rgba(42, 79, 154, 0.22),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.journey-hero .section__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.journey-hero__grid {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3.5rem);
+  align-items: center;
+}
+
+.journey-hero__eyebrow {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-primary-blue);
+  margin: 0 0 1rem;
+}
+
+.journey-hero__title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.6rem, 7vw, 5rem);
+  line-height: 0.96;
+  letter-spacing: 0.005em;
+  max-width: 22ch;
+  margin: 0 0 1.5rem;
+  color: var(--color-almost-white);
+}
+
+.journey-hero__lead {
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  line-height: 1.65;
+  color: rgba(243, 245, 248, 0.78);
+  max-width: 46ch;
+  margin: 0;
+}
+
+.journey-hero__quote {
+  margin: clamp(2rem, 4vw, 2.75rem) 0 0;
+  max-width: 44ch;
+}
+
+.journey-hero__quote-label {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-primary-blue);
+  margin: 0 0 0.9rem;
+}
+
+.journey-hero__quote blockquote {
+  margin: 0;
+  padding-left: 1.1rem;
+  border-left: 1px solid rgba(42, 79, 154, 0.5);
+}
+
+.journey-hero__quote blockquote p {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.15rem, 2.4vw, 1.55rem);
+  line-height: 1.28;
+  color: rgba(243, 245, 248, 0.94);
+  margin: 0;
+}
+
+.journey-hero__quote figcaption {
+  margin-top: 0.9rem;
+  padding-left: 1.1rem;
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-silver-gray);
+}
+
+/*
+ * The blank hero timeslip. Same visual grammar as the running spine so the
+ * reader recognises it later.
+ */
+.journey-hero-slip {
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.1rem 1.05rem;
+  background: rgba(255, 255, 255, 0.02);
+  max-width: 30rem;
+}
+
+.journey-hero-slip__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.journey-hero-slip__eyebrow,
+.journey-hero-slip__event,
+.journey-hero-slip__distance {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.journey-hero-slip__eyebrow {
+  font-weight: 700;
+  color: var(--color-primary-blue);
+}
+
+.journey-hero-slip__event {
+  margin-top: 0.2rem;
+  letter-spacing: 0.08em;
+  color: rgba(243, 245, 248, 0.55);
+}
+
+.journey-hero-slip__distance {
+  color: rgba(243, 245, 248, 0.42);
+  text-align: right;
+}
+
+.journey-hero-slip__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1rem;
+  margin: 0;
+}
+
+.journey-hero-slip__grid > div {
+  display: grid;
+  gap: 0.15rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.journey-hero-slip__grid dt {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.35);
+}
+
+.journey-hero-slip__grid dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.8rem, 3.6vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: rgba(243, 245, 248, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 900px) {
+  .journey-hero__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+  }
+
+  .journey-hero__form {
+    justify-self: end;
+    width: 100%;
+  }
+}

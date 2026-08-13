@@ -56,11 +56,17 @@ export const en: Dictionary = {
       base: { code: 'CLASS', value: 'TDS', unit: '', label: 'Top Doorslammer' },
     },
     driverLabel: 'The driver',
-    driverTitle: 'The driver behind 5.74',
+    driverEyebrowMeta: 'Since 1998',
+    driverTitle: 'Anders Edh',
+    driverTagline: 'Builder  ·  Driver  ·  From Hudiksvall',
     driverBody:
-      'Anders Edh builds, tunes and drives from the same garage in Hudiksvall. The times do the talking.',
+      'Anders builds, tunes and drives from the same garage in Hudiksvall. The times do the talking.',
     driverQuote: 'I’d rather show the result than talk myself up.',
     driverCta: 'The full journey',
+    driverCtaSecondary: 'See the car',
+    driverCredits: 'Hudiksvall, SE  ·  Top Doorslammer  ·  Built in his own garage',
+    driverCardMeta: 'Santa Pod · 2024',
+    driverCardTime: '5.74 s · 415 km/h',
     driverAlt: 'Anders Edh standing in his racing suit',
     machineLabel: 'The car',
     machineTitle: 'The Beast',
@@ -109,8 +115,7 @@ export const en: Dictionary = {
   },
   pass: {
     title: 'The pass',
-    lead:
-      'Pick an opponent. Stage the car. Wait for green. Watch 5.74 seconds in a two-lane comparison over 402 metres.',
+    lead: 'Santa Pod, quarter mile — 5.74 s against Formula 1 or a passenger jet.',
     stage: 'Stage the car',
     again: 'Race again',
     mute: 'Mute',
@@ -126,6 +131,26 @@ export const en: Dictionary = {
     openTimeslip: 'Open the timeslip',
     closeTimeslip: 'Close timeslip',
     readTimeslip: 'Read the timeslip — decode the numbers',
+    gapAhead: 'ahead',
+    gapBehind: 'behind',
+    reactionHint: 'Space on green measures your reaction.',
+    launchWait: 'Wait for green',
+    launchNow: 'LAUNCH!',
+    launchKeyHint: 'Space',
+    yourReaction: 'Your RT',
+    reactionFaster: 'Faster than Anders — red-light if this were live',
+    cockpitView: 'Cockpit',
+    expandTrack: 'Full screen',
+    collapseTrack: 'Close',
+    scrubLabel: 'Scrub the pass',
+    chuteStatus: 'Chutes out',
+    scrubChute: 'Chutes',
+    flyby: {
+      highway: 'Past highway limit · 120 km/h',
+      autobahn: 'Past Autobahn pace · 200 km/h',
+      tgv: 'Past TGV cruise · 300 km/h',
+      hypercar: 'Past Bugatti Chiron · 400 km/h',
+    },
     pickOpponent: 'Race against',
     status: {
       idle: 'Pick opponent — inspect — stage',
@@ -184,13 +209,15 @@ export const en: Dictionary = {
       eighth: '660′ · 201 m · EDH’s usual distance · 326 km/h',
       thousand: '1000′ · ~305 m · final push to the quarter-mile finish',
       quarter: '1320′ · 402 m · Santa Pod pace · 415 km/h',
+      chutes: 'Chutes — now the car has to stop',
     },
     racingHud: {
       reaction: 'Reaction time',
-      elapsed: 'Elapsed time',
+      elapsed: 'ET',
       speedUnit: 'km/h',
       rpmUnit: 'RPM',
       tireLabel: 'Slick',
+      chutes: 'Chutes',
     },
     timeslipSplits: {
       reaction: {
@@ -225,9 +252,9 @@ export const en: Dictionary = {
     },
   },
   journey: {
-    title: 'From an impulse buy to a record',
+    title: 'A running timeslip',
     intro:
-      'From the vibration in a mini-moped handlebar in Hudiksvall to the start line in Europe. Still the same garage. Still the same curiosity.',
+      'A garage in Hudiksvall. A Camaro. A number that keeps falling. The whole career fits inside the times at the finish line — read the rows as they get filled in.',
     beatChildhood: 'The beginning',
     beatPhilosophy: 'The philosophy',
     quote1:
@@ -238,9 +265,12 @@ export const en: Dictionary = {
     quote2:
       'Anyone can look up the information. The hard part is knowing what to look up.',
     quote2Attr: 'Anders Edh',
-    heroAlt: 'Anders Edh in the pits beside his blue Camaro',
-    spineLabel: 'Chapters in the journey',
-    crossroadsLabel: 'The crossroads',
+    spineLabel: 'Timeslip: rows of a career',
+    crossroadsLabel: 'The crossroads · 2016',
+    crossroadsBody:
+      'The fastest year yet, and still no fields were filled in. The car sat in the garage. The economy was recounted. No new time was recorded. Anders considered selling everything.',
+    crossroadsCaption: 'Blank timeslip. Nothing measured.',
+    finalRowCaption: 'The next row gets written at the track.',
     chapters: {
       roots: 'Roots',
       build: 'Build',
@@ -249,47 +279,78 @@ export const en: Dictionary = {
     },
     timeline: {
       '1970s-first-camaro':
-        'Buys his first Camaro (1971) for SEK 14,800 at age sixteen.',
+        'Sixteen years old, Anders buys his first Camaro (a 1971) for SEK 14,800. No times measured — only the feeling of owning an American car.',
       '2004-ebay':
-        'Spontaneous New Year’s Eve purchase of a 1970 Camaro from New Jersey on eBay.',
+        'New Year’s Eve. An impulse buy on eBay. A 1970 Camaro rolls off the boat from New Jersey.',
       '2005-license':
-        'Introduced to drag racing by Kjell-Åke Kring (Norrbo) and earns his licence in Söderhamn. Mechanic Martin Ekstedt appears in the garage.',
-      '2006-10s': 'Runs 10.0 seconds over 402 metres (the quarter mile).',
-      '2010-nitrous': 'Reaches 7.8 seconds over 402 metres with a nitrous engine.',
+        'Kjell-Åke Kring drags Anders into the sport. Racing licence in Söderhamn. Mechanic Martin Ekstedt shows up in the garage.',
+      '2006-10s':
+        'First season with the clock running. The quarter mile — 402 metres — falls on ten seconds flat.',
+      '2010-nitrous':
+        'Nitrous in the engine. The quarter mile drops to 7.80 s. The steel-body car starts getting serious.',
       '2013-chassis':
-        'Strips the car completely and builds a tube chassis from scratch. The street car becomes a pure race machine.',
-      '2016-680': 'Runs 6.80 seconds over 402 metres.',
-      '2016-crossroads':
-        'Stands at a crossroads and considers selling everything.',
+        'The car comes apart completely. A tube chassis is welded up from scratch. The street car stops existing — a race machine replaces it.',
+      '2016-680':
+        'The fastest season yet with the steel body. 6.80 s over 402 m. Costs set hard limits at the same time.',
+      '2016-crossroads': 'Blank row. No time measured.',
       '2016-2017-blower':
-        'Switches to a blower Chevrolet engine. A new direction.',
+        'A new direction. A screw blower on the Chevrolet engine replaces the nitrous. The rebuild takes a whole winter.',
       '2017-edrs6':
-        'Almost immediately runs 4.15 seconds over 201 metres. Finishes 6th in the European Drag Racing Series.',
+        'New distance — 201 m in the European Drag Racing Series. 4.15 s straight out of the box. Sixth overall.',
       '2018-runnerup':
-        'Runner-up in the Northern European Summit Racing EDRS Series in Top Doorslammer.',
+        'Runner-up in the Summit Racing EDRS Series in Top Doorslammer. Season read all the way through.',
       '2019-champion':
-        'Wins the Nordic Top Doorslammer series and takes 1st place in the European Drag Racing Series (EDRS).',
+        'Nordic champion in Top Doorslammer. 1st in EDRS.',
       '2021-record':
-        'Final season with the steel-bodied car. 3.89 seconds over 201 metres: then the fastest doorslammer record in Europe.',
+        'Final season with the steel body. 3.89 s over 201 m — then the fastest doorslammer record in Europe.',
       '2023-beast':
-        'Builds a new Camaro with carbon-fibre body, BAE 521 engine and MB chassis.',
+        'The Beast takes shape. Carbon-fibre body, BAE 521 engine, MB chassis. The car exists, but the time has not been measured yet.',
       '2024-santapod':
-        'Santa Pod, England. Personal best 5.74 seconds @ 415 km/h.',
+        'Santa Pod, England. 5.7451 s @ 415 km/h. The record row of the career.',
       '2025-podium':
-        'Andreas Gröning joins the team. 3rd place overall in Top Doorslammer European Drag Racing Series.',
+        'Andreas Gröning joins. Third overall in EDRS Top Doorslammer.',
       '2026-season':
-        'Win in the first race at Santa Pod. 3.87 seconds on the asphalt track in Hudiksvall after four-link and weight-balance work.',
+        'Win in the first start at Santa Pod. 3.87 s on the asphalt track in Hudiksvall after four-link and weight-balance work.',
     },
     marks: {
-      '2006-10s': '10.0 s',
-      '2010-nitrous': '7.8 s',
+      '2006-10s': '10.00 s',
+      '2010-nitrous': '7.80 s',
       '2016-680': '6.80 s',
       '2017-edrs6': '4.15 s',
       '2018-runnerup': '2nd EDRS',
       '2019-champion': '1st EDRS',
       '2021-record': '3.89 s',
-      '2024-santapod': '5.74 s',
+      '2024-santapod': '5.7451 s',
       '2026-season': '3.87 s',
+    },
+    timeslip: {
+      eyebrow: 'EDH Racing · Timeslip',
+      event: 'Career · 1970s–2026',
+      distance: 'Read top to bottom',
+      colYear: 'Year',
+      colDistance: 'Distance',
+      colEt: 'ET',
+      colOutcome: 'Outcome',
+      outcomeLabels: {
+        quiet: 'Quiet year',
+        race: 'Race',
+        record: 'Record',
+        championship: 'Championship',
+        setback: 'Setback',
+        rebuild: 'Rebuild',
+      },
+    },
+    bookends: {
+      'bookend-2011': {
+        label: '2011–2012',
+        caption:
+          'Two winters without racing. The tube chassis is redrawn, the steel body is stripped, nothing is measured.',
+      },
+      'bookend-2022': {
+        label: '2022',
+        caption:
+          'The Beast is coming together in the workshop. The old car stands still; the new one is not running yet.',
+      },
     },
   },
   machine: {

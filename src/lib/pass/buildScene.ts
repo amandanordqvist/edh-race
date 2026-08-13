@@ -1,17 +1,16 @@
-import type { Application, Entity, Vec3 } from 'playcanvas'
+import type { Application, Asset, Entity, Texture, Vec3 } from 'playcanvas'
 
-import { buildPassEnvironment } from './buildEnvironment'
+import { buildPassEnvironment, type TreeMode } from './buildEnvironment'
 import { attachCamaroDecals } from './attachCamaroDecals'
 import { buildPassVehicles, type VehicleId } from './buildVehicles'
 import { loadCamaroGlb } from './loadCamaroGlb'
+import { loadFittedGlb } from './loadFittedGlb'
+import { loadTextureAsset } from './loadTextureAsset'
+import { LANE_FAR_Z, LANE_NEAR_Z } from './passLayout'
+import { sponsors } from '../../data/sponsors'
 import type { PassOpponentId, PassQuality } from './types'
 
 type PlayCanvasNamespace = typeof import('playcanvas')
-type TreeMode = 'off' | 'stage' | 'amber' | 'green'
-
-/** Near lane (+Z) faces the chase cam; far lane is the rival. */
-const LANE_NEAR_Z = 2.2
-const LANE_FAR_Z = -2.2
 
 export type PassScene = {
   sceneRoot: Entity
@@ -41,13 +40,58 @@ export async function buildPassScene(
   const sceneRoot = new pc.Entity('pass-scene')
   app.root.addChild(sceneRoot)
 
-  app.scene.ambientLight = new pc.Color(0.28, 0.32, 0.38)
+  // Bright daylight: high sun, cool fill, pale horizon haze — NHRA daytime strip.
+  app.scene.ambientLight = new pc.Color(0.5, 0.52, 0.56)
   app.scene.fog.type = pc.FOG_LINEAR
-  app.scene.fog.color = new pc.Color(0.55, 0.66, 0.78)
-  app.scene.fog.start = quality === 'high' ? 42 : 28
-  app.scene.fog.end = quality === 'high' ? 155 : 120
+  app.scene.fog.color = new pc.Color(0.74, 0.8, 0.88)
+  app.scene.fog.start = quality === 'high' ? 62 : 40
+  app.scene.fog.end = quality === 'high' ? 190 : 140
 
-  const environment = buildPassEnvironment(pc, sceneRoot, quality)
+  // Pre-fetch sponsor logos for wall boards. Missing textures fall back to tone.
+  const sponsorTextures = await Promise.all(
+    sponsors.map(async (sponsor) => {
+      try {
+        const asset = await loadTextureAsset(app, pc, sponsor.logo, `sponsor-${sponsor.id}`)
+        return { sponsorId: sponsor.id, asset }
+      } catch (error) {
+        console.warn(`[pass] Sponsor logo ${sponsor.id} unavailable`, error)
+        return { sponsorId: sponsor.id, asset: null as Asset | null }
+      }
+    }),
+  )
+
+  let asphaltRough: Texture | null = null
+  try {
+    const roughAsset = await loadTextureAsset(
+      app,
+      pc,
+      '/models/pass/asphalt-rough.jpg',
+      'asphalt-rough',
+    )
+    asphaltRough = (roughAsset.resource as Texture | undefined) ?? null
+  } catch (error) {
+    console.warn('[pass] Asphalt roughness unavailable', error)
+  }
+
+  let christmasTreeMesh: Entity | null = null
+  try {
+    christmasTreeMesh = await loadFittedGlb({
+      app,
+      pc,
+      quality,
+      url: '/models/dragster_race_christmas_tree.glb',
+      name: 'christmas-tree-glb',
+      target: { kind: 'height', meters: 5.8 },
+      groundClearance: 0,
+    })
+  } catch (error) {
+    console.warn('[pass] Christmas tree GLB unavailable — using primitive tree', error)
+  }
+
+  const environment = buildPassEnvironment(pc, sceneRoot, quality, sponsorTextures, {
+    asphaltRough,
+    christmasTreeMesh,
+  })
   const vehicles = buildPassVehicles(pc, quality)
 
   let camaro = vehicles.racers.camaro
@@ -75,6 +119,46 @@ export async function buildPassScene(
     camaro,
     f1: vehicles.racers.f1,
     jet: vehicles.racers.jet,
+  }
+
+  // Sketchfab F2004 includes a 22 m studio cage — strip it, then fit the car.
+  try {
+    const f1Glb = await loadFittedGlb({
+      app,
+      pc,
+      quality,
+      url: '/models/2004_ferrari_f2004.glb',
+      name: 'f1-glb',
+      target: { kind: 'length', meters: 4.55 },
+      groundClearance: 0.03,
+      stripLargerThan: 7,
+      stripYSpread: 3.2,
+      maxFittedHeight: 2.4,
+      maxFittedExtent: 6.5,
+    })
+    racers.f1.destroy()
+    racers.f1 = f1Glb
+  } catch (error) {
+    console.warn('[pass] F1 GLB unavailable — using primitive fallback', error)
+  }
+
+  try {
+    const jetGlb = await loadFittedGlb({
+      app,
+      pc,
+      quality,
+      url: '/models/c17_plane_game-ready.glb',
+      name: 'jet-glb',
+      target: { kind: 'length', meters: 9 },
+      groundClearance: 0.06,
+      minFitScale: 0.001,
+      maxFittedHeight: 10,
+      maxFittedExtent: 22,
+    })
+    racers.jet.destroy()
+    racers.jet = jetGlb
+  } catch (error) {
+    console.warn('[pass] C-17 GLB unavailable — using primitive jet', error)
   }
 
   const placeOnLane = (entity: Entity, x: number, z: number) => {
@@ -105,7 +189,7 @@ export async function buildPassScene(
     sceneRoot.addChild(racer)
   })
 
-  const skyClear = new pc.Color(0.48, 0.6, 0.74)
+  const skyClear = new pc.Color(0.55, 0.68, 0.82)
   const camera = new pc.Entity('pass-camera')
   camera.addComponent('camera', {
     clearColor: skyClear,
@@ -129,11 +213,13 @@ export async function buildPassScene(
 
   const high = quality === 'high'
 
+  // High daylight key from over the far grandstand so rubber and blue paint read.
+  // When the PureSky HDRI is active, IBL already lights the cars — keep the key softer.
   const keyLight = new pc.Entity('key-light')
   keyLight.addComponent('light', {
     type: 'directional',
-    color: new pc.Color(1, 0.96, 0.88),
-    intensity: high ? 1.55 : 1.35,
+    color: new pc.Color(1.0, 0.96, 0.88),
+    intensity: high ? 2.15 : 1.8,
     castShadows: true,
     shadowDistance: high ? 140 : 95,
     shadowResolution: high ? 2048 : 1024,
@@ -141,28 +227,38 @@ export async function buildPassScene(
     normalOffsetBias: 0.04,
     shadowType: pc.SHADOW_PCF3_32F,
   })
-  keyLight.setEulerAngles(48, 38, 0)
+  keyLight.setEulerAngles(42, 28, 0)
   sceneRoot.addChild(keyLight)
 
   const fillLight = new pc.Entity('fill-light')
   fillLight.addComponent('light', {
     type: 'directional',
-    color: new pc.Color(0.62, 0.74, 0.92),
-    intensity: high ? 0.62 : 0.5,
+    color: new pc.Color(0.52, 0.64, 0.86),
+    intensity: high ? 0.72 : 0.58,
     castShadows: false,
   })
-  fillLight.setEulerAngles(28, -145, 0)
+  fillLight.setEulerAngles(32, -130, 0)
   sceneRoot.addChild(fillLight)
+
+  const groundBounce = new pc.Entity('ground-bounce')
+  groundBounce.addComponent('light', {
+    type: 'directional',
+    color: new pc.Color(0.55, 0.54, 0.5),
+    intensity: high ? 0.3 : 0.24,
+    castShadows: false,
+  })
+  groundBounce.setEulerAngles(-48, 8, 0)
+  sceneRoot.addChild(groundBounce)
 
   if (high) {
     const rimLight = new pc.Entity('rim-light')
     rimLight.addComponent('light', {
       type: 'directional',
-      color: new pc.Color(0.45, 0.55, 0.75),
-      intensity: 0.35,
+      color: new pc.Color(0.72, 0.82, 1.0),
+      intensity: 0.48,
       castShadows: false,
     })
-    rimLight.setEulerAngles(12, -95, 0)
+    rimLight.setEulerAngles(8, -40, 0)
     sceneRoot.addChild(rimLight)
   }
 

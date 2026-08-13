@@ -173,12 +173,31 @@ export function buildTrackMarkers(opts: TrackMarkersOptions): void {
     }),
   )
 
+  const gantryLight = createMaterial(pc, {
+    diffuse: [0.85, 0.88, 0.92],
+    emissive: [0.7, 0.78, 0.95],
+    emissiveIntensity: 0.55,
+    metalness: 0.08,
+    gloss: 0.4,
+  })
+  ;([-trackWidth * 0.28, 0, trackWidth * 0.28] as number[]).forEach((z, i) => {
+    gantry.addChild(
+      createPrimitive(pc, {
+        name: `gantry-light-${i}`,
+        type: 'box',
+        position: [0.28, 8.05, z],
+        scale: [0.18, 0.1, 0.55],
+        material: gantryLight,
+        castShadows: false,
+        receiveShadows: false,
+      }),
+    )
+  })
+
   sceneRoot.addChild(gantry)
 
-  // Distance strip painted under the finish gantry (just past 1320') so the
-  // last few metres feel like actual dragstrip pavement, not empty tarmac.
   const trapMat = createMaterial(pc, {
-    diffuse: [0.86, 0.86, 0.9],
+    diffuse: [0.82, 0.83, 0.86],
     metalness: 0.02,
     gloss: 0.14,
   })
@@ -187,21 +206,7 @@ export function buildTrackMarkers(opts: TrackMarkersOptions): void {
       name: 'finish-stripe',
       type: 'box',
       position: [finishX, 0.021, 0],
-      scale: [0.35, 0.005, trackWidth + 0.6],
-      material: trapMat,
-      castShadows: false,
-      receiveShadows: false,
-    }),
-  )
-
-  const shutdownStart = finishX + worldAt(20)
-  const shutdownLength = Math.max(20, trackLength - finishX)
-  sceneRoot.addChild(
-    createPrimitive(pc, {
-      name: 'shutdown-stripe',
-      type: 'box',
-      position: [shutdownStart + shutdownLength / 2, 0.02, 0],
-      scale: [shutdownLength, 0.004, trackWidth + 0.2],
+      scale: [0.28, 0.005, trackWidth + 0.6],
       material: trapMat,
       castShadows: false,
       receiveShadows: false,

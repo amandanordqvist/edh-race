@@ -49,6 +49,12 @@ export async function createPassApp(
   app.setCanvasResolution(pc.RESOLUTION_AUTO)
   resize()
   window.addEventListener('resize', resize)
+  document.addEventListener('fullscreenchange', resize)
+
+  const parent = canvas.parentElement
+  const observer = parent ? new ResizeObserver(() => resize()) : null
+  observer?.observe(parent)
+
   app.start()
 
   return {
@@ -56,6 +62,8 @@ export async function createPassApp(
     pc,
     destroy: () => {
       window.removeEventListener('resize', resize)
+      document.removeEventListener('fullscreenchange', resize)
+      observer?.disconnect()
       app.destroy()
     },
   }

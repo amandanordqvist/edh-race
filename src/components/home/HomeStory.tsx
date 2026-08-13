@@ -2,7 +2,7 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useRef, useState } from 'react'
-import { type JourneyMedia, timeline } from '../../data/timeline'
+import { entryById, type JourneyMedia } from '../../data/timeline'
 import { useLocale, useT } from '../../i18n'
 import { localePath } from '../../lib/paths'
 import { Button } from '../ui/Button'
@@ -29,9 +29,7 @@ export function HomeStory() {
   const trackRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
 
-  const beats = TEASER_IDS.map((id) => timeline.find((entry) => entry.id === id)).filter(
-    (entry): entry is NonNullable<typeof entry> => Boolean(entry),
-  )
+  const beats = TEASER_IDS.map((id) => entryById(id))
 
   useGSAP(
     () => {

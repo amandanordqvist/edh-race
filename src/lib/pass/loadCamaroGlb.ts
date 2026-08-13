@@ -1,7 +1,7 @@
 import type { Application, ContainerResource, Entity, StandardMaterial } from 'playcanvas'
 
 import type { PassQuality } from './types'
-import { forEachEntity } from './camaroRig'
+import { collectModelBounds, forEachEntity } from './camaroRig'
 import { loadContainerAsset } from './loadGlbAsset'
 import {
   createMaterial,
@@ -33,51 +33,6 @@ export type LoadedCamaro = {
   hasTextures: boolean
 }
 
-type ModelBounds = {
-  min: [number, number, number]
-  max: [number, number, number]
-}
-
-function collectModelBounds(root: Entity): ModelBounds | null {
-  let minX = Infinity
-  let minY = Infinity
-  let minZ = Infinity
-  let maxX = -Infinity
-  let maxY = -Infinity
-  let maxZ = -Infinity
-  let found = false
-
-  forEachEntity(root, (entity) => {
-    const render = entity.render
-    if (!render) return
-
-    render.meshInstances.forEach((instance) => {
-      const aabb = instance.aabb
-      const cx = aabb.center.x
-      const cy = aabb.center.y
-      const cz = aabb.center.z
-      const hx = aabb.halfExtents.x
-      const hy = aabb.halfExtents.y
-      const hz = aabb.halfExtents.z
-
-      minX = Math.min(minX, cx - hx)
-      minY = Math.min(minY, cy - hy)
-      minZ = Math.min(minZ, cz - hz)
-      maxX = Math.max(maxX, cx + hx)
-      maxY = Math.max(maxY, cy + hy)
-      maxZ = Math.max(maxZ, cz + hz)
-      found = true
-    })
-  })
-
-  if (!found) return null
-
-  return {
-    min: [minX, minY, minZ],
-    max: [maxX, maxY, maxZ],
-  }
-}
-
 function prepareCamaroMaterials(
   root: Entity,
   pc: PlayCanvasNamespace,
@@ -101,10 +56,9 @@ function prepareCamaroMaterials(
 
       if (textured) {
         hasTextures = true
-        // Gloss/metal lift so the paint reads as clearcoated in daylight.
         source.useMetalness = true
-        if (source.metalness < 0.35) source.metalness = 0.55
-        if (source.gloss < 0.55) source.gloss = 0.72
+        source.emissive.set(0.16, 0.16, 0.18)
+        source.emissiveIntensity = 0.22
         source.update()
         if (!bodyMaterial) bodyMaterial = source
       } else if (materialName.includes('bodywork') || !bodyMaterial) {
@@ -112,8 +66,8 @@ function prepareCamaroMaterials(
           const tinted = source.clone()
           tinted.name = 'edh-bodywork'
           tinted.diffuse.set(28 / 255, 58 / 255, 128 / 255)
-          tinted.emissive.set(0.02, 0.04, 0.08)
-          tinted.emissiveIntensity = quality === 'high' ? 0.18 : 0.1
+          tinted.emissive.set(0.06, 0.08, 0.14)
+          tinted.emissiveIntensity = quality === 'high' ? 0.28 : 0.16
           tinted.useMetalness = true
           tinted.metalness = 0.62
           tinted.gloss = 0.78
@@ -173,8 +127,8 @@ function prepareCamaroMaterials(
   return {
     bodyMaterial: createMaterial(pc, {
       diffuse: [28 / 255, 58 / 255, 128 / 255],
-      emissive: [0.02, 0.04, 0.08],
-      emissiveIntensity: quality === 'high' ? 0.18 : 0.1,
+      emissive: [0.06, 0.08, 0.14],
+      emissiveIntensity: quality === 'high' ? 0.28 : 0.16,
       metalness: 0.62,
       gloss: 0.78,
     }),

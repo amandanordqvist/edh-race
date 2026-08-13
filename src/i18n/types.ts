@@ -1,4 +1,4 @@
-import type { TimelineId } from '../data/timeline'
+import type { TimelineBookendId, TimelineId } from '../data/timeline'
 
 export type Locale = 'sv' | 'en'
 
@@ -58,10 +58,16 @@ export type Dictionary = {
       base: { code: string; value: string; unit: string; label: string }
     }
     driverLabel: string
+    driverEyebrowMeta: string
     driverTitle: string
+    driverTagline: string
     driverBody: string
     driverQuote: string
     driverCta: string
+    driverCtaSecondary: string
+    driverCredits: string
+    driverCardMeta: string
+    driverCardTime: string
     driverAlt: string
     machineLabel: string
     machineTitle: string
@@ -112,6 +118,26 @@ export type Dictionary = {
     openTimeslip: string
     closeTimeslip: string
     readTimeslip: string
+    gapAhead: string
+    gapBehind: string
+    reactionHint: string
+    launchWait: string
+    launchNow: string
+    launchKeyHint: string
+    yourReaction: string
+    reactionFaster: string
+    cockpitView: string
+    expandTrack: string
+    collapseTrack: string
+    scrubLabel: string
+    chuteStatus: string
+    scrubChute: string
+    flyby: {
+      highway: string
+      autobahn: string
+      tgv: string
+      hypercar: string
+    }
     status: {
       idle: string
       staging: string
@@ -163,6 +189,7 @@ export type Dictionary = {
       eighth: string
       thousand: string
       quarter: string
+      chutes: string
     }
     racingHud: {
       reaction: string
@@ -170,6 +197,7 @@ export type Dictionary = {
       speedUnit: string
       rpmUnit: string
       tireLabel: string
+      chutes: string
     }
     timeslipSplits: {
       reaction: { label: string; meaning: string }
@@ -191,10 +219,12 @@ export type Dictionary = {
     philosophy: string
     quote2: string
     quote2Attr: string
-    heroAlt: string
-    /** aria-label for the sticky chapter navigator */
+    /** aria-label for the running timeslip spine. */
     spineLabel: string
     crossroadsLabel: string
+    crossroadsBody: string
+    crossroadsCaption: string
+    finalRowCaption: string
     chapters: {
       roots: string
       build: string
@@ -205,6 +235,30 @@ export type Dictionary = {
     timeline: Record<TimelineId, string>
     /** Pulled-out headline figure; localised because decimal separators differ. */
     marks: Partial<Record<TimelineId, string>>
+    timeslip: {
+      /** Eyebrow at the top of the sticky spine. */
+      eyebrow: string
+      event: string
+      distance: string
+      /** Column names for the running rows. */
+      colYear: string
+      colDistance: string
+      colEt: string
+      colOutcome: string
+      /** Screen-reader only labels for outcome badges. */
+      outcomeLabels: {
+        quiet: string
+        race: string
+        record: string
+        championship: string
+        setback: string
+        rebuild: string
+      }
+    }
+    bookends: Record<
+      TimelineBookendId,
+      { label: string; caption: string }
+    >
   }
   machine: {
     title: string

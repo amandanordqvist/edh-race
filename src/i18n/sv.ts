@@ -56,11 +56,17 @@ export const sv: Dictionary = {
       base: { code: 'CLASS', value: 'TDS', unit: '', label: 'Top Doorslammer' },
     },
     driverLabel: 'Föraren',
+    driverEyebrowMeta: 'Sedan 1998',
     driverTitle: 'Anders Edh',
+    driverTagline: 'Byggare  ·  Förare  ·  Hudiksvallare',
     driverBody:
-      'Anders Edh bygger, finjusterar och kör från samma garage i Hudiksvall. Tiderna får tala.',
-    driverQuote: '',
+      'Anders bygger, finjusterar och kör från samma garage i Hudiksvall. Tiderna får tala.',
+    driverQuote: 'Jag visar hellre resultatet än snackar om mig själv.',
     driverCta: 'Hela resan',
+    driverCtaSecondary: 'Se maskinen',
+    driverCredits: 'Hudiksvall, SE  ·  Top Doorslammer  ·  Byggd i egen verkstad',
+    driverCardMeta: 'Santa Pod · 2024',
+    driverCardTime: '5,74 s · 415 km/h',
     driverAlt: 'Anders Edh stående i racingoverall',
     machineLabel: 'Bilen',
     machineTitle: 'The Beast',
@@ -109,12 +115,11 @@ export const sv: Dictionary = {
   },
   pass: {
     title: 'Passet',
-    lead:
-      'Välj motståndare. Stagea bilen. Vänta på grönt. Se 5.74 sekunder i en tvåfils jämförelse över 402 meter.',
+    lead: 'Santa Pod, kvarts mile — 5,74 s mot Formel 1 eller ett passagerarflyg.',
     stage: 'Stagea bilen',
     again: 'Kör igen',
-    mute: 'Stäng av ljud',
-    unmute: 'Slå på ljud',
+    mute: 'Ljud av',
+    unmute: 'Ljud på',
     followCar: 'Följ bilen',
     zoomOut: 'Zooma ut',
     loading: 'Laddar Pass Arena…',
@@ -126,6 +131,26 @@ export const sv: Dictionary = {
     openTimeslip: 'Öppna tidkortet',
     closeTimeslip: 'Stäng tidkortet',
     readTimeslip: 'Läs tidkortet — förstå siffrorna',
+    gapAhead: 'före',
+    gapBehind: 'efter',
+    reactionHint: 'Mellanslag på grönt mäter din reaktion.',
+    launchWait: 'Vänta på grönt',
+    launchNow: 'LAUNCH!',
+    launchKeyHint: 'Mellanslag',
+    yourReaction: 'Din RT',
+    reactionFaster: 'Snabbare än Anders — foul om skarpt',
+    cockpitView: 'Kokpit',
+    expandTrack: 'Helbild',
+    collapseTrack: 'Stäng',
+    scrubLabel: 'Skrubba passet',
+    chuteStatus: 'Chutes ute',
+    scrubChute: 'Chutes',
+    flyby: {
+      highway: 'Förbi motorvägen · 120 km/h',
+      autobahn: 'Förbi Autobahn-tempot · 200 km/h',
+      tgv: 'Förbi TGV kryssfart · 300 km/h',
+      hypercar: 'Förbi Bugatti Chiron · 400 km/h',
+    },
     pickOpponent: 'Racea mot',
     status: {
       idle: 'Välj motståndare — snurra bilen — stagea',
@@ -184,13 +209,15 @@ export const sv: Dictionary = {
       eighth: '660′ · 201 m · EDH:s vanliga distans · 326 km/h',
       thousand: '1000′ · ~305 m · sista accelerationen mot kvarts-mile-mål',
       quarter: '1320′ · 402 m · Santa Pod-tempo · 415 km/h',
+      chutes: 'Chutes — nu ska bilen stanna',
     },
     racingHud: {
       reaction: 'Reaktionstid',
-      elapsed: 'Elapsed time',
+      elapsed: 'Tid',
       speedUnit: 'km/h',
       rpmUnit: 'RPM',
       tireLabel: 'Slick',
+      chutes: 'Chutes',
     },
     timeslipSplits: {
       reaction: {
@@ -225,9 +252,9 @@ export const sv: Dictionary = {
     },
   },
   journey: {
-    title: 'Från ett spontanköp till ett rekord',
+    title: 'En löpande tidslapp',
     intro:
-      'Från vibrationen i ett mini-mopedstyre i Hudiksvall till startlinjen i Europa. Fortfarande samma garage. Fortfarande samma nyfikenhet.',
+      'Ett garage i Hudiksvall. En Camaro. Ett tal som fortsätter falla. Hela karriären ryms i tiderna över mållinjen — läs raderna medan de fylls i.',
     beatChildhood: 'Början',
     beatPhilosophy: 'Filosofin',
     quote1:
@@ -238,9 +265,12 @@ export const sv: Dictionary = {
     quote2:
       'Vem som helst kan ta reda på informationen. Svårigheten är att veta vad man ska ta reda på.',
     quote2Attr: 'Anders Edh',
-    heroAlt: 'Anders Edh i depån vid sin blå Camaro',
-    spineLabel: 'Kapitel i resan',
-    crossroadsLabel: 'Vägskälet',
+    spineLabel: 'Tidslapp: karriärens rader',
+    crossroadsLabel: 'Vägskälet · 2016',
+    crossroadsBody:
+      'Snabbaste året hittills, och ändå fylldes inga fält i. Bilen stod i garaget. Ekonomin räknades om. Ingen ny tid registrerades. Anders övervägde att sälja allt.',
+    crossroadsCaption: 'Tom tidslapp. Inget uppmätt.',
+    finalRowCaption: 'Fortsättningen skrivs ute på banan.',
     chapters: {
       roots: 'Rötter',
       build: 'Bygget',
@@ -249,46 +279,78 @@ export const sv: Dictionary = {
     },
     timeline: {
       '1970s-first-camaro':
-        'Köper sin första Camaro (1971) för 14 800 kr som 16-åring.',
+        'Sextonåringen köper sin första Camaro (årsmodell 1971) för 14 800 kr. Inga tider mäts — bara känslan av att äga en amerikansk bil.',
       '2004-ebay':
-        'Spontanköp av en 1970 Camaro från New Jersey på eBay på nyårsafton.',
+        'Nyårsafton. Ett spontanköp på eBay. En 1970 Camaro rullar iland från New Jersey.',
       '2005-license':
-        'Introduceras till dragracing av Kjell-Åke Kring (Norrbo) och tar licens i Söderhamn. Mekanikern Martin Ekstedt dyker upp i garaget.',
-      '2006-10s': 'Kör 10,0 sekunder på 402 meter (kvartsmilen).',
-      '2010-nitrous': 'Når 7,8 sekunder på 402 meter med en lustgasmotor.',
+        'Kjell-Åke Kring drar in Anders i dragracingen. Licens i Söderhamn. Mekanikern Martin Ekstedt dyker upp i garaget.',
+      '2006-10s':
+        'Första säsongen med tidsupptagning. Kvartsmilen — 402 meter — går på jämnt tio sekunder.',
+      '2010-nitrous':
+        'Lustgas i motorn. Kvartsmilen kortas till 7,80 s. Plåtbilen börjar bli seriös.',
       '2013-chassis':
-        'River bilen helt och bygger rörchassi från grunden. Gatubilen är nu en ren tävlingsmaskin.',
-      '2016-680': 'Kör 6,80 sekunder på 402 meter.',
-      '2016-crossroads': 'Står vid ett vägskäl och överväger att sälja allt.',
+        'Bilen tas isär helt. Rörchassi svetsas från grunden. Gatubilen upphör att existera — en tävlingsmaskin ersätter den.',
+      '2016-680':
+        'Snabbaste säsongen med plåtkarossen. 6,80 s över 402 m. Samtidigt sätter kostnaderna hårda gränser.',
+      '2016-crossroads': 'Tom rad. Ingen tid mätt.',
       '2016-2017-blower':
-        'Byter till kompressormotor (Chevrolet). En ny riktning.',
+        'Ny riktning. Skruvkompressor på Chevrolet-motorn ersätter lustgasen. Ombygget tar en hel vinter.',
       '2017-edrs6':
-        'Kör 4,15 sekunder på 201 meter nästan direkt. Slutar på 6:e plats i European Drag Racing Series.',
+        'Ny distans — 201 m i European Drag Racing Series. 4,15 s direkt ur boxen. Sjätte plats totalt.',
       '2018-runnerup':
-        'Runner Up (2:a) i nordeuropeiska Summit Racing EDRS Series i Top Doorslammer.',
+        'Andraplats i Summit Racing EDRS Series Top Doorslammer. Serien läses hela vägen ut.',
       '2019-champion':
-        'Vinner Top Doorslammer-serien i Norden och tar 1:a plats i European Drag Racing Series (EDRS).',
+        'Nordisk mästare i Top Doorslammer. Förstaplats i EDRS.',
       '2021-record':
-        'Sista säsongen med plåtbilen. 3,89 sekunder på 201 meter: då det snabbaste plåtbilsrekordet i Europa.',
+        'Sista säsongen med plåtbilen. 3,89 s över 201 m — då det snabbaste plåtbilsrekordet i Europa.',
       '2023-beast':
-        'Bygger en ny Camaro med kolfiberkaross, BAE 521-motor och MB-chassi.',
+        'The Beast tar form. Kolfiberkaross, BAE 521-motor, MB-chassi. Bilen finns, men tiden har inte hunnit mätas.',
       '2024-santapod':
-        'Santa Pod, England. Personbästa 5,74 sekunder @ 415 km/h.',
+        'Santa Pod, England. 5,7451 s @ 415 km/h. Karriärens rekordrad.',
       '2025-podium':
-        'Andreas Gröning kommer in i teamet. 3:e plats totalt i Top Doorslammer European Drag Racing Series.',
+        'Andreas Gröning ansluter. Tredje plats totalt i EDRS Top Doorslammer.',
       '2026-season':
-        'Vinst i första tävlingen på Santa Pod. 3,87 sekunder på asfaltsbanan i Hudiksvall efter arbete med fyrlänk och viktbalans.',
+        'Vinst i första starten på Santa Pod. 3,87 s på asfaltsbanan i Hudiksvall efter finjustering av fyrlänk och viktbalans.',
     },
     marks: {
-      '2006-10s': '10,0 s',
-      '2010-nitrous': '7,8 s',
+      '2006-10s': '10,00 s',
+      '2010-nitrous': '7,80 s',
       '2016-680': '6,80 s',
       '2017-edrs6': '4,15 s',
       '2018-runnerup': '2:a EDRS',
       '2019-champion': '1:a EDRS',
       '2021-record': '3,89 s',
-      '2024-santapod': '5,74 s',
+      '2024-santapod': '5,7451 s',
       '2026-season': '3,87 s',
+    },
+    timeslip: {
+      eyebrow: 'EDH Racing · Tidslapp',
+      event: 'Karriär · 1970s–2026',
+      distance: 'Läs uppifrån och ned',
+      colYear: 'År',
+      colDistance: 'Distans',
+      colEt: 'ET',
+      colOutcome: 'Utfall',
+      outcomeLabels: {
+        quiet: 'Tyst år',
+        race: 'Race',
+        record: 'Rekord',
+        championship: 'Mästerskap',
+        setback: 'Motgång',
+        rebuild: 'Ombygge',
+      },
+    },
+    bookends: {
+      'bookend-2011': {
+        label: '2011–2012',
+        caption:
+          'Två vintrar utan tävling. Rörchassit ritas om, plåten skalas av, ingenting mäts.',
+      },
+      'bookend-2022': {
+        label: '2022',
+        caption:
+          'The Beast växer fram i verkstan. Gamla bilen står stilla; nya bilen kör inte än.',
+      },
     },
   },
   machine: {

@@ -4,6 +4,9 @@ import type { PassCameraView, PassPhase } from './types'
 
 const CAMERA_LERP = 7.5
 const ZOOM_LERP = 5.5
+/** Deepest slow-mo timeScale from raceController — kept in sync so the hero
+ * shot commits fully at peak slow-mo. */
+const SLOW_MO_MIN_SCALE = 0.32
 
 /** Idle inspect orbit — full car readable before stage. */
 const INSPECT_RADIUS_DEFAULT = 10.2
@@ -60,25 +63,39 @@ function inspectPose(
   }
 }
 
-/** Tree insert — low 3/4 rear at the Christmas tree / burnout. */
+/** Tree insert — low, almost dead-behind, so the tree sits between the lanes. */
 function treeInsertPose(heroX: number, heroZ: number): Pose {
   return {
-    position: [heroX - 5.4, 1.55, heroZ + 7.2],
-    look: [heroX + 1.2, 0.65, heroZ - 0.15],
-    fov: 32,
+    position: [heroX - 6.6, 1.18, heroZ + 0.85],
+    look: [heroX + 9, 0.68, heroZ * 0.35],
+    fov: 36,
   }
 }
 
-/** Chase camera — tight 3/4 rear, lower to the asphalt. */
+/** Chase camera — low and dead-behind, looking straight down the strip. */
 function followPose(heroX: number, heroZ: number, speed01: number): Pose {
   return {
     position: [
-      heroX - 5.8 - speed01 * 1.4,
-      1.55 + speed01 * 0.35,
-      heroZ + 5.8 + speed01 * 0.7,
+      heroX - 8.2 - speed01 * 1.2,
+      1.28 + speed01 * 0.15,
+      heroZ,
     ],
-    look: [heroX + 4.2 + speed01 * 4.5, 0.85 + speed01 * 0.1, heroZ],
+    look: [heroX + 18 + speed01 * 4, 0.72, heroZ],
     fov: 36 + speed01 * 6,
+  }
+}
+
+/** Chute beat — pulled back and up so both canopies read over the shutdown. */
+function chutePose(heroX: number, heroZ: number, settle01: number): Pose {
+  const settle = Math.min(1, Math.max(0, settle01))
+  return {
+    position: [
+      heroX - 12.2 - settle * 1.6,
+      2.55 + settle * 1.15,
+      heroZ + 0.12 + settle * 1.55,
+    ],
+    look: [heroX + 5.5 - settle * 5.4, 1.15, heroZ],
+    fov: 40 + settle * 3,
   }
 }
 
@@ -94,9 +111,34 @@ function sideRailPose(heroX: number, trackLength: number): Pose {
 
 function finishWidePose(trackLength: number): Pose {
   return {
-    position: [trackLength * 0.58, 22, 34],
-    look: [trackLength * 0.88, 1, 0],
-    fov: 48,
+    position: [trackLength + 6, 14, 26],
+    look: [trackLength + 24, 0.5, 0],
+    fov: 46,
+  }
+}
+
+/**
+ * First-person cockpit shot — driver's eyeline just above the windshield,
+ * looking straight down the strip. Wide FOV plus continuous chassis shake
+ * gives visceral speed even though the geometry itself hasn't changed.
+ */
+function cockpitPose(heroX: number, heroZ: number, speed01: number): Pose {
+  return {
+    position: [heroX + 1.35, 1.25 + speed01 * 0.05, heroZ],
+    look: [heroX + 32, 1.05 + speed01 * 0.1, heroZ],
+    fov: 66 + speed01 * 6,
+  }
+}
+
+/**
+ * Slow-mo finish: still dead-behind, just closer and lower so the car
+ * stays parallel to the strip instead of a side-quarter that reads as yaw.
+ */
+function heroFinishPose(heroX: number, heroZ: number): Pose {
+  return {
+    position: [heroX - 5.6, 1.08, heroZ],
+    look: [heroX + 14, 0.68, heroZ],
+    fov: 34,
   }
 }
 
@@ -144,6 +186,10 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   let raceSpeed = 0
   let heroX = camaro.getLocalPosition().x
   let heroZ = camaro.getLocalPosition().z
+  /** 0 = normal race camera, 1 = fully committed to the hero finish shot. */
+  let slowMoAmount = 0
+  /** 0 = chase, 1 = chute-beat camera over the shutdown. */
+  let chuteAmount = 0
 
   /** Idle inspect orbit state */
   let inspectYaw = INSPECT_START_YAW
@@ -158,6 +204,8 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   let view: PassCameraView = 'follow'
   let launchShake = 0
   let shakePhase = 0
+  /** Cockpit-mode shake follows raceSpeed and never fully fades until race ends. */
+  let cockpitShakePhase = 0
 
   const initialInspect = inspectPose(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius)
   let currentPos: [number, number, number] = [...initialInspect.position]
@@ -165,7 +213,9 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   let currentFov = initialInspect.fov
 
   const emitView = () => {
-    const next: PassCameraView = zoomTarget >= 0.5 ? 'wide' : 'follow'
+    // 'cockpit' is explicitly set — don't overwrite it via scroll zoom.
+    const next: PassCameraView =
+      view === 'cockpit' ? 'cockpit' : zoomTarget >= 0.5 ? 'wide' : 'follow'
     if (next === view) return
     view = next
     onViewChange?.(view)
@@ -197,16 +247,27 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
         return mixPose(insert, follow, 0.4)
       }
 
-      case 'racing': {
-        const follow = followPose(heroX, heroZ, raceSpeed)
-        const wide = sideRailPose(heroX, trackLength)
-        return mixPose(follow, wide, zoomCurrent)
-      }
-
+      case 'racing':
       case 'finished': {
-        const follow = followPose(heroX, heroZ, 0)
-        const wide = finishWidePose(trackLength)
-        return mixPose(follow, wide, zoomCurrent)
+        if (view === 'cockpit') {
+          const pov = cockpitPose(heroX, heroZ, raceSpeed)
+          if (currentPhase === 'racing' && slowMoAmount > 0) {
+            return mixPose(pov, heroFinishPose(heroX, heroZ), slowMoAmount)
+          }
+          return pov
+        }
+        const follow = followPose(heroX, heroZ, raceSpeed)
+        const wide =
+          currentPhase === 'finished' && chuteAmount > 0.45
+            ? finishWidePose(trackLength)
+            : sideRailPose(heroX, trackLength)
+        const race = mixPose(follow, wide, zoomCurrent)
+        const withSlow =
+          currentPhase === 'racing' && slowMoAmount > 0
+            ? mixPose(race, heroFinishPose(heroX, heroZ), slowMoAmount)
+            : race
+        const settle = chuteAmount * (1 - raceSpeed)
+        return mixPose(withSlow, chutePose(heroX, heroZ, settle), chuteAmount)
       }
 
       default: {
@@ -267,6 +328,17 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
       camera.setLocalPosition(currentPos[0] + sx, currentPos[1] + sy, currentPos[2] + sz)
     }
 
+    // Cockpit vibration — locked to raceSpeed so the whole cabin trembles
+    // through the strip. Skipped in slow-mo so the finish moment reads clean.
+    if (view === 'cockpit' && currentPhase === 'racing' && slowMoAmount < 0.15) {
+      cockpitShakePhase += dt * (52 + raceSpeed * 34)
+      const amp = 0.045 + raceSpeed * 0.18
+      const sx = Math.sin(cockpitShakePhase * 2.7) * amp * 0.55
+      const sy = Math.sin(cockpitShakePhase * 3.3 + 0.9) * amp
+      const sz = Math.cos(cockpitShakePhase * 2.1) * amp * 0.35
+      camera.setLocalPosition(currentPos[0] + sx, currentPos[1] + sy, currentPos[2] + sz)
+    }
+
     cameraComponent.fov = currentFov
   }
 
@@ -304,8 +376,15 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   }
 
   const setView = (next: PassCameraView) => {
+    if (next === 'cockpit') {
+      view = 'cockpit'
+      zoomTarget = 0
+      onViewChange?.(view)
+      return
+    }
+    view = next
     zoomTarget = next === 'wide' ? 1 : 0
-    emitView()
+    onViewChange?.(view)
   }
 
   const getView = () => view
@@ -337,8 +416,14 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
       onViewChange?.(view)
     }
 
+    if (phase === 'idle' || phase === 'staging' || phase === 'amber' || phase === 'green') {
+      slowMoAmount = 0
+      chuteAmount = 0
+    }
+
     if (phase === 'racing') {
-      if (zoomTarget <= 0.5) {
+      // Preserve an explicit cockpit selection made during idle/staging.
+      if (view !== 'cockpit' && zoomTarget <= 0.5) {
         zoomTarget = 0
         view = 'follow'
         onViewChange?.(view)
@@ -356,12 +441,21 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     }
   }
 
-  const onRaceProgress = (progress01: number, speed01 = 0, nextHeroX?: number) => {
+  const onRaceProgress = (
+    progress01: number,
+    speed01 = 0,
+    nextHeroX?: number,
+    timeScale = 1,
+    chuteDeploy01 = 0,
+  ) => {
     void progress01
     raceSpeed = Math.min(1, Math.max(0, speed01))
     if (typeof nextHeroX === 'number') {
       heroX = nextHeroX
     }
+    const clamped = Math.min(1, Math.max(SLOW_MO_MIN_SCALE, timeScale))
+    slowMoAmount = (1 - clamped) / (1 - SLOW_MO_MIN_SCALE)
+    chuteAmount = Math.min(1, Math.max(0, chuteDeploy01))
   }
 
   const reset = () => {
@@ -379,6 +473,8 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     view = 'follow'
     launchShake = 0
     shakePhase = 0
+    slowMoAmount = 0
+    chuteAmount = 0
     onViewChange?.(view)
     applyPoseImmediate(inspectPose(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius))
   }

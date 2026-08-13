@@ -1,0 +1,23 @@
+/*
+ * The reel is a two-column layout: sticky timeslip on the left (a real column
+ * in the grid so `position: sticky` has a full-height context to travel
+ * within), reading flow on the right. Below 1100px the timeslip collapses to
+ * a horizontal strip pinned under the header — see JourneyTimeslip.css.
+ */
+.journey-reel__grid {
+  display: grid;
+  gap: clamp(1rem, 3vw, 2rem);
+}
+
+.journey-reel__acts {
+  min-width: 0;
+  max-width: 62rem;
+}
+
+@media (min-width: 1100px) {
+  .journey-reel__grid {
+    grid-template-columns: 18rem minmax(0, 1fr);
+    column-gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+}

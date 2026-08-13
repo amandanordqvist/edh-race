@@ -1,35 +1,15 @@
 import type { CSSProperties } from 'react'
 import type { JourneyBeatEntry, TimelineWeight } from '../../data/timeline'
 import { useT } from '../../i18n'
+import { beatDomId } from './domIds'
 import './JourneyBeat.css'
 
-function weightClass(weight: TimelineWeight): string {
-  switch (weight) {
-    case 'quiet':
-      return 'journey-beat--quiet'
-    case 'valley':
-      return 'journey-beat--valley'
-    case 'peak':
-      return 'journey-beat--peak'
-    case 'climax':
-      return 'journey-beat--climax'
-    default: {
-      const _exhaustive: never = weight
-      return _exhaustive
-    }
-  }
-}
-
-/** Display width the media can actually reach, so we never request more. */
 function mediaSizes(weight: TimelineWeight): string {
   switch (weight) {
-    case 'quiet':
-    case 'valley':
-      return '(min-width: 900px) 264px, 92vw'
-    case 'peak':
-      return '(min-width: 900px) 496px, 92vw'
-    case 'climax':
-      return '(min-width: 900px) 720px, 92vw'
+    case 'regular':
+      return '(min-width: 900px) 320px, 92vw'
+    case 'record':
+      return '(min-width: 900px) 640px, 96vw'
     default: {
       const _exhaustive: never = weight
       return _exhaustive
@@ -37,10 +17,13 @@ function mediaSizes(weight: TimelineWeight): string {
   }
 }
 
-export function beatDomId(id: string): string {
-  return `beat-${id}`
-}
-
+/**
+ * A single beat. Layout weight is either `regular` or `record` — a record
+ * beat spans the reading column with more air. The typographic weight of the
+ * year label is driven independently by `outcome` (hairline for
+ * quiet/setback/rebuild, solid for record/championship), which is the only
+ * cue for narrative temperature on the page.
+ */
 export function JourneyBeat({
   entry,
   as: Tag = 'li',
@@ -54,8 +37,10 @@ export function JourneyBeat({
   return (
     <Tag
       id={beatDomId(entry.id)}
-      className={`journey-beat ${weightClass(entry.weight)}`}
+      className={`journey-beat journey-beat--${entry.weight}`}
       data-beat=""
+      data-weight={entry.weight}
+      data-outcome={entry.outcome}
     >
       <span className="journey-beat__rule" aria-hidden="true" />
 

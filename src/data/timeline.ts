@@ -1,6 +1,25 @@
-export type TimelineWeight = 'quiet' | 'valley' | 'peak' | 'climax'
+export type TimelineWeight = 'regular' | 'record'
 
 export type TimelineChapter = 'roots' | 'build' | 'elite' | 'record'
+
+/**
+ * The narrative role of a year, independent of layout weight. Drives the
+ * hairline / regular / solid year-label rule across the page and the
+ * setback / championship / record hits in the running timeslip.
+ */
+export type TimelineOutcome =
+  | 'quiet'
+  | 'race'
+  | 'record'
+  | 'championship'
+  | 'setback'
+  | 'rebuild'
+
+/**
+ * Distances Anders raced on. 2006–2016 was quarter mile (402 m). From 2017
+ * onward the class moved to eighth mile (201 m).
+ */
+export type TimelineDistance = '201m' | '402m'
 
 export type JourneyMedia = {
   /** Largest available variant; also the fallback for browsers ignoring srcSet. */
@@ -19,6 +38,12 @@ export type TimelineEntry = {
   year: string
   chapter: TimelineChapter
   weight: TimelineWeight
+  outcome: TimelineOutcome
+  /** Present only where the year had a measured pass. */
+  distance?: TimelineDistance
+  et?: string
+  mph?: string
+  kmh?: string
   media?: JourneyMedia
 }
 
@@ -39,7 +64,8 @@ export const timeline = [
     id: '1970s-first-camaro',
     year: '1970s',
     chapter: 'roots',
-    weight: 'quiet',
+    weight: 'regular',
+    outcome: 'quiet',
     media: {
       src: '/images/journey/webp/camaro70-1600.webp',
       srcSet:
@@ -52,7 +78,8 @@ export const timeline = [
     id: '2004-ebay',
     year: '2004',
     chapter: 'roots',
-    weight: 'quiet',
+    weight: 'regular',
+    outcome: 'quiet',
     media: {
       src: '/images/journey/webp/car-2004.webp',
       width: 720,
@@ -63,7 +90,8 @@ export const timeline = [
     id: '2005-license',
     year: '2005',
     chapter: 'roots',
-    weight: 'quiet',
+    weight: 'regular',
+    outcome: 'quiet',
     media: {
       src: '/images/journey/webp/journey-2005-1.webp',
       width: 644,
@@ -74,7 +102,10 @@ export const timeline = [
     id: '2006-10s',
     year: '2006',
     chapter: 'roots',
-    weight: 'quiet',
+    weight: 'regular',
+    outcome: 'race',
+    distance: '402m',
+    et: '10.00',
     media: {
       src: '/images/journey/webp/2006-camaro.webp',
       width: 800,
@@ -85,7 +116,10 @@ export const timeline = [
     id: '2010-nitrous',
     year: '2010',
     chapter: 'roots',
-    weight: 'quiet',
+    weight: 'regular',
+    outcome: 'race',
+    distance: '402m',
+    et: '7.80',
     media: {
       src: '/images/journey/webp/2010-camaro-960.webp',
       width: 960,
@@ -96,7 +130,8 @@ export const timeline = [
     id: '2013-chassis',
     year: '2013',
     chapter: 'build',
-    weight: 'peak',
+    weight: 'regular',
+    outcome: 'rebuild',
     media: {
       src: '/images/journey/webp/2013-camaro.webp',
       width: 640,
@@ -107,7 +142,10 @@ export const timeline = [
     id: '2016-680',
     year: '2016',
     chapter: 'build',
-    weight: 'peak',
+    weight: 'regular',
+    outcome: 'race',
+    distance: '402m',
+    et: '6.80',
     media: {
       src: '/images/journey/webp/2016-camaro.webp',
       width: 640,
@@ -118,13 +156,15 @@ export const timeline = [
     id: '2016-crossroads',
     year: '2016',
     chapter: 'build',
-    weight: 'valley',
+    weight: 'regular',
+    outcome: 'setback',
   },
   {
     id: '2016-2017-blower',
     year: '2016–2017',
-    chapter: 'build',
-    weight: 'quiet',
+    chapter: 'elite',
+    weight: 'regular',
+    outcome: 'rebuild',
     media: {
       src: '/images/journey/webp/2017-camaro.webp',
       width: 640,
@@ -135,7 +175,10 @@ export const timeline = [
     id: '2017-edrs6',
     year: '2017',
     chapter: 'elite',
-    weight: 'quiet',
+    weight: 'regular',
+    outcome: 'race',
+    distance: '201m',
+    et: '4.15',
     media: {
       src: '/images/journey/webp/2017-anders.webp',
       width: 720,
@@ -146,7 +189,8 @@ export const timeline = [
     id: '2018-runnerup',
     year: '2018',
     chapter: 'elite',
-    weight: 'peak',
+    weight: 'regular',
+    outcome: 'championship',
     media: {
       src: '/images/journey/webp/2018-camaro1-1600.webp',
       srcSet:
@@ -159,7 +203,8 @@ export const timeline = [
     id: '2019-champion',
     year: '2019',
     chapter: 'elite',
-    weight: 'peak',
+    weight: 'record',
+    outcome: 'championship',
     media: {
       src: '/images/journey/webp/2019-camaro.webp',
       width: 980,
@@ -170,7 +215,10 @@ export const timeline = [
     id: '2021-record',
     year: '2021',
     chapter: 'elite',
-    weight: 'peak',
+    weight: 'record',
+    outcome: 'record',
+    distance: '201m',
+    et: '3.89',
     media: {
       src: '/images/journey/webp/2018-camaro2-1600.webp',
       srcSet:
@@ -183,7 +231,8 @@ export const timeline = [
     id: '2023-beast',
     year: '2023',
     chapter: 'record',
-    weight: 'peak',
+    weight: 'regular',
+    outcome: 'rebuild',
     media: {
       src: '/images/journey/webp/2023-camaro-1600.webp',
       srcSet:
@@ -196,7 +245,12 @@ export const timeline = [
     id: '2024-santapod',
     year: '2024',
     chapter: 'record',
-    weight: 'climax',
+    weight: 'record',
+    outcome: 'record',
+    distance: '402m',
+    et: '5.7451',
+    mph: '258',
+    kmh: '415',
     media: {
       src: '/images/journey/webp/2024-santapod4.webp',
       width: 720,
@@ -207,7 +261,8 @@ export const timeline = [
     id: '2025-podium',
     year: '2025',
     chapter: 'record',
-    weight: 'quiet',
+    weight: 'regular',
+    outcome: 'championship',
     media: {
       src: '/images/journey/webp/2024-santapod6-1200.webp',
       srcSet:
@@ -220,7 +275,10 @@ export const timeline = [
     id: '2026-season',
     year: '2026',
     chapter: 'record',
-    weight: 'peak',
+    weight: 'regular',
+    outcome: 'race',
+    distance: '201m',
+    et: '3.87',
     media: {
       src: '/images/journey/webp/2024-santapod5.webp',
       width: 720,
@@ -250,8 +308,62 @@ export function entriesForChapter(
   )
 }
 
+/**
+ * Range label for a chapter. Year strings are display text and may already be a
+ * range ('2016–2017') or non-numeric ('1970s'), so take the first year's opening
+ * token and the last year's closing token rather than joining them raw.
+ */
+export function chapterSpan(chapter: TimelineChapter): string {
+  const entries = entriesForChapter(chapter)
+  const first = entries[0]?.year.split('–').at(0) ?? ''
+  const last = entries[entries.length - 1]?.year.split('–').at(-1) ?? ''
+  return first === last ? first : `${first}–${last}`
+}
+
 export function entryById(id: TimelineId): JourneyBeatEntry {
   const entry = timeline.find((item) => item.id === id)
   if (!entry) throw new Error(`Unknown timeline id: ${id}`)
   return entry
+}
+
+/**
+ * Rows the running timeslip renders, in scroll order. Crossroads is included
+ * so the cursor pauses on it as its own blank row, and the two silent
+ * bookends sit where the calendar has gaps (2011–2012 and 2022).
+ */
+export type TimeslipRow =
+  | { kind: 'beat'; id: TimelineId; entry: JourneyBeatEntry }
+  | { kind: 'bookend'; id: TimelineBookendId; year: string }
+
+export type TimelineBookendId = 'bookend-2011' | 'bookend-2022'
+
+export const timelineBookends: readonly {
+  id: TimelineBookendId
+  year: string
+  /** Placed after this timeline id in reading order. */
+  after: TimelineId
+}[] = [
+  { id: 'bookend-2011', year: '2011–2012', after: '2010-nitrous' },
+  { id: 'bookend-2022', year: '2022', after: '2021-record' },
+]
+
+/**
+ * The full reading sequence of the page's running timeslip: every beat (including
+ * the crossroads) interleaved with the two silent bookends. Deriving this once
+ * keeps the timeslip, scroll spy and reveal effects reading the same list.
+ */
+export function timeslipRows(): readonly TimeslipRow[] {
+  const bookendsByAnchor = new Map(
+    timelineBookends.map((bookend) => [bookend.after, bookend]),
+  )
+
+  const rows: TimeslipRow[] = []
+  for (const entry of timeline) {
+    rows.push({ kind: 'beat', id: entry.id, entry })
+    const bookend = bookendsByAnchor.get(entry.id)
+    if (bookend) {
+      rows.push({ kind: 'bookend', id: bookend.id, year: bookend.year })
+    }
+  }
+  return rows
 }

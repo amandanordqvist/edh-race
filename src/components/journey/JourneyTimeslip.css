@@ -1,0 +1,256 @@
+/*
+ * The running timeslip. Sticky rail on desktop, thin strip on mobile. Every
+ * numeric cell reads with the same tabular-figures grammar as the Pass Arena
+ * timeslip in PassFallback.tsx, so the two objects rhyme without repeating.
+ */
+.journey-timeslip {
+  --journey-row-h: 2rem;
+  --journey-timeslip-max-h: calc(100vh - var(--header-height) - 3rem);
+
+  position: sticky;
+  top: calc(var(--header-height) + 1rem);
+  z-index: var(--z-sticky);
+  padding: 0.9rem 0.95rem 1rem;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  background: var(--color-almost-black);
+  max-height: var(--journey-timeslip-max-h);
+  overflow: hidden;
+  color: var(--color-almost-white);
+}
+
+.journey-timeslip__header {
+  display: grid;
+  gap: 0.15rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 0.5rem;
+}
+
+.journey-timeslip__eyebrow,
+.journey-timeslip__event,
+.journey-timeslip__distance {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.journey-timeslip__eyebrow {
+  font-weight: 700;
+  color: var(--color-primary-blue);
+}
+
+.journey-timeslip__event {
+  color: rgba(243, 245, 248, 0.55);
+}
+
+.journey-timeslip__distance {
+  color: rgba(243, 245, 248, 0.4);
+  letter-spacing: 0.1em;
+}
+
+.journey-timeslip__col-headers {
+  display: grid;
+  grid-template-columns: 3.4rem 1fr 2.6rem;
+  gap: 0.5rem;
+  padding: 0.25rem 0.15rem 0.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.35);
+}
+
+.journey-timeslip__col-headers span:last-child {
+  text-align: right;
+}
+
+.journey-timeslip__rows {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+.journey-timeslip__row {
+  display: block;
+  height: var(--journey-row-h);
+}
+
+.journey-timeslip__link {
+  display: grid;
+  grid-template-columns: 3.4rem 1fr 2.6rem;
+  gap: 0.5rem;
+  align-items: center;
+  height: 100%;
+  padding: 0 0.15rem;
+  border-radius: 2px;
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.journey-timeslip__link:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: 2px;
+}
+
+.journey-timeslip__year {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(243, 245, 248, 0.9);
+}
+
+.journey-timeslip__cell {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: rgba(243, 245, 248, 0.78);
+}
+
+.journey-timeslip__cell:last-child {
+  text-align: right;
+  color: var(--color-almost-white);
+}
+
+.journey-timeslip__cell--empty {
+  color: rgba(243, 245, 248, 0.28);
+}
+
+/*
+ * The outcome rule. Hairline year for quiet / setback / rebuild, regular
+ * weight for a race, solid weight for a record or a championship. This is the
+ * only weight cue on the page.
+ */
+.journey-timeslip__row[data-outcome='quiet'] .journey-timeslip__year,
+.journey-timeslip__row[data-outcome='setback'] .journey-timeslip__year,
+.journey-timeslip__row[data-outcome='rebuild'] .journey-timeslip__year {
+  font-weight: 300;
+  color: rgba(243, 245, 248, 0.55);
+}
+
+.journey-timeslip__row[data-outcome='race'] .journey-timeslip__year {
+  font-weight: 500;
+}
+
+.journey-timeslip__row[data-outcome='record'] .journey-timeslip__year,
+.journey-timeslip__row[data-outcome='championship'] .journey-timeslip__year {
+  font-weight: 700;
+  color: var(--color-almost-white);
+}
+
+.journey-timeslip__row[data-outcome='setback'] .journey-timeslip__link {
+  opacity: 0.55;
+}
+
+/*
+ * The cursor. GSAP writes x/y via ScrollTrigger.scrub so the motion stays on
+ * the compositor. CSS only places the bar; it does not interpolate the index.
+ */
+.journey-timeslip__cursor {
+  position: absolute;
+  left: -0.4rem;
+  right: -0.4rem;
+  top: 0;
+  height: var(--journey-row-h);
+  border-left: 2px solid var(--color-primary-blue);
+  background: linear-gradient(
+    90deg,
+    rgba(42, 79, 154, 0.18) 0%,
+    rgba(42, 79, 154, 0.04) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .journey-timeslip__link:hover {
+    color: var(--color-almost-white);
+  }
+  .journey-timeslip__link:hover .journey-timeslip__year {
+    color: var(--color-almost-white);
+  }
+}
+
+/*
+ * Mobile: a thin horizontal strip pinned under the header. Only the years and
+ * the cursor read; distance and ET are hidden by design — the full timeslip
+ * lives in the reading flow. Fixed row width so the cursor's translateX math
+ * stays exact.
+ */
+@media (max-width: 1099px) {
+  .journey-timeslip {
+    --journey-mobile-row-w: 4.75rem;
+    padding: 0.55rem 0.7rem 0.5rem;
+    max-height: none;
+  }
+
+  .journey-timeslip__header {
+    display: none;
+  }
+
+  .journey-timeslip__col-headers {
+    display: none;
+  }
+
+  .journey-timeslip__rows {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    padding-block: 0.15rem;
+  }
+
+  .journey-timeslip__rows::-webkit-scrollbar {
+    display: none;
+  }
+
+  .journey-timeslip__row {
+    flex: 0 0 var(--journey-mobile-row-w);
+    width: var(--journey-mobile-row-w);
+    height: auto;
+    scroll-snap-align: center;
+  }
+
+  .journey-timeslip__link {
+    grid-template-columns: auto;
+    height: auto;
+    padding: 0.35rem 0.4rem;
+    border-radius: 0;
+  }
+
+  .journey-timeslip__year {
+    text-align: center;
+    font-size: 0.78rem;
+  }
+
+  .journey-timeslip__cell {
+    display: none;
+  }
+
+  .journey-timeslip__cursor {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    height: 2px;
+    width: var(--journey-mobile-row-w);
+    border-left: none;
+    border-top: none;
+    background: var(--color-primary-blue);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-timeslip__cursor {
+    transition: none;
+  }
+}

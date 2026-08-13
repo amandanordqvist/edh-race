@@ -3,6 +3,7 @@ import type { Application, Entity, StandardMaterial } from 'playcanvas'
 import { collectCamaroWheels, collectExhaustMaterials } from './camaroRig'
 import { createCamaroWheelSpin } from './camaroWheelSpin'
 import { createBurnoutSmoke } from './burnoutSmoke'
+import { createChuteVfx } from './chuteVfx'
 import { createSpeedStreaks } from './speedStreaks'
 import type { PassPhase, PassQuality } from './types'
 import type { PlayCanvasNamespace } from './scenePrimitives'
@@ -91,10 +92,17 @@ export function createPassEffects(opts: PassEffectsOptions) {
     },
   })
 
+  const chuteVfx = createChuteVfx({
+    pc,
+    parent: sceneRoot,
+    camaro,
+  })
+
   let phase: PassPhase = 'idle'
   let raceProgress = 0
   let raceSpeed = 0
   let heroX = 0
+  let chuteDeploy01 = 0
   let launchPulse = 0
   let updateHandler: ((dt: number) => void) | null = null
 
@@ -108,8 +116,19 @@ export function createPassEffects(opts: PassEffectsOptions) {
     if (next === 'green') {
       launchPulse = 1
     }
-    if (next === 'idle' || next === 'finished') {
+    if (next === 'idle' || next === 'staging') {
+      chuteDeploy01 = 0
+      chuteVfx.reset()
+    }
+    if (next === 'idle') {
       camaro.setLocalEulerAngles(baseCamaroRotation)
+      if (!camaroHasTextures) {
+        camaroBodyMaterial.emissiveIntensity = baseEmissive
+        camaroBodyMaterial.update()
+      }
+      speedStreaks.reset()
+    }
+    if (next === 'finished') {
       if (!camaroHasTextures) {
         camaroBodyMaterial.emissiveIntensity = baseEmissive
         camaroBodyMaterial.update()
@@ -118,10 +137,16 @@ export function createPassEffects(opts: PassEffectsOptions) {
     }
   }
 
-  const onRaceFrame = (progress01: number, speed01: number, nextHeroX: number) => {
+  const onRaceFrame = (
+    progress01: number,
+    speed01: number,
+    nextHeroX: number,
+    nextChuteDeploy01 = 0,
+  ) => {
     raceProgress = progress01
     raceSpeed = speed01
     heroX = nextHeroX
+    chuteDeploy01 = nextChuteDeploy01
     wheelSpin.onRaceFrame(progress01, speed01)
   }
 
@@ -193,15 +218,27 @@ export function createPassEffects(opts: PassEffectsOptions) {
       })
     }
 
-    if (phase === 'racing') {
-      const launchPitch = launchPulse > 0 ? -launchPulse * 5.5 : 0
-      const speedPitch = -0.8 - raceSpeed * 3.2
-      const vibe = Math.sin(time * (38 + raceSpeed * 24)) * raceSpeed * 0.25
+    if (phase === 'racing' || phase === 'finished') {
+      // Race-progress wheelie: peaks around 60' (progress ≈ 0.16), settles by ~330'.
+      // Reads as a real doorslammer nose-lift rather than a tiny idle rock.
+      const wheelieRise = Math.min(1, raceProgress / 0.03)
+      const wheelieDecay = Math.max(0, 1 - Math.pow(Math.max(0, raceProgress - 0.03) / 0.2, 1.2))
+      const wheelieAmount = wheelieRise * wheelieDecay
+      const wheeliePitch = wheelieAmount * 6.5
 
+      const launchPitch = launchPulse > 0 ? launchPulse * 3.5 : 0
+      const speedPitch = phase === 'racing' ? -raceSpeed * 1.1 : 0
+      const chuteSquat = -chuteDeploy01 * 3.6
+      const vibe =
+        phase === 'racing'
+          ? Math.sin(time * (38 + raceSpeed * 24)) * raceSpeed * 0.25
+          : 0
+
+      // Car faces +X: pitch (nose up) is Euler Z, not X (X would roll).
       camaro.setLocalEulerAngles(
-        baseCamaroRotation.x + launchPitch + speedPitch + vibe,
+        baseCamaroRotation.x,
         baseCamaroRotation.y,
-        baseCamaroRotation.z,
+        baseCamaroRotation.z + wheeliePitch + launchPitch + speedPitch + chuteSquat + vibe,
       )
 
       if (!camaroHasTextures) {
@@ -211,11 +248,13 @@ export function createPassEffects(opts: PassEffectsOptions) {
       }
     } else if (launchPulse > 0) {
       camaro.setLocalEulerAngles(
-        baseCamaroRotation.x - launchPulse * 4.5,
+        baseCamaroRotation.x,
         baseCamaroRotation.y,
-        baseCamaroRotation.z,
+        baseCamaroRotation.z + launchPulse * 4.5,
       )
     }
+
+    chuteVfx.update(chuteDeploy01)
   }
 
   const start = () => {
@@ -230,8 +269,10 @@ export function createPassEffects(opts: PassEffectsOptions) {
     raceSpeed = 0
     heroX = 0
     launchPulse = 0
+    chuteDeploy01 = 0
     burnoutSmoke.reset()
     wheelSpin.reset()
+    chuteVfx.reset()
     setStripIntensity(0.04)
     camaro.setLocalEulerAngles(baseCamaroRotation)
     if (!camaroHasTextures) {
@@ -248,6 +289,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
     }
     burnoutSmoke.destroy()
     wheelSpin.destroy()
+    chuteVfx.destroy()
     speedStreaks.destroy()
   }
 

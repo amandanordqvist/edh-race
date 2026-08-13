@@ -14,6 +14,7 @@ type GrandstandOptions = {
   trackLength: number
   trackWidth: number
   quality: PassQuality
+  hideSkyPlanes?: boolean
 }
 
 /**
@@ -21,27 +22,13 @@ type GrandstandOptions = {
  * Avoids one endless Lego slab and unique-material crowd cubes.
  */
 export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
-  const { pc, sceneRoot, trackLength, trackWidth, quality } = opts
+  const { pc, sceneRoot, trackLength, trackWidth, quality, hideSkyPlanes } = opts
   const high = quality === 'high'
   const halfTrack = trackLength / 2
   const sideOffset = trackWidth / 2 + 8.8
 
-  const skyZenith = createMaterial(pc, {
-    diffuse: [0.42, 0.58, 0.76],
-    emissive: [0.08, 0.14, 0.24],
-    emissiveIntensity: 0.06,
-    metalness: 0,
-    gloss: 0.04,
-  })
-  const skyHorizon = createMaterial(pc, {
-    diffuse: [0.62, 0.72, 0.82],
-    emissive: [0.1, 0.14, 0.2],
-    emissiveIntensity: 0.05,
-    metalness: 0,
-    gloss: 0.04,
-  })
   const field = createMaterial(pc, {
-    diffuse: [0.18, 0.22, 0.16],
+    diffuse: [0.2, 0.22, 0.16],
     metalness: 0.02,
     gloss: 0.06,
   })
@@ -102,58 +89,79 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
     gloss: 0.4,
   })
 
-  // Horizon walls on all chase-facing axes (not only −Z).
-  const skyPlanes: Array<{
-    name: string
-    position: [number, number, number]
-    scale: [number, number, number]
-    material: StandardMaterial
-  }> = [
-    {
-      name: 'sky-far',
-      position: [trackLength + 55, 28, 0],
-      scale: [8, 70, trackWidth + 180],
-      material: skyZenith,
-    },
-    {
-      name: 'sky-near',
-      position: [-40, 26, 0],
-      scale: [8, 65, trackWidth + 160],
-      material: skyHorizon,
-    },
-    {
-      name: 'sky-left',
-      position: [halfTrack, 26, -62],
-      scale: [trackLength + 140, 60, 8],
-      material: skyZenith,
-    },
-    {
-      name: 'sky-right',
-      position: [halfTrack, 26, 62],
-      scale: [trackLength + 140, 60, 8],
-      material: skyHorizon,
-    },
-    {
-      name: 'sky-cap',
-      position: [halfTrack, 58, 0],
-      scale: [trackLength + 160, 6, trackWidth + 160],
-      material: skyZenith,
-    },
-  ]
-
-  skyPlanes.forEach((plane) => {
-    sceneRoot.addChild(
-      createPrimitive(pc, {
-        name: plane.name,
-        type: 'box',
-        position: plane.position,
-        scale: plane.scale,
-        material: plane.material,
-        castShadows: false,
-        receiveShadows: false,
-      }),
-    )
-  })
+  if (!hideSkyPlanes) {
+    const skyZenith = createMaterial(pc, {
+      diffuse: [0.38, 0.55, 0.78],
+      emissive: [0.16, 0.28, 0.48],
+      emissiveIntensity: 0.12,
+      metalness: 0,
+      gloss: 0.04,
+    })
+    const skyHorizon = createMaterial(pc, {
+      diffuse: [0.78, 0.84, 0.9],
+      emissive: [0.42, 0.5, 0.62],
+      emissiveIntensity: 0.14,
+      metalness: 0,
+      gloss: 0.04,
+    })
+    const skyHorizonCool = createMaterial(pc, {
+      diffuse: [0.62, 0.72, 0.86],
+      emissive: [0.28, 0.38, 0.55],
+      emissiveIntensity: 0.1,
+      metalness: 0,
+      gloss: 0.04,
+    })
+    const skyPlanes: Array<{
+      name: string
+      position: [number, number, number]
+      scale: [number, number, number]
+      material: StandardMaterial
+    }> = [
+      {
+        name: 'sky-far',
+        position: [trackLength + 55, 28, 0],
+        scale: [8, 70, trackWidth + 180],
+        material: skyHorizon,
+      },
+      {
+        name: 'sky-near',
+        position: [-40, 26, 0],
+        scale: [8, 65, trackWidth + 160],
+        material: skyHorizonCool,
+      },
+      {
+        name: 'sky-left',
+        position: [halfTrack, 26, -62],
+        scale: [trackLength + 140, 60, 8],
+        material: skyHorizonCool,
+      },
+      {
+        name: 'sky-right',
+        position: [halfTrack, 26, 62],
+        scale: [trackLength + 140, 60, 8],
+        material: skyHorizon,
+      },
+      {
+        name: 'sky-cap',
+        position: [halfTrack, 58, 0],
+        scale: [trackLength + 160, 6, trackWidth + 160],
+        material: skyZenith,
+      },
+    ]
+    skyPlanes.forEach((plane) => {
+      sceneRoot.addChild(
+        createPrimitive(pc, {
+          name: plane.name,
+          type: 'box',
+          position: plane.position,
+          scale: plane.scale,
+          material: plane.material,
+          castShadows: false,
+          receiveShadows: false,
+        }),
+      )
+    })
+  }
 
   // Soft field beyond barriers — kills the empty blue floor void.
   sceneRoot.addChild(
@@ -161,7 +169,7 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
       name: 'field-left',
       type: 'box',
       position: [halfTrack, -0.7, -sideOffset - 18],
-      scale: [trackLength + 80, 0.4, 40],
+      scale: [trackLength + 160, 0.4, 40],
       material: field,
       castShadows: false,
     }),
@@ -171,7 +179,7 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
       name: 'field-right',
       type: 'box',
       position: [halfTrack, -0.7, sideOffset + 18],
-      scale: [trackLength + 80, 0.4, 40],
+      scale: [trackLength + 160, 0.4, 40],
       material: field,
       castShadows: false,
     }),
@@ -179,9 +187,9 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
 
   const bayCount = high ? 5 : 3
   const bayGap = 1.6
-  const standLength = trackLength * 0.82
+  const standStart = 10
+  const standLength = trackLength - 16
   const bayLength = (standLength - bayGap * (bayCount - 1)) / bayCount
-  const standStart = halfTrack - standLength * 0.5
 
   ;([-sideOffset, sideOffset] as number[]).forEach((z, sideIndex) => {
     const facing = z < 0 ? 1 : -1

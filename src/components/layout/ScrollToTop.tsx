@@ -1,9 +1,14 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
-/** Reset window scroll on route change (footer/nav Links keep prior Y otherwise). */
+/**
+ * Reset window scroll on every navigation.
+ * Keys off `location.key` (not just pathname) so clicking a footer/nav link
+ * to the page you're already on still scrolls back to the top.
+ * Uses `behavior: 'instant'` to bypass the global `scroll-behavior: smooth`.
+ */
 export function ScrollToTop() {
-  const { pathname, hash } = useLocation()
+  const { pathname, hash, key } = useLocation()
 
   useEffect(() => {
     if (hash) {
@@ -14,13 +19,21 @@ export function ScrollToTop() {
           el.scrollIntoView()
           return
         }
-        window.scrollTo(0, 0)
+        scrollToTop()
       })
       return () => window.cancelAnimationFrame(frame)
     }
 
-    window.scrollTo(0, 0)
-  }, [pathname, hash])
+    scrollToTop()
+  }, [pathname, hash, key])
 
   return null
+}
+
+function scrollToTop() {
+  try {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
+  } catch {
+    window.scrollTo(0, 0)
+  }
 }

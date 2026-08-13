@@ -1,34 +1,39 @@
+/*
+ * Chapter shell. The header reads as a single restrained label — the running
+ * timeslip carries the year span, so the header only needs the name and a
+ * small kicker to place the reader.
+ */
 .journey-chapter {
   scroll-margin-top: calc(var(--header-height) + 1.5rem);
   padding-block: clamp(2.5rem, 6vw, 4rem);
 }
 
 .journey-chapter__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+  display: grid;
+  gap: 0.35rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--color-hairline-strong);
+  border-bottom: 1px solid var(--color-hairline);
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
 }
 
 .journey-chapter__name {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(1.6rem, 4vw, 2.4rem);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 300;
+  font-size: clamp(2rem, 5.5vw, 3.4rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  color: var(--color-almost-white);
   margin: 0;
 }
 
 .journey-chapter__span {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
-  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   font-variant-numeric: tabular-nums;
-  color: var(--color-silver-gray);
+  color: var(--color-primary-blue);
   margin: 0;
-  white-space: nowrap;
 }
 
 .journey-chapter__beats {

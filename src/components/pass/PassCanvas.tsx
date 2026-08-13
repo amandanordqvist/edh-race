@@ -13,6 +13,7 @@ import { detectPassQuality } from '../../lib/pass/quality'
 import { createRaceController } from '../../lib/pass/raceController'
 import type { HudSplitId } from '../../data/simulator'
 import { useT } from '../../i18n'
+import { PASS_SCENE_REVISION } from '../../lib/pass/passRevision'
 import type { PassCameraView, PassCommands, PassPhase, PassSceneMeta } from '../../lib/pass/types'
 import './PassCanvas.css'
 
@@ -22,6 +23,9 @@ type PassCanvasProps = {
   onPhase: (phase: PassPhase) => void
   onClock: (seconds: number) => void
   onSpeed?: (speedKmh: number) => void
+  onGap?: (gapM: number) => void
+  onChuteDeploy?: (chuteDeploy01: number) => void
+  onLaunch?: (reactionS: number | null) => void
   onSplitCallout?: (splitId: HudSplitId) => void
   onCameraView?: (view: PassCameraView) => void
   onFinished: () => void
@@ -35,6 +39,9 @@ type LiveHandlers = Pick<
   | 'onPhase'
   | 'onClock'
   | 'onSpeed'
+  | 'onGap'
+  | 'onChuteDeploy'
+  | 'onLaunch'
   | 'onSplitCallout'
   | 'onCameraView'
   | 'onFinished'
@@ -53,6 +60,9 @@ export function PassCanvas(props: PassCanvasProps) {
     onPhase: props.onPhase,
     onClock: props.onClock,
     onSpeed: props.onSpeed,
+    onGap: props.onGap,
+    onChuteDeploy: props.onChuteDeploy,
+    onLaunch: props.onLaunch,
     onSplitCallout: props.onSplitCallout,
     onCameraView: props.onCameraView,
     onFinished: props.onFinished,
@@ -66,6 +76,9 @@ export function PassCanvas(props: PassCanvasProps) {
       onPhase: props.onPhase,
       onClock: props.onClock,
       onSpeed: props.onSpeed,
+      onGap: props.onGap,
+      onChuteDeploy: props.onChuteDeploy,
+      onLaunch: props.onLaunch,
       onSplitCallout: props.onSplitCallout,
       onCameraView: props.onCameraView,
       onFinished: props.onFinished,
@@ -161,12 +174,26 @@ export function PassCanvas(props: PassCanvasProps) {
             onClock: (seconds) => liveRef.current.onClock(seconds),
             onFinished: () => liveRef.current.onFinished(),
             onWebglUnavailable: () => liveRef.current.onWebglUnavailable(),
+            onLaunch: (reactionS) => liveRef.current.onLaunch?.(reactionS),
           },
           onRaceFrame: (frame) => {
-            cameraDirector?.onRaceProgress(frame.progress01, frame.speed01, frame.heroX)
-            passEffects?.onRaceFrame(frame.progress01, frame.speed01, frame.heroX)
+            cameraDirector?.onRaceProgress(
+              frame.progress01,
+              frame.speed01,
+              frame.heroX,
+              frame.timeScale,
+              frame.chuteDeploy01,
+            )
+            passEffects?.onRaceFrame(
+              frame.progress01,
+              frame.speed01,
+              frame.heroX,
+              frame.chuteDeploy01,
+            )
             audio.onRaceSpeed(frame.speed01)
             liveRef.current.onSpeed?.(frame.speedKmh)
+            liveRef.current.onGap?.(frame.gapM)
+            liveRef.current.onChuteDeploy?.(frame.chuteDeploy01)
             if (frame.splitHit) {
               liveRef.current.onSplitCallout?.(frame.splitHit)
             }
@@ -187,6 +214,8 @@ export function PassCanvas(props: PassCanvasProps) {
             stage: () => {
               void audio.unlock().then(() => raceController?.stage())
             },
+            launch: () => raceController?.launch(),
+            seek: (elapsedS) => raceController?.seek(elapsedS),
             reset: () => {
               raceController?.reset()
               cameraDirector?.reset()
@@ -222,7 +251,6 @@ export function PassCanvas(props: PassCanvasProps) {
         if (!cancelled) {
           setLoading(false)
           console.error('[pass] failed to start the PlayCanvas scene', error)
-          liveRef.current.onWebglUnavailable()
         }
       }
     }
@@ -241,8 +269,8 @@ export function PassCanvas(props: PassCanvasProps) {
       destroyApp?.()
       cameraDirectorRef.current = null
     }
-    // Mount once; live values are read through liveRef to avoid tearing down PlayCanvas per render.
-  }, [])
+    // Mount once per scene revision; live values go through liveRef.
+  }, [PASS_SCENE_REVISION])
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     if (liveRef.current.reducedMotion) return

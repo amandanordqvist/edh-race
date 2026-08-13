@@ -200,6 +200,118 @@
   pointer-events: none;
 }
 
+.pass-arena__reaction-hint {
+  margin: 0;
+  max-width: 32rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid rgba(42, 79, 154, 0.36);
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, rgba(42, 79, 154, 0.22) 0%, rgba(10, 14, 22, 0.6) 100%);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.42;
+  letter-spacing: 0.02em;
+  color: rgba(233, 240, 252, 0.86);
+  pointer-events: none;
+}
+
+.pass-arena__launch {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  pointer-events: auto;
+}
+
+.pass-arena__launch-btn {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 12rem;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-md);
+  background: rgba(10, 14, 22, 0.7);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(243, 245, 248, 0.65);
+  cursor: not-allowed;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, color 160ms ease;
+  overflow: hidden;
+}
+
+.pass-arena__launch-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 100%, rgba(52, 200, 120, 0.42) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 220ms ease;
+  pointer-events: none;
+}
+
+.pass-arena__launch-btn--live {
+  border-color: rgba(52, 200, 120, 0.7);
+  background: linear-gradient(180deg, rgba(52, 200, 120, 0.28) 0%, rgba(20, 60, 40, 0.85) 100%);
+  color: rgba(230, 255, 240, 0.98);
+  cursor: pointer;
+  animation: pass-launch-pulse 900ms ease-out infinite;
+  box-shadow: 0 18px 48px rgba(52, 200, 120, 0.32);
+}
+
+.pass-arena__launch-btn--live::before {
+  opacity: 1;
+}
+
+.pass-arena__launch-btn--live:hover {
+  transform: translateY(-1px);
+}
+
+.pass-arena__launch-btn:focus-visible {
+  outline: 2px solid rgba(140, 220, 180, 0.75);
+  outline-offset: 3px;
+}
+
+.pass-arena__launch-eyebrow {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pass-arena__launch-hint {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-ui);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+@keyframes pass-launch-pulse {
+  0%,
+  100% {
+    box-shadow: 0 18px 48px rgba(52, 200, 120, 0.28);
+  }
+
+  50% {
+    box-shadow: 0 22px 60px rgba(52, 200, 120, 0.48);
+  }
+}
+
 .pass-arena__timeslip-link {
   display: inline-flex;
   align-items: center;
@@ -386,6 +498,53 @@
   color: var(--color-primary-blue);
 }
 
+.pass-arena__finish-stat--reaction {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  column-gap: 0.4rem;
+  row-gap: 0.05rem;
+  align-items: baseline;
+  padding: 0.15rem 0.5rem;
+  border-left: 1px solid rgba(52, 200, 120, 0.35);
+}
+
+.pass-arena__finish-stat--reaction .pass-arena__finish-stat-label {
+  grid-column: 1;
+  grid-row: 1;
+  color: rgba(180, 232, 200, 0.88);
+}
+
+.pass-arena__finish-stat--reaction .pass-arena__finish-stat-value {
+  grid-column: 2;
+  grid-row: 1;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  color: rgba(200, 245, 220, 0.98);
+}
+
+.pass-arena__finish-stat-caption {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  font-family: var(--font-ui);
+  font-size: 0.55rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.5);
+}
+
+.pass-arena__finish-stat-delta {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin-top: 0.05rem;
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(226, 174, 120, 0.9);
+}
+
 .pass-arena__finish-actions {
   display: inline-flex;
   gap: 0.5rem;
@@ -397,6 +556,143 @@
   min-height: 2.2rem;
   padding: 0.5rem 1rem;
   font-size: 0.72rem;
+}
+
+.pass-arena__finish--with-scrubber {
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.pass-arena__scrubber {
+  order: 3;
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem 0.75rem;
+  margin-top: 0.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  background: rgba(6, 8, 12, 0.42);
+}
+
+.pass-arena__scrubber-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.pass-arena__scrubber-label {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.5);
+}
+
+.pass-arena__scrubber-time {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(243, 245, 248, 0.92);
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-arena__scrubber-slider {
+  appearance: none;
+  width: 100%;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(42, 79, 154, 0.65) 0%,
+    rgba(52, 200, 120, 0.55) 100%
+  );
+  outline: none;
+  cursor: pointer;
+}
+
+.pass-arena__scrubber-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  background: rgba(42, 79, 154, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  cursor: grab;
+  transition: transform 120ms ease;
+}
+
+.pass-arena__scrubber-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.12);
+}
+
+.pass-arena__scrubber-slider::-moz-range-thumb {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  background: rgba(42, 79, 154, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  cursor: grab;
+}
+
+.pass-arena__scrubber-slider:focus-visible {
+  box-shadow: 0 0 0 3px rgba(140, 180, 255, 0.4);
+}
+
+.pass-arena__scrubber-ticks {
+  position: relative;
+  height: 1.8rem;
+  margin-top: 0.1rem;
+}
+
+.pass-arena__scrubber-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: rgba(243, 245, 248, 0.7);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: color 140ms ease, transform 140ms ease;
+}
+
+.pass-arena__scrubber-tick:hover,
+.pass-arena__scrubber-tick:focus-visible {
+  color: rgba(255, 255, 255, 1);
+  transform: translateX(-50%) translateY(-1px);
+  outline: none;
+}
+
+.pass-arena__scrubber-tick-dot {
+  width: 0.25rem;
+  height: 0.65rem;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.32);
+  transition: background 140ms ease;
+}
+
+.pass-arena__scrubber-tick:hover .pass-arena__scrubber-tick-dot,
+.pass-arena__scrubber-tick:focus-visible .pass-arena__scrubber-tick-dot {
+  background: var(--color-primary-blue);
+}
+
+.pass-arena__scrubber-tick-label {
+  font-variant-numeric: tabular-nums;
 }
 
 .pass-arena__finish-secondary {
@@ -788,6 +1084,85 @@
   }
 }
 
+.pass-arena__flyby-rail {
+  position: absolute;
+  top: clamp(3.5rem, 8vh, 5rem);
+  right: clamp(0.9rem, 2vw, 1.4rem);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  pointer-events: none;
+}
+
+.pass-arena__flyby-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(224, 168, 108, 0.55);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(50, 30, 18, 0.85) 0%, rgba(18, 22, 30, 0.85) 100%);
+  backdrop-filter: blur(6px);
+  color: rgba(255, 220, 190, 0.98);
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.42);
+  animation: pass-flyby-in 260ms ease-out, pass-flyby-out 400ms ease-in 1.7s forwards;
+}
+
+.pass-arena__flyby-arrow {
+  font-size: 0.8rem;
+  color: rgba(255, 200, 140, 1);
+  transform: translateX(0);
+  animation: pass-flyby-arrow 640ms ease-in-out infinite;
+}
+
+.pass-arena__flyby-label {
+  color: inherit;
+}
+
+@keyframes pass-flyby-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pass-flyby-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+@keyframes pass-flyby-arrow {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.85;
+  }
+
+  50% {
+    transform: translateX(3px);
+    opacity: 1;
+  }
+}
+
 .pass-arena__split-banner {
   position: absolute;
   top: clamp(0.65rem, 1.5vw, 1rem);
@@ -940,6 +1315,16 @@
   border-left: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.pass-racing-hud__chip--chutes {
+  margin-left: 0.1rem;
+  padding-left: 0.5rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pass-racing-hud__chip--chutes .pass-racing-hud__chip-label {
+  color: rgba(232, 168, 148, 0.92);
+}
+
 .pass-racing-hud__chip-label {
   font-family: var(--font-ui);
   font-size: 0.55rem;
@@ -968,6 +1353,81 @@
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+}
+
+.pass-racing-hud__gap {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.45rem);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(6, 10, 22, 0.55);
+  backdrop-filter: blur(6px);
+  transform: translateX(-50%);
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.9);
+  white-space: nowrap;
+  animation: pass-gap-in 240ms ease-out;
+}
+
+.pass-racing-hud__gap--lead {
+  border-color: rgba(120, 205, 155, 0.55);
+  background: rgba(24, 42, 32, 0.7);
+  color: rgba(180, 232, 200, 0.98);
+}
+
+.pass-racing-hud__gap--trail {
+  border-color: rgba(226, 120, 108, 0.55);
+  background: rgba(48, 22, 22, 0.7);
+  color: rgba(240, 190, 180, 0.98);
+}
+
+.pass-racing-hud__gap-arrow {
+  font-size: 0.75rem;
+}
+
+.pass-racing-hud__gap-value {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-racing-hud__gap-unit {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  opacity: 0.72;
+}
+
+.pass-racing-hud__gap-vs {
+  margin-left: 0.15rem;
+  font-size: 0.55rem;
+  opacity: 0.72;
+}
+
+@keyframes pass-gap-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 @media (max-width: 640px) {

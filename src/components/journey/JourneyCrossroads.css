@@ -1,9 +1,15 @@
 /*
- * Restraint is what makes this land. No image, no accent, and more air than
- * anywhere else on the page.
+ * The set piece. Roughly a screenful tall so scroll linearly slows here — the
+ * timeslip cursor holds on the setback row. Restraint everywhere: no accent
+ * colour, no shadow, no image.
  */
 .journey-crossroads {
-  padding-block: clamp(5rem, 13vw, 9rem);
+  padding-block: clamp(5rem, 12vw, 8rem);
+  min-height: 90vh;
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 2.75rem);
+  align-content: center;
+  scroll-margin-top: calc(var(--header-height) + 1.5rem);
 }
 
 .journey-crossroads__label {
@@ -16,17 +22,114 @@
   margin: 0;
 }
 
-/* The label already carries the year, so drop the beat's own repeat of it. */
-.journey-crossroads .journey-beat__year {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
+.journey-crossroads__slip {
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1.25rem, 3vw, 2rem);
+  background: rgba(255, 255, 255, 0.015);
+  max-width: 44rem;
 }
 
-.journey-crossroads .journey-beat {
-  margin-top: clamp(1.5rem, 3vw, 2rem);
-  padding-top: clamp(1.5rem, 3vw, 2rem);
+.journey-crossroads__slip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+}
+
+.journey-crossroads__slip-eyebrow,
+.journey-crossroads__slip-event,
+.journey-crossroads__slip-date {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.journey-crossroads__slip-eyebrow {
+  font-weight: 700;
+  color: rgba(243, 245, 248, 0.42);
+}
+
+.journey-crossroads__slip-event {
+  margin-top: 0.2rem;
+  letter-spacing: 0.08em;
+  color: rgba(243, 245, 248, 0.35);
+}
+
+.journey-crossroads__slip-date {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: rgba(243, 245, 248, 0.35);
+}
+
+.journey-crossroads__year {
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: clamp(5rem, 18vw, 12rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  color: rgba(243, 245, 248, 0.42);
+  font-variant-numeric: tabular-nums;
+  margin: 0 0 clamp(1.5rem, 3vw, 2rem);
+  text-align: left;
+}
+
+.journey-crossroads__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 0 0 clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.journey-crossroads__grid > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.journey-crossroads__grid dt {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.32);
+}
+
+.journey-crossroads__grid dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  color: rgba(243, 245, 248, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+
+.journey-crossroads__caption {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.4);
+  margin: 0;
+}
+
+.journey-crossroads__body {
+  font-size: clamp(1.05rem, 2vw, 1.15rem);
+  line-height: 1.65;
+  color: rgba(243, 245, 248, 0.76);
+  max-width: 44ch;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .journey-crossroads__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
