@@ -1,18 +1,49 @@
 .pass-arena {
   position: relative;
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-shell);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: calc(var(--radius-shell) * 0.45);
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(9, 12, 18, 0.86) 0%, rgba(9, 12, 18, 0.3) 36%, rgba(9, 12, 18, 0.84) 100%),
+    linear-gradient(180deg, rgba(9, 12, 18, 0.55) 0%, rgba(9, 12, 18, 0.12) 40%, rgba(9, 12, 18, 0.6) 100%),
     linear-gradient(180deg, #07090d 0%, #10141c 100%);
-  box-shadow: var(--shadow-deep);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+}
+
+.pass-arena--expanded,
+.pass-arena:fullscreen,
+.pass-arena:-webkit-full-screen {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-grain) + 10);
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  border-radius: 0;
+  border: 0;
+}
+
+.pass-arena--expanded .pass-arena__viewport,
+.pass-arena:fullscreen .pass-arena__viewport,
+.pass-arena:-webkit-full-screen .pass-arena__viewport {
+  height: 100%;
+}
+
+.pass-arena--expanded .pass-canvas,
+.pass-arena:fullscreen .pass-canvas,
+.pass-arena:-webkit-full-screen .pass-canvas {
+  border-radius: 0;
+}
+
+.pass-arena--expanded .pass-arena__model-credit,
+.pass-arena:fullscreen .pass-arena__model-credit,
+.pass-arena:-webkit-full-screen .pass-arena__model-credit {
+  display: none;
 }
 
 .pass-arena__viewport {
   position: relative;
-  height: clamp(420px, 72vh, 820px);
+  height: clamp(480px, 82vh, 920px);
 }
 
 .pass-arena__viewport::after {
@@ -21,18 +52,20 @@
   inset: 0;
   pointer-events: none;
   z-index: 2;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
   background:
-    radial-gradient(120% 90% at 50% 55%, transparent 40%, rgba(4, 6, 10, 0.42) 100%);
-  mix-blend-mode: multiply;
+    radial-gradient(120% 90% at 50% 58%, transparent 58%, rgba(4, 6, 10, 0.18) 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+  background-size: auto, 180px 180px;
+  opacity: 0.28;
+  mix-blend-mode: soft-light;
 }
 
 .pass-arena__shade {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(6, 8, 12, 0.55) 0%, rgba(6, 8, 12, 0.05) 26%, rgba(6, 8, 12, 0.08) 55%, rgba(6, 8, 12, 0.62) 100%),
-    radial-gradient(circle at 50% 40%, transparent 0%, transparent 42%, rgba(6, 8, 12, 0.25) 100%);
+    linear-gradient(180deg, rgba(6, 8, 12, 0.06) 0%, rgba(6, 8, 12, 0) 18%, rgba(6, 8, 12, 0.02) 62%, rgba(6, 8, 12, 0.34) 100%);
   pointer-events: none;
 }
 
@@ -61,6 +94,11 @@
   justify-content: flex-end;
   align-items: flex-start;
   pointer-events: auto;
+}
+
+.pass-arena--chrome-hidden .pass-arena__top-actions {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .pass-arena__cam {
@@ -182,6 +220,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0.4rem;
+  pointer-events: auto;
 }
 
 .pass-arena__inspect-hint {
@@ -418,6 +457,7 @@
 }
 
 .pass-arena__mute,
+.pass-arena__expand,
 .pass-arena__stage {
   pointer-events: auto;
 }
@@ -426,22 +466,192 @@
   align-items: end;
 }
 
-.pass-arena__finish {
+.pass-arena--finished .pass-arena__footer {
+  justify-content: flex-start;
+}
+
+.pass-arena__finish--result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.05rem;
+  width: min(100%, 34rem);
+  margin: 0;
+  padding: 1.25rem 1.4rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: calc(var(--radius-md) * 0.55);
+  background: rgba(6, 8, 12, 0.78);
+  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.5);
+  animation: pass-finish-in 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: auto;
+}
+
+.pass-arena__finish-hero {
+  display: grid;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.pass-arena__finish-wins {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-primary-blue);
+}
+
+.pass-arena__finish-et {
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.pass-arena__finish-et-value {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 4.4rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: var(--color-almost-white);
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-arena__finish-et-unit {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.55);
+}
+
+.pass-arena__finish-trap {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3vw, 1.7rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.88);
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-arena__finish-reaction {
+  margin: 0.35rem 0 0;
+  max-width: 34ch;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(243, 245, 248, 0.62);
+}
+
+.pass-arena__finish--result .pass-arena__finish-actions {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem 0.85rem;
-  justify-content: space-between;
-  align-items: center;
+  gap: 0.55rem;
+}
+
+.pass-arena__journey-link {
+  min-height: auto;
+  padding: 0.15rem 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.55);
+}
+
+.pass-arena__journey-link:hover,
+.pass-arena__journey-link:focus-visible {
+  color: rgba(243, 245, 248, 0.88);
+  background: transparent;
+  transform: none;
+}
+
+.pass-arena__explore {
   width: 100%;
-  padding: 0.6rem 0.75rem 0.6rem 0.85rem;
-  border: 1px solid rgba(42, 79, 154, 0.32);
-  border-radius: var(--radius-md);
-  background:
-    linear-gradient(90deg, rgba(42, 79, 154, 0.18) 0%, rgba(10, 14, 22, 0.72) 55%, rgba(10, 14, 22, 0.82) 100%);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(8px);
-  pointer-events: auto;
-  animation: pass-finish-in 260ms ease-out;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.pass-arena__explore-toggle {
+  justify-self: start;
+  padding: 0.2rem 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.55);
+  cursor: pointer;
+}
+
+.pass-arena__explore-toggle:hover,
+.pass-arena__explore-toggle:focus-visible {
+  color: rgba(243, 245, 248, 0.9);
+}
+
+.pass-arena__finish--result .pass-arena__scrubber {
+  margin-top: 0;
+  order: 0;
+  flex-basis: auto;
+}
+
+.pass-arena__finish--slim {
+  gap: 0.35rem 0.7rem;
+  padding: 0.4rem 0.6rem 0.45rem;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(8, 10, 16, 0.78);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+}
+
+.pass-arena__finish-rt {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.45rem;
+  margin: 0;
+  min-width: 0;
+}
+
+.pass-arena__finish-rt-label {
+  font-family: var(--font-ui);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(180, 232, 200, 0.82);
+}
+
+.pass-arena__finish-rt-value {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(200, 245, 220, 0.98);
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-arena__finish-rt-vs,
+.pass-arena__finish-rt-delta {
+  font-family: var(--font-ui);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.48);
+}
+
+.pass-arena__finish-rt-delta {
+  color: rgba(226, 174, 120, 0.88);
 }
 
 .pass-arena__finish-stats {
@@ -561,6 +771,17 @@
 .pass-arena__finish--with-scrubber {
   flex-wrap: wrap;
   align-items: stretch;
+}
+
+.pass-arena__finish--slim.pass-arena__finish--with-scrubber {
+  align-items: center;
+}
+
+.pass-arena__finish--slim .pass-arena__scrubber {
+  padding: 0.3rem 0.15rem 0.2rem;
+  margin-top: 0.1rem;
+  border: 0;
+  background: transparent;
 }
 
 .pass-arena__scrubber {
@@ -858,27 +1079,29 @@
 
 .pass-timeslip__splits {
   list-style: none;
-  margin: 0 0 1rem;
+  margin: 0 0 1.15rem;
   padding: 0;
   display: grid;
-  gap: 0.45rem;
+  gap: 0;
 }
 
 .pass-timeslip__split {
-  padding: 0.55rem 0.5rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.02);
+  padding: 0.7rem 0.15rem;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0;
+  background: transparent;
+}
+
+.pass-timeslip__split:last-child {
+  border-bottom: 0;
 }
 
 .pass-timeslip__split--hero {
-  border-color: rgba(42, 79, 154, 0.35);
-  background: linear-gradient(
-    90deg,
-    rgba(42, 79, 154, 0.28) 0%,
-    rgba(42, 79, 154, 0.06) 70%,
-    transparent 100%
-  );
+  margin: 0 -0.55rem;
+  padding: 0.7rem 0.55rem;
+  border-bottom-color: transparent;
+  background: rgba(42, 79, 154, 0.22);
 }
 
 .pass-timeslip__split-top {
@@ -1040,13 +1263,13 @@
 
   .pass-arena__finish-actions {
     width: 100%;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 }
 
 @media (max-width: 640px) {
   .pass-arena__viewport {
-    height: clamp(420px, 78vh, 640px);
+    height: clamp(460px, 78vh, 720px);
   }
 
   .pass-arena__hud {
@@ -1239,9 +1462,32 @@
   }
 }
 
+.pass-arena--racing-hud .pass-arena__top-actions {
+  opacity: 0.28;
+  transition: opacity 220ms ease;
+}
+
+.pass-arena--racing-hud.pass-arena--chrome-visible .pass-arena__top-actions,
+.pass-arena--racing-hud:focus-within .pass-arena__top-actions {
+  opacity: 1;
+}
+
+@media (pointer: coarse) {
+  .pass-arena--racing-hud .pass-arena__top-actions {
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pass-arena--racing-hud .pass-arena__top-actions {
+    opacity: 1;
+    transition: none;
+  }
+}
+
 .pass-arena--racing-hud .pass-arena__shade {
   background:
-    linear-gradient(180deg, rgba(6, 8, 12, 0.22) 0%, transparent 18%, transparent 72%, rgba(6, 8, 12, 0.28) 100%);
+    linear-gradient(180deg, rgba(6, 8, 12, 0.05) 0%, transparent 16%, transparent 72%, rgba(6, 8, 12, 0.22) 100%);
 }
 
 .pass-arena--racing-hud .pass-arena__hud {
@@ -1260,7 +1506,8 @@
 }
 
 .pass-arena--racing-hud .pass-arena__cam-btn,
-.pass-arena--racing-hud .pass-arena__mute {
+.pass-arena--racing-hud .pass-arena__mute,
+.pass-arena--racing-hud .pass-arena__expand {
   min-height: 2rem;
   padding: 0.35rem 0.7rem;
   font-size: 0.68rem;
@@ -1281,44 +1528,54 @@
 
 .pass-racing-hud {
   position: absolute;
-  left: 50%;
-  bottom: clamp(0.55rem, 1.5vw, 0.9rem);
+  left: clamp(0.9rem, 3vw, 2rem);
+  bottom: clamp(0.7rem, 2vw, 1.15rem);
   z-index: 2;
-  width: min(36rem, calc(100% - 1.5rem));
-  transform: translateX(-50%);
+  width: auto;
+  max-width: min(18rem, calc(100% - 2rem));
+  transform: none;
   pointer-events: none;
+}
+
+.pass-racing-hud--pulse .pass-racing-hud__chip-value--speed {
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 0 18px rgba(120, 170, 255, 0.55);
+  transform: translateY(-1px);
 }
 
 .pass-racing-hud__rail {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: baseline;
-  gap: 0.35rem 0.55rem;
-  padding: 0.35rem 0.65rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  background: rgba(6, 10, 22, 0.48);
-  backdrop-filter: blur(8px);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .pass-racing-hud__chip {
   display: inline-flex;
   align-items: baseline;
   gap: 0.35rem;
-  padding: 0.1rem 0.35rem;
+  padding: 0;
 }
 
 .pass-racing-hud__chip--speed {
-  margin-left: 0.15rem;
-  padding-left: 0.55rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+}
+
+.pass-racing-hud__chip--remain {
+  opacity: 0.72;
 }
 
 .pass-racing-hud__chip--chutes {
-  margin-left: 0.1rem;
-  padding-left: 0.5rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+  opacity: 0.8;
 }
 
 .pass-racing-hud__chip--chutes .pass-racing-hud__chip-label {
@@ -1329,9 +1586,9 @@
   font-family: var(--font-ui);
   font-size: 0.55rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.48);
+  color: rgba(255, 255, 255, 0.42);
 }
 
 .pass-racing-hud__chip-value {
@@ -1342,15 +1599,18 @@
   letter-spacing: 0.02em;
   color: rgba(255, 255, 255, 0.92);
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
+  transition: color 180ms ease, text-shadow 180ms ease, transform 180ms ease;
 }
 
 .pass-racing-hud__chip-value--sm {
-  font-size: 0.92rem;
+  font-size: 0.85rem;
+  opacity: 0.85;
 }
 
 .pass-racing-hud__chip-value--speed {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.7rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -1358,15 +1618,15 @@
 .pass-racing-hud__gap {
   position: absolute;
   left: 50%;
-  bottom: calc(100% + 0.45rem);
+  bottom: calc(100% + 0.35rem);
   display: inline-flex;
   align-items: baseline;
   gap: 0.3rem;
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(6, 10, 22, 0.55);
-  backdrop-filter: blur(6px);
+  padding: 0.1rem 0.15rem;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
   transform: translateX(-50%);
   font-family: var(--font-ui);
   font-size: 0.62rem;
@@ -1375,18 +1635,19 @@
   text-transform: uppercase;
   color: rgba(243, 245, 248, 0.9);
   white-space: nowrap;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.65);
   animation: pass-gap-in 240ms ease-out;
 }
 
 .pass-racing-hud__gap--lead {
-  border-color: rgba(120, 205, 155, 0.55);
-  background: rgba(24, 42, 32, 0.7);
+  border-color: transparent;
+  background: transparent;
   color: rgba(180, 232, 200, 0.98);
 }
 
 .pass-racing-hud__gap--trail {
-  border-color: rgba(226, 120, 108, 0.55);
-  background: rgba(48, 22, 22, 0.7);
+  border-color: transparent;
+  background: transparent;
   color: rgba(240, 190, 180, 0.98);
 }
 
@@ -1476,8 +1737,8 @@
 
 /* Timeslip dialog — full pedagogical timeslip in a modal */
 .pass-timeslip-dialog {
-  width: min(38rem, 100vw);
-  max-height: min(88vh, 900px);
+  width: min(51rem, calc(100vw - 2rem));
+  max-height: 85vh;
   margin: auto;
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1488,6 +1749,7 @@
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
   overflow: hidden;
   animation: pass-dialog-in 240ms ease-out;
+  z-index: calc(var(--z-grain) + 20);
 }
 
 .pass-timeslip-dialog::backdrop {
@@ -1505,13 +1767,13 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  max-height: min(88vh, 900px);
+  max-height: 85vh;
 }
 
 .pass-timeslip-dialog__close {
   position: absolute;
-  top: 0.65rem;
-  right: 0.65rem;
+  top: 1.15rem;
+  right: 1.35rem;
   z-index: 2;
   width: 2.2rem;
   height: 2.2rem;
@@ -1546,6 +1808,22 @@
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-blue) rgba(8, 10, 14, 0.95);
+}
+
+.pass-timeslip-dialog__body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pass-timeslip-dialog__body::-webkit-scrollbar-track {
+  background: rgba(8, 10, 14, 0.95);
+}
+
+.pass-timeslip-dialog__body::-webkit-scrollbar-thumb {
+  background: var(--color-primary-blue);
+  border-radius: 99px;
+  border: 2px solid rgba(8, 10, 14, 0.95);
 }
 
 .pass-timeslip-dialog__body .pass-timeslip {

@@ -7,9 +7,8 @@ import { PassTimeslipDialog } from './PassTimeslipDialog'
 import { usePassExpand } from './usePassExpand'
 import { Button } from '../ui/Button'
 import { useLocale, useT } from '../../i18n'
-import { localePath } from '../../lib/paths'
-import { edhTimeslipMeta, hudSplitCallouts, type HudSplitId } from '../../data/simulator'
-import { SHUTDOWN_COAST_S } from '../../lib/pass/ease'
+import { formatLocaleNumber } from '../../lib/formatLocaleNumber'
+import { edhTimeslipMeta, type HudSplitId } from '../../data/simulator'
 import type {
   PassCameraView,
   PassCommands,
@@ -30,16 +29,6 @@ const flybyThresholds: FlybyThreshold[] = [
 ]
 
 const FLYBY_LIFETIME_MS = 2100
-const SCRUB_MAX_S = edhTimeslipMeta.et + SHUTDOWN_COAST_S
-const CHUTE_SCRUB_S = edhTimeslipMeta.et + 0.55
-
-const scrubTickLabels: Record<HudSplitId, string> = {
-  sixty: "60'",
-  threeThirty: "330'",
-  eighth: "660'",
-  thousand: "1000'",
-  quarter: "1320'",
-}
 
 export function PassArena() {
   const locale = useLocale()
@@ -52,19 +41,19 @@ export function PassArena() {
   const [phase, setPhase] = useState<PassPhase>('idle')
   const [clock, setClock] = useState(0)
   const [speedKmh, setSpeedKmh] = useState(0)
-  const [gapM, setGapM] = useState(0)
+  const [remainingM, setRemainingM] = useState(402)
+  const [opponentClock, setOpponentClock] = useState(0)
   const [chuteDeploy01, setChuteDeploy01] = useState(0)
   const [cameraView, setCameraView] = useState<PassCameraView>('follow')
   const [splitCallout, setSplitCallout] = useState<HudSplitId | null>(null)
   const [muted, setMuted] = useState(true)
   const [opponent, setOpponent] = useState<PassOpponentId>('f1')
-  const [camaroUsesGlb, setCamaroUsesGlb] = useState(false)
   const [webglOk, setWebglOk] = useState(true)
   const [timeslipOpen, setTimeslipOpen] = useState(false)
   const [userReactionS, setUserReactionS] = useState<number | null>(null)
   const [flybys, setFlybys] = useState<{ id: FlybyKey; expiresAt: number }[]>([])
   const flybysHitRef = useRef<Set<FlybyKey>>(new Set())
-  const [scrubS, setScrubS] = useState<number>(edhTimeslipMeta.et)
+  const [finishReady, setFinishReady] = useState(false)
 
   const commandsRef = useRef<PassCommands | null>(null)
   const webglRetryRef = useRef(false)
@@ -75,6 +64,15 @@ export function PassArena() {
     commandsRef.current?.setMuted(muted)
   }, [muted])
 
+  useEffect(() => {
+    if (phase !== 'finished') {
+      setFinishReady(false)
+      return
+    }
+    const timer = window.setTimeout(() => setFinishReady(true), 1000)
+    return () => window.clearTimeout(timer)
+  }, [phase])
+
   // HMR / scene rebuild can trip a one-off WebGL loss. Retry once so Stage
   // comes back without a full page reload; a real missing GPU stays on fallback.
   useEffect(() => {
@@ -84,15 +82,16 @@ export function PassArena() {
   }, [webglOk])
 
   const handleReady = useCallback(
-    (commands: PassCommands, meta: PassSceneMeta) => {
+    (commands: PassCommands, _meta: PassSceneMeta) => {
+      void _meta
       commandsRef.current = commands
       commands.setMuted(muted)
       commands.setOpponent(opponent)
-      setCamaroUsesGlb(meta.camaroUsesGlb)
       setPhase('idle')
       setClock(0)
       setSpeedKmh(0)
-      setGapM(0)
+      setRemainingM(402)
+      setOpponentClock(0)
       setChuteDeploy01(0)
       setSplitCallout(null)
       setCameraView('follow')
@@ -158,11 +157,6 @@ export function PassArena() {
   }, [flybys])
 
 
-  const handleScrub = useCallback((next: number) => {
-    setScrubS(next)
-    commandsRef.current?.seek(next)
-  }, [])
-
   const handleToggleMuted = useCallback(() => {
     setMuted((current) => !current)
   }, [])
@@ -180,15 +174,13 @@ export function PassArena() {
     setCameraView('follow')
   }, [])
 
-  const handleZoomOut = useCallback(() => {
-    commandsRef.current?.setCameraView('wide')
-    setCameraView('wide')
-  }, [])
-
-  const handleCockpit = useCallback(() => {
-    commandsRef.current?.setCameraView('cockpit')
-    setCameraView('cockpit')
-  }, [])
+  const handleCycleCamera = useCallback(() => {
+    const order: PassCameraView[] = ['follow', 'cockpit', 'wide']
+    const index = order.indexOf(cameraView)
+    const next = order[(index + 1) % order.length] ?? 'follow'
+    commandsRef.current?.setCameraView(next)
+    setCameraView(next)
+  }, [cameraView])
 
   if (!webglOk) {
     return <PassFallback />
@@ -196,17 +188,31 @@ export function PassArena() {
 
   const showStageCta = phase === 'idle'
   const showOpponentPicker = phase === 'idle'
-  const showCameraControls = phase === 'racing' || phase === 'finished'
+  const showCameraControls = phase === 'racing'
+  const hideChromeTools = phase === 'finished'
   const showRacingHud =
     !reducedMotion &&
     (cameraView === 'follow' || cameraView === 'cockpit') &&
     (phase === 'staging' || phase === 'amber' || phase === 'green' || phase === 'racing')
 
+  const cameraViewLabel =
+    cameraView === 'cockpit'
+      ? t.pass.cockpitView
+      : cameraView === 'wide'
+        ? t.pass.zoomOut
+        : t.pass.followCar
+
   return (
     <section
       ref={arenaRef}
-      className={`pass-arena pass-arena--${phase}${showRacingHud ? ' pass-arena--racing-hud' : ''}${expanded ? ' pass-arena--expanded' : ''}`}
+      className={`pass-arena pass-arena--${phase}${showRacingHud ? ' pass-arena--racing-hud' : ''}${expanded ? ' pass-arena--expanded' : ''}${hideChromeTools ? ' pass-arena--chrome-hidden' : ''}`}
       aria-label={t.pass.title}
+      onPointerMove={() => {
+        arenaRef.current?.classList.add('pass-arena--chrome-visible')
+      }}
+      onPointerLeave={() => {
+        arenaRef.current?.classList.remove('pass-arena--chrome-visible')
+      }}
     >
       <div className="pass-arena__viewport">
         <PassCanvas
@@ -219,7 +225,8 @@ export function PassArena() {
               setSplitCallout(null)
             }
             if (next === 'idle' || next === 'staging') {
-              setGapM(0)
+              setRemainingM(402)
+              setOpponentClock(0)
               setChuteDeploy01(0)
               setUserReactionS(null)
               flybysHitRef.current.clear()
@@ -228,13 +235,11 @@ export function PassArena() {
             if (next === 'staging' || next === 'racing') {
               setCameraView('follow')
             }
-            if (next === 'finished') {
-              setScrubS(SCRUB_MAX_S)
-            }
           }}
           onClock={setClock}
           onSpeed={setSpeedKmh}
-          onGap={setGapM}
+          onRemaining={setRemainingM}
+          onOpponentClock={setOpponentClock}
           onChuteDeploy={setChuteDeploy01}
           onLaunch={setUserReactionS}
           onSplitCallout={setSplitCallout}
@@ -248,8 +253,9 @@ export function PassArena() {
 
         <div className="pass-arena__hud">
           <div className="pass-arena__topbar">
+            {phase === 'idle' || (!showRacingHud && phase !== 'finished') ? (
             <div className="pass-arena__status">
-              {phase !== 'idle' && phase !== 'finished' && !showRacingHud ? (
+              {phase !== 'idle' && !showRacingHud ? (
                 <p className="pass-arena__status-text" role="status" aria-live="polite">
                   {t.pass.status[phase]}
                 </p>
@@ -260,10 +266,12 @@ export function PassArena() {
                   <span className="pass-arena__pace-sep">·</span>
                   <span>402 m</span>
                   <span className="pass-arena__pace-sep">·</span>
-                  <span className="pass-arena__pace-hero">5.74s</span>
+                  <span className="pass-arena__pace-hero">
+                    {formatLocaleNumber(edhTimeslipMeta.et, locale, 3)}s
+                  </span>
                 </p>
               ) : null}
-              {!showRacingHud && phase !== 'idle' && phase !== 'finished' ? (
+              {!showRacingHud && phase !== 'idle' ? (
                 <>
                   <p className="pass-arena__clock" data-phase={phase}>
                     {clock.toFixed(2)}s
@@ -286,10 +294,14 @@ export function PassArena() {
                 </p>
               ) : null}
             </div>
+            ) : (
+              <div />
+            )}
 
+            {!hideChromeTools ? (
             <div className="pass-arena__top-actions">
               {showCameraControls && !reducedMotion ? (
-                <div className="pass-arena__cam" role="group" aria-label={t.pass.followCar}>
+                <div className="pass-arena__cam" role="group" aria-label={t.pass.cameraViews}>
                   <Button
                     className="pass-arena__cam-btn"
                     variant={cameraView === 'follow' ? 'primary' : 'ghost'}
@@ -300,19 +312,11 @@ export function PassArena() {
                   </Button>
                   <Button
                     className="pass-arena__cam-btn"
-                    variant={cameraView === 'cockpit' ? 'primary' : 'ghost'}
-                    onClick={handleCockpit}
-                    aria-pressed={cameraView === 'cockpit'}
+                    variant={cameraView !== 'follow' ? 'primary' : 'ghost'}
+                    onClick={handleCycleCamera}
+                    aria-label={`${t.pass.cameraViews}: ${cameraViewLabel}`}
                   >
-                    {t.pass.cockpitView}
-                  </Button>
-                  <Button
-                    className="pass-arena__cam-btn"
-                    variant={cameraView === 'wide' ? 'primary' : 'ghost'}
-                    onClick={handleZoomOut}
-                    aria-pressed={cameraView === 'wide'}
-                  >
-                    {t.pass.zoomOut}
+                    {t.pass.cameraViews}
                   </Button>
                 </div>
               ) : null}
@@ -336,29 +340,33 @@ export function PassArena() {
                 {expanded ? t.pass.collapseTrack : t.pass.expandTrack}
               </Button>
             </div>
+            ) : (
+              <div />
+            )}
           </div>
+
+          {(phase === 'racing' || phase === 'finished') ? (
+            <p className="sr-only" role="status" aria-live="polite">
+              {`${t.pass.laneBoard}: EDH ${clock.toFixed(3)} · ${t.pass.compare[opponent]} ${opponentClock.toFixed(3)}`}
+            </p>
+          ) : null}
 
           {showRacingHud ? (
             <PassRacingHud
               phase={phase}
-              clock={clock}
               speedKmh={speedKmh}
-              gapM={gapM}
+              remainingM={remainingM}
               chuteDeploy01={chuteDeploy01}
             />
           ) : null}
 
-          {showRacingHud && phase === 'racing' && chuteDeploy01 > 0.25 ? (
-            <p className="pass-arena__split-banner" role="status" aria-live="polite">
-              {t.pass.splitCallouts.chutes}
-            </p>
-          ) : showRacingHud && phase === 'racing' && splitCallout ? (
+          {showRacingHud && phase === 'racing' && chuteDeploy01 <= 0.25 && splitCallout ? (
             <p className="pass-arena__split-banner" role="status" aria-live="polite">
               {getSplitCalloutText(t, splitCallout)}
             </p>
           ) : null}
 
-          {flybys.length > 0 ? (
+          {flybys.length > 0 && phase === 'racing' ? (
             <div className="pass-arena__flyby-rail" aria-hidden="true">
               {flybys.map((flyby) => (
                 <div key={flyby.id} className="pass-arena__flyby-chip">
@@ -410,47 +418,29 @@ export function PassArena() {
               </div>
             ) : null}
 
-            {phase === 'finished' ? (
-              <div className="pass-arena__finish pass-arena__finish--with-scrubber" role="group" aria-label={t.pass.status.finished}>
-                <div className="pass-arena__finish-stats">
-                  <div className="pass-arena__finish-stat pass-arena__finish-stat--hero">
-                    <span className="pass-arena__finish-stat-label">ET</span>
-                    <span className="pass-arena__finish-stat-value">
-                      {edhTimeslipMeta.et.toFixed(2)}
-                      <span className="pass-arena__finish-stat-unit">s</span>
+            {phase === 'finished' && finishReady ? (
+              <div className="pass-arena__finish pass-arena__finish--result" role="group" aria-label={t.pass.status.finished}>
+                <div className="pass-arena__finish-hero">
+                  <p className="pass-arena__finish-wins">{t.pass.heroWins}</p>
+                  <p className="pass-arena__finish-et">
+                    <span className="pass-arena__finish-et-value">
+                      {formatLocaleNumber(edhTimeslipMeta.et, locale, 4)}
                     </span>
-                  </div>
-                  <div className="pass-arena__finish-stat">
-                    <span className="pass-arena__finish-stat-label">Trap</span>
-                    <span className="pass-arena__finish-stat-value">
-                      {edhTimeslipMeta.trapKmh}
-                      <span className="pass-arena__finish-stat-unit">km/h</span>
-                    </span>
-                  </div>
+                    <span className="pass-arena__finish-et-unit">s</span>
+                  </p>
+                  <p className="pass-arena__finish-trap">
+                    {edhTimeslipMeta.trapKmh} km/h
+                  </p>
                   {userReactionS !== null ? (
-                    <div className="pass-arena__finish-stat pass-arena__finish-stat--reaction">
-                      <span className="pass-arena__finish-stat-label">{t.pass.yourReaction}</span>
-                      <span className="pass-arena__finish-stat-value">
-                        {userReactionS.toFixed(3)}
-                      </span>
-                      <span className="pass-arena__finish-stat-caption">
-                        vs {edhTimeslipMeta.reaction.toFixed(3)} · Anders
-                      </span>
-                      <span className="pass-arena__finish-stat-delta">
-                        {userReactionS <= edhTimeslipMeta.reaction
-                          ? t.pass.reactionFaster
-                          : `+${((userReactionS - edhTimeslipMeta.reaction) * 1000).toFixed(0)} ms`}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="pass-arena__finish-stat">
-                      <span className="pass-arena__finish-stat-label">RT</span>
-                      <span className="pass-arena__finish-stat-value">
-                        {edhTimeslipMeta.reaction.toFixed(3)}
-                      </span>
-                    </div>
-                  )}
+                    <p className="pass-arena__finish-reaction">
+                      {t.pass.reactionLate.replace(
+                        '{seconds}',
+                        formatLocaleNumber(Math.max(0, userReactionS), locale, 3),
+                      )}
+                    </p>
+                  ) : null}
                 </div>
+
                 <div className="pass-arena__finish-actions">
                   <Button className="pass-arena__stage" onClick={handleStage}>
                     {t.pass.again}
@@ -460,66 +450,9 @@ export function PassArena() {
                     variant="ghost"
                     onClick={openTimeslip}
                   >
-                    {t.pass.openTimeslip}
-                  </Button>
-                  <Button
-                    className="pass-arena__finish-secondary"
-                    to={localePath(locale, 'journey')}
-                    variant="ghost"
-                    icon
-                  >
-                    {t.pass.continueJourney}
+                    {t.pass.seeTimeslip}
                   </Button>
                 </div>
-
-                {!reducedMotion ? (
-                  <div className="pass-arena__scrubber">
-                    <div className="pass-arena__scrubber-head">
-                      <span className="pass-arena__scrubber-label">{t.pass.scrubLabel}</span>
-                      <span className="pass-arena__scrubber-time">{scrubS.toFixed(3)}s</span>
-                    </div>
-                    <input
-                      type="range"
-                      min={0}
-                      max={SCRUB_MAX_S}
-                      step={0.01}
-                      value={scrubS}
-                      onChange={(event) => handleScrub(parseFloat(event.target.value))}
-                      className="pass-arena__scrubber-slider"
-                      aria-label={t.pass.scrubLabel}
-                    />
-                    <div className="pass-arena__scrubber-ticks" aria-hidden="true">
-                      {hudSplitCallouts.map((split) => {
-                        const percent = (split.et / SCRUB_MAX_S) * 100
-                        return (
-                          <button
-                            key={split.id}
-                            type="button"
-                            className="pass-arena__scrubber-tick"
-                            style={{ left: `${percent}%` }}
-                            onClick={() => handleScrub(split.et)}
-                            aria-label={`${scrubTickLabels[split.id]} · ${split.et.toFixed(2)}s`}
-                          >
-                            <span className="pass-arena__scrubber-tick-dot" />
-                            <span className="pass-arena__scrubber-tick-label">
-                              {scrubTickLabels[split.id]}
-                            </span>
-                          </button>
-                        )
-                      })}
-                      <button
-                        type="button"
-                        className="pass-arena__scrubber-tick"
-                        style={{ left: `${(CHUTE_SCRUB_S / SCRUB_MAX_S) * 100}%` }}
-                        onClick={() => handleScrub(CHUTE_SCRUB_S)}
-                        aria-label={`${t.pass.scrubChute} · ${CHUTE_SCRUB_S.toFixed(2)}s`}
-                      >
-                        <span className="pass-arena__scrubber-tick-dot" />
-                        <span className="pass-arena__scrubber-tick-label">{t.pass.scrubChute}</span>
-                      </button>
-                    </div>
-                  </div>
-                ) : null}
               </div>
             ) : (
               <div className="pass-arena__actions">
@@ -556,14 +489,6 @@ export function PassArena() {
             )}
           </div>
         </div>
-
-        {camaroUsesGlb ? (
-          <p className="pass-arena__model-credit">
-            <a href={t.pass.modelCreditHref} target="_blank" rel="license noopener noreferrer">
-              {t.pass.modelCredit}
-            </a>
-          </p>
-        ) : null}
       </div>
 
       <PassTimeslipDialog open={timeslipOpen} onClose={closeTimeslip} />

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 
 import { PassTimeslip } from './PassFallback'
 import { useT } from '../../i18n'
@@ -53,7 +54,7 @@ export function PassTimeslipDialog({ open, onClose }: Props) {
     [onClose],
   )
 
-  return (
+  return createPortal(
     <dialog
       ref={dialogRef}
       className="pass-timeslip-dialog"
@@ -75,6 +76,7 @@ export function PassTimeslipDialog({ open, onClose }: Props) {
           <PassTimeslip />
         </div>
       </div>
-    </dialog>
+    </dialog>,
+    document.body,
   )
 }

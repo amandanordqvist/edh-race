@@ -23,7 +23,7 @@ body {
   margin: 0;
   min-height: 100dvh;
   font-family: var(--font-body);
-  font-size: 1rem;
+  font-size: var(--body-size);
   line-height: 1.65;
   color: var(--color-almost-white);
   background: var(--color-almost-black);
@@ -107,6 +107,46 @@ ul {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  z-index: calc(var(--z-nav) + 2);
+  padding: 0.75rem 1.1rem;
+  min-height: 44px;
+  background: var(--color-primary-blue);
+  color: var(--color-almost-white);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  transform: translateY(-120%);
+}
+
+.skip-link:focus {
+  transform: translateY(0.75rem);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-pad: 4.5rem;
+    --section-pad-bottom: 4.75rem;
+    --grid-gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-height: 76px;
+    --section-pad: 7.5rem;
+    --section-pad-bottom: 8rem;
+    --body-size: 1.0625rem;
+    --grid-gap: 1.75rem;
+  }
 }
 
 /* Fixed film grain — GPU-safe, never on scrolling containers */

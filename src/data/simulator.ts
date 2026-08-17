@@ -6,13 +6,15 @@ export type SimulatorRacer = {
   et: number
   /** Display top speed for finish board */
   speedLabel: string
+  /** Trap speed at 1320' (km/h) for the lane scoreboard. */
+  trapKmh: number
 }
 
 /** Educational standing-start comparison over 402 m. The Beast is the hero. */
 export const simulatorRacers: SimulatorRacer[] = [
-  { id: 'camaro', et: 5.7451, speedLabel: '415 km/h' },
-  { id: 'f1', et: 9.4, speedLabel: '~330 km/h' },
-  { id: 'jet', et: 16.8, speedLabel: '~290 km/h' },
+  { id: 'camaro', et: 5.7451, speedLabel: '415 km/h', trapKmh: 415 },
+  { id: 'f1', et: 9.4, speedLabel: '~330 km/h', trapKmh: 330 },
+  { id: 'jet', et: 16.8, speedLabel: '~290 km/h', trapKmh: 290 },
 ]
 
 export const TREE_STAGE_MS = 700

@@ -3,97 +3,76 @@
   margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
 }
 
+.sponsor-strip__label {
+  margin: 0 0 0.85rem;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-primary-blue);
+}
+
 .sponsor-strip .section__title {
-  max-width: 18ch;
+  max-width: 16ch;
 }
 
 .sponsor-strip .section__lead {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.35rem;
   max-width: 52ch;
 }
 
-.sponsor-strip__benefits {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.55rem;
-  margin: 0 0 1.5rem;
-}
-
-.sponsor-strip__benefits li {
-  position: relative;
-  padding-left: 1rem;
-  font-size: 1rem;
-  line-height: 1.55;
-  color: rgba(243, 245, 248, 0.88);
-}
-
-.sponsor-strip__benefits li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.65em;
-  width: 0.4rem;
-  height: 1px;
-  background: var(--color-primary-blue);
+.sponsor-strip__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .sponsor-strip__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.15rem;
-  border-block: 1px solid var(--color-hairline);
+  gap: 1.25rem;
   padding-block: 1.75rem;
 }
 
 .sponsor-strip__logo {
   display: grid;
   place-items: center;
-  min-height: 8.25rem;
-  padding: 1.35rem 1.25rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
+  min-height: 7.5rem;
+  padding: 1.25rem;
 }
 
 .sponsor-strip__logo img {
-  height: 4.5rem;
+  height: 4.25rem;
   width: auto;
   max-width: 100%;
   object-fit: contain;
   filter: grayscale(1) brightness(1.35) contrast(0.9);
-  opacity: 0.88;
+  opacity: 0.86;
   transition:
-    opacity 0.55s cubic-bezier(0.32, 0.72, 0, 1),
-    filter 0.55s cubic-bezier(0.32, 0.72, 0, 1),
-    transform 0.55s cubic-bezier(0.32, 0.72, 0, 1);
+    opacity var(--duration-med) var(--ease-out),
+    filter var(--duration-med) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .sponsor-strip__logo:hover img {
     opacity: 1;
-    filter: grayscale(0.2) brightness(1.08);
-    transform: translateY(-1px);
+    filter: none;
   }
 }
 
 @media (min-width: 720px) {
-  .sponsor-strip__benefits {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.65rem 1.5rem;
-  }
-
   .sponsor-strip__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.35rem;
+    gap: 1.5rem;
     padding-block: 2rem;
   }
 
   .sponsor-strip__logo {
-    min-height: 10rem;
-    padding: 1.75rem 1.5rem;
+    min-height: 8.5rem;
   }
 
   .sponsor-strip__logo img {
-    height: 5.5rem;
+    height: 5rem;
   }
 }

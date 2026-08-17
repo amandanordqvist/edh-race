@@ -6,6 +6,14 @@ import './Reveal.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
+type RevealPace = 'launch' | 'rise' | 'settle'
+
+const PACE = {
+  launch: { y: 24, duration: 0.6, ease: 'power3.out', start: 'top 86%' },
+  rise: { y: 40, duration: 0.85, ease: 'power3.out', start: 'top 88%' },
+  settle: { y: 20, duration: 0.7, ease: 'power2.out', start: 'top 90%' },
+} as const
+
 type RevealProps = {
   children: ReactNode
   className?: string
@@ -15,6 +23,8 @@ type RevealProps = {
   stagger?: number
   /** Media reveal: slight scale instead of only rise */
   variant?: 'rise' | 'media'
+  /** Entrance pacing — launch (snappy), rise (default), settle (quiet) */
+  pace?: RevealPace
   as?: 'div' | 'li' | 'article' | 'section' | 'figure' | 'ul'
   style?: CSSProperties
 }
@@ -23,9 +33,10 @@ export function Reveal({
   children,
   className = '',
   delay = 0,
-  y = 48,
+  y,
   stagger,
   variant = 'rise',
+  pace = 'rise',
   as: Tag = 'div',
   style,
 }: RevealProps) {
@@ -43,32 +54,35 @@ export function Reveal({
         return
       }
 
+      const preset = PACE[pace]
+      const resolvedY = y ?? preset.y
+      const duration =
+        variant === 'media' ? (pace === 'launch' ? 0.75 : 1.05) : preset.duration
+
       const ctx = gsap.context(() => {
         const targets = stagger != null ? el.children : el
         const fromVars =
           variant === 'media'
-            ? { opacity: 0, scale: 1.06, y: y * 0.35 }
-            : { opacity: 0, y }
+            ? { opacity: 0, scale: 1.06, y: resolvedY * 0.35 }
+            : { opacity: 0, y: resolvedY }
 
         gsap.from(targets, {
           ...fromVars,
-          duration: variant === 'media' ? 1.05 : 0.85,
+          duration,
           delay,
           stagger: stagger ?? 0,
-          ease: 'power3.out',
+          ease: preset.ease,
           scrollTrigger: {
             trigger: el,
-            start: 'top 88%',
+            start: preset.start,
             once: true,
           },
         })
       }, el)
 
-      ScrollTrigger.refresh()
-
       return () => ctx.revert()
     },
-    { dependencies: [delay, y, stagger, variant] },
+    { dependencies: [delay, y, stagger, variant, pace] },
   )
 
   return (

@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.65rem;
+  min-height: 44px;
   padding: 0.9rem 1.35rem 0.9rem 1.55rem;
   font-family: var(--font-ui);
   font-size: 0.85rem;

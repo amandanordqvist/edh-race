@@ -1,6 +1,7 @@
 import { useId } from 'react'
 
 import { PassArena } from '../components/pass/PassArena'
+import { PassClosing } from '../components/pass/PassClosing'
 import { PassContextSection } from '../components/pass/PassContextSection'
 import { useT } from '../i18n'
 import './PassPage.css'
@@ -13,6 +14,7 @@ export default function PassPage() {
     <main className="pass-page" aria-labelledby={titleId}>
       <section className="pass-page__hero">
         <div className="pass-page__copy">
+          <p className="pass-page__eyebrow">{t.pass.heroEyebrow}</p>
           <h1 id={titleId} className="pass-page__title">
             {t.pass.title}
           </h1>
@@ -25,6 +27,7 @@ export default function PassPage() {
       </section>
 
       <PassContextSection />
+      <PassClosing />
     </main>
   )
 }

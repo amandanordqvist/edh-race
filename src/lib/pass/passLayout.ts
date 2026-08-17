@@ -5,10 +5,13 @@ export const LANE_FAR_Z = -2.2
 export const TRACK_LENGTH = 132
 export const TRACK_WIDTH = 11.5
 
+/** Burnout box / staging yard behind the start line (negative X). */
+export const STAGING_LENGTH = 22
+
 /** Asphalt past the 1320' gantry — chute, coast, sand. */
 export const SHUTDOWN_LENGTH = 44
 
 /** Painted safety channel between racing surface and the concrete wall. */
-export const CHANNEL_WIDTH = 2.0
+export const CHANNEL_WIDTH = 1.55
 
 export const BARRIER_Z = TRACK_WIDTH / 2 + CHANNEL_WIDTH + 0.35

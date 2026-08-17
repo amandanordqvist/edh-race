@@ -24,6 +24,8 @@ type PassCanvasProps = {
   onClock: (seconds: number) => void
   onSpeed?: (speedKmh: number) => void
   onGap?: (gapM: number) => void
+  onRemaining?: (meters: number) => void
+  onOpponentClock?: (seconds: number) => void
   onChuteDeploy?: (chuteDeploy01: number) => void
   onLaunch?: (reactionS: number | null) => void
   onSplitCallout?: (splitId: HudSplitId) => void
@@ -40,6 +42,8 @@ type LiveHandlers = Pick<
   | 'onClock'
   | 'onSpeed'
   | 'onGap'
+  | 'onRemaining'
+  | 'onOpponentClock'
   | 'onChuteDeploy'
   | 'onLaunch'
   | 'onSplitCallout'
@@ -61,6 +65,8 @@ export function PassCanvas(props: PassCanvasProps) {
     onClock: props.onClock,
     onSpeed: props.onSpeed,
     onGap: props.onGap,
+    onRemaining: props.onRemaining,
+    onOpponentClock: props.onOpponentClock,
     onChuteDeploy: props.onChuteDeploy,
     onLaunch: props.onLaunch,
     onSplitCallout: props.onSplitCallout,
@@ -77,6 +83,8 @@ export function PassCanvas(props: PassCanvasProps) {
       onClock: props.onClock,
       onSpeed: props.onSpeed,
       onGap: props.onGap,
+      onRemaining: props.onRemaining,
+      onOpponentClock: props.onOpponentClock,
       onChuteDeploy: props.onChuteDeploy,
       onLaunch: props.onLaunch,
       onSplitCallout: props.onSplitCallout,
@@ -193,6 +201,10 @@ export function PassCanvas(props: PassCanvasProps) {
             audio.onRaceSpeed(frame.speed01)
             liveRef.current.onSpeed?.(frame.speedKmh)
             liveRef.current.onGap?.(frame.gapM)
+            liveRef.current.onRemaining?.(
+              Math.max(0, (1 - frame.progress01) * 402),
+            )
+            liveRef.current.onOpponentClock?.(frame.opponentClock)
             liveRef.current.onChuteDeploy?.(frame.chuteDeploy01)
             if (frame.splitHit) {
               liveRef.current.onSplitCallout?.(frame.splitHit)

@@ -43,11 +43,11 @@ export function buildPassVehicles(
   const cast = shadowsEnabled(quality)
 
   const camaroBlue = createMaterial(pc, {
-    diffuse: [42 / 255, 79 / 255, 154 / 255],
-    emissive: [0.05, 0.09, 0.2],
-    emissiveIntensity: quality === 'high' ? 0.28 : 0.16,
-    metalness: 0.38,
-    gloss: 0.5,
+    diffuse: [42 / 255, 72 / 255, 148 / 255],
+    emissive: [0.04, 0.06, 0.12],
+    emissiveIntensity: quality === 'high' ? 0.16 : 0.1,
+    metalness: 0.55,
+    gloss: 0.88,
   })
   const camaroDark = createMaterial(pc, {
     diffuse: [0.07, 0.08, 0.1],
@@ -57,11 +57,11 @@ export function buildPassVehicles(
   const camaroGlass = createMaterial(pc, {
     diffuse: [0.1, 0.14, 0.2],
     metalness: 0.55,
-    gloss: 0.72,
+    gloss: 0.9,
   })
   const rubber = createMaterial(pc, {
     diffuse: [0.05, 0.05, 0.055],
-    metalness: 0.04,
+    metalness: 0.02,
     gloss: 0.12,
   })
   const chute = createMaterial(pc, {

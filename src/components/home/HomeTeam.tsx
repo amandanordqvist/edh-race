@@ -11,7 +11,7 @@ export function HomeTeam() {
   const t = useT()
   const locale = useLocale()
   const [photoFailed, setPhotoFailed] = useState(false)
-  const members = team.filter((member) => member.group === 'crew' && member.image).slice(0, 4)
+  const members = team.filter((member) => member.group === 'crew')
 
   return (
     <Section className="home-team" wide>
@@ -19,12 +19,9 @@ export function HomeTeam() {
         <p className="home-team__label">{t.home.teamLabel}</p>
         <h2 className="home-team__title">{t.home.teamTitle}</h2>
         <p className="home-team__body">{t.home.teamBody}</p>
-        <blockquote className="home-team__quote">
-          <p>{t.home.teamQuote}</p>
-        </blockquote>
       </Reveal>
 
-      <Reveal className="home-team__photo" as="figure" delay={0.06} variant="media" y={28}>
+      <Reveal className="home-team__photo" as="figure" delay={0.06} variant="media" y={24}>
         {photoFailed ? (
           <div className="home-team__fallback" role="img" aria-label={t.home.imageFallback}>
             <span>{t.home.imageFallback}</span>
@@ -42,12 +39,13 @@ export function HomeTeam() {
         )}
       </Reveal>
 
-      <Reveal delay={0.12} y={28}>
-        <div className="home-team__grid">
+      <Reveal delay={0.1} y={24}>
+        <ul className="home-team__grid">
           {members.map((member) => {
             const copy = t.team.members[member.id]
+            const role = copy?.role ?? ''
             return (
-              <article className="home-team__card" key={member.id}>
+              <li className="home-team__card" key={member.id}>
                 {member.image ? (
                   <img
                     className="home-team__avatar"
@@ -58,27 +56,18 @@ export function HomeTeam() {
                     loading="lazy"
                     decoding="async"
                   />
-                ) : (
-                  <div className="home-team__avatar home-team__avatar--initials" aria-hidden="true">
-                    {member.name
-                      .split(' ')
-                      .filter(Boolean)
-                      .slice(0, 2)
-                      .map((part) => part[0])
-                      .join('')}
-                  </div>
-                )}
+                ) : null}
                 <div>
                   <h3 className="home-team__name">{member.name}</h3>
-                  <p className="home-team__role">{copy?.role ?? ''}</p>
+                  {role ? <p className="home-team__role">{role}</p> : null}
                 </div>
-              </article>
+              </li>
             )
           })}
-        </div>
+        </ul>
       </Reveal>
 
-      <Reveal className="home-team__cta" delay={0.18}>
+      <Reveal className="home-team__cta" delay={0.14}>
         <Button to={localePath(locale, 'team')} icon>
           {t.home.teamCta}
         </Button>

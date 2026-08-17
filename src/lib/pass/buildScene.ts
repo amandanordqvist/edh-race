@@ -1,13 +1,13 @@
-import type { Application, Asset, Entity, Texture, Vec3 } from 'playcanvas'
+import type { Application, Entity, Texture, Vec3 } from 'playcanvas'
 
 import { buildPassEnvironment, type TreeMode } from './buildEnvironment'
 import { attachCamaroDecals } from './attachCamaroDecals'
 import { buildPassVehicles, type VehicleId } from './buildVehicles'
 import { loadCamaroGlb } from './loadCamaroGlb'
 import { loadFittedGlb } from './loadFittedGlb'
+import { createScoreboard, type PassScoreboard } from './createScoreboard'
 import { loadTextureAsset } from './loadTextureAsset'
 import { LANE_FAR_Z, LANE_NEAR_Z } from './passLayout'
-import { sponsors } from '../../data/sponsors'
 import type { PassOpponentId, PassQuality } from './types'
 
 type PlayCanvasNamespace = typeof import('playcanvas')
@@ -30,6 +30,7 @@ export type PassScene = {
   setOpponent: (opponent: PassOpponentId) => void
   setTreeLights: (mode: TreeMode) => void
   resetRacers: () => void
+  scoreboard: PassScoreboard
 }
 
 export async function buildPassScene(
@@ -40,25 +41,15 @@ export async function buildPassScene(
   const sceneRoot = new pc.Entity('pass-scene')
   app.root.addChild(sceneRoot)
 
-  // Bright daylight: high sun, cool fill, pale horizon haze — NHRA daytime strip.
-  app.scene.ambientLight = new pc.Color(0.5, 0.52, 0.56)
+  // Clear daytime strip: blue sky fill, haze that stays sky-coloured.
+  app.scene.ambientLight = new pc.Color(0.38, 0.46, 0.58)
   app.scene.fog.type = pc.FOG_LINEAR
-  app.scene.fog.color = new pc.Color(0.74, 0.8, 0.88)
-  app.scene.fog.start = quality === 'high' ? 62 : 40
-  app.scene.fog.end = quality === 'high' ? 190 : 140
+  app.scene.fog.color = new pc.Color(0.62, 0.76, 0.92)
+  app.scene.fog.start = quality === 'high' ? 72 : 48
+  app.scene.fog.end = quality === 'high' ? 210 : 160
 
-  // Pre-fetch sponsor logos for wall boards. Missing textures fall back to tone.
-  const sponsorTextures = await Promise.all(
-    sponsors.map(async (sponsor) => {
-      try {
-        const asset = await loadTextureAsset(app, pc, sponsor.logo, `sponsor-${sponsor.id}`)
-        return { sponsorId: sponsor.id, asset }
-      } catch (error) {
-        console.warn(`[pass] Sponsor logo ${sponsor.id} unavailable`, error)
-        return { sponsorId: sponsor.id, asset: null as Asset | null }
-      }
-    }),
-  )
+  // Barrier boards stay tone-only — skip logo fetches until body-mapped decals exist.
+  const sponsorTextures: import('./buildBarrierBoards').SponsorTextureEntry[] = []
 
   let asphaltRough: Texture | null = null
   try {
@@ -81,7 +72,7 @@ export async function buildPassScene(
       quality,
       url: '/models/dragster_race_christmas_tree.glb',
       name: 'christmas-tree-glb',
-      target: { kind: 'height', meters: 5.8 },
+      target: { kind: 'height', meters: 4.6 },
       groundClearance: 0,
     })
   } catch (error) {
@@ -108,9 +99,8 @@ export async function buildPassScene(
     camaroUsesGlb = true
     camaroHasTextures = loaded.hasTextures
 
-    if (!loaded.hasTextures) {
-      await attachCamaroDecals({ app, pc, camaro, quality })
-    }
+    // Always brand the car — scan textures alone read as a generic prototype.
+    await attachCamaroDecals({ app, pc, camaro, quality })
   } catch (error) {
     console.warn('[pass] Camaro GLB unavailable — using primitive fallback', error)
   }
@@ -167,8 +157,9 @@ export async function buildPassScene(
   }
 
   placeOnLane(racers.camaro, racers.camaro.getLocalPosition().x || 0.4, LANE_NEAR_Z)
-  placeOnLane(racers.f1, 0.2, LANE_FAR_Z)
-  placeOnLane(racers.jet, 0.15, LANE_FAR_Z)
+  // Opponent slightly ahead and further left — full silhouette, lower visual priority.
+  placeOnLane(racers.f1, 1.85, LANE_FAR_Z - 0.55)
+  placeOnLane(racers.jet, 1.6, LANE_FAR_Z - 0.55)
 
   let opponent: PassOpponentId = 'f1'
   racers.f1.enabled = true
@@ -189,17 +180,17 @@ export async function buildPassScene(
     sceneRoot.addChild(racer)
   })
 
-  const skyClear = new pc.Color(0.55, 0.68, 0.82)
+  const skyClear = new pc.Color(0.52, 0.7, 0.92)
   const camera = new pc.Entity('pass-camera')
   camera.addComponent('camera', {
     clearColor: skyClear,
-    fov: quality === 'high' ? 46 : 52,
-    nearClip: 0.35,
+    fov: quality === 'high' ? 44 : 50,
+    nearClip: 0.2,
     farClip: environment.trackLength * 3,
   })
-  const inspectYaw = (38 * Math.PI) / 180
-  const inspectPitch = (18 * Math.PI) / 180
-  const inspectRadius = 7.2
+  const inspectYaw = (14 * Math.PI) / 180
+  const inspectPitch = (6 * Math.PI) / 180
+  const inspectRadius = 7.6
   const heroX = startPositions.camaro.x
   const heroZ = startPositions.camaro.z
   const cosPitch = Math.cos(inspectPitch)
@@ -208,59 +199,68 @@ export async function buildPassScene(
     0.72 + Math.sin(inspectPitch) * inspectRadius,
     heroZ + Math.cos(inspectYaw) * cosPitch * inspectRadius,
   )
-  camera.lookAt(heroX, 0.72, heroZ)
+  camera.lookAt(heroX + 1.2, 0.72, heroZ)
   sceneRoot.addChild(camera)
 
   const high = quality === 'high'
 
-  // High daylight key from over the far grandstand so rubber and blue paint read.
-  // When the PureSky HDRI is active, IBL already lights the cars — keep the key softer.
+  // High daytime sun from the left, sky fill from the right.
   const keyLight = new pc.Entity('key-light')
   keyLight.addComponent('light', {
     type: 'directional',
-    color: new pc.Color(1.0, 0.96, 0.88),
-    intensity: high ? 2.15 : 1.8,
+    color: new pc.Color(1.0, 0.94, 0.82),
+    intensity: high ? 2.45 : 2.05,
     castShadows: true,
-    shadowDistance: high ? 140 : 95,
+    shadowDistance: high ? 90 : 70,
     shadowResolution: high ? 2048 : 1024,
-    shadowBias: 0.12,
-    normalOffsetBias: 0.04,
+    shadowBias: 0.06,
+    normalOffsetBias: 0.055,
     shadowType: pc.SHADOW_PCF3_32F,
   })
-  keyLight.setEulerAngles(42, 28, 0)
+  keyLight.setEulerAngles(46, 52, 0)
   sceneRoot.addChild(keyLight)
 
   const fillLight = new pc.Entity('fill-light')
   fillLight.addComponent('light', {
     type: 'directional',
-    color: new pc.Color(0.52, 0.64, 0.86),
-    intensity: high ? 0.72 : 0.58,
+    color: new pc.Color(0.55, 0.7, 0.92),
+    intensity: high ? 0.72 : 0.55,
     castShadows: false,
   })
-  fillLight.setEulerAngles(32, -130, 0)
+  fillLight.setEulerAngles(38, -155, 0)
   sceneRoot.addChild(fillLight)
 
   const groundBounce = new pc.Entity('ground-bounce')
   groundBounce.addComponent('light', {
     type: 'directional',
-    color: new pc.Color(0.55, 0.54, 0.5),
-    intensity: high ? 0.3 : 0.24,
+    color: new pc.Color(0.18, 0.17, 0.15),
+    intensity: high ? 0.12 : 0.09,
     castShadows: false,
   })
-  groundBounce.setEulerAngles(-48, 8, 0)
+  groundBounce.setEulerAngles(-58, 18, 0)
   sceneRoot.addChild(groundBounce)
 
-  if (high) {
-    const rimLight = new pc.Entity('rim-light')
-    rimLight.addComponent('light', {
-      type: 'directional',
-      color: new pc.Color(0.72, 0.82, 1.0),
-      intensity: 0.48,
-      castShadows: false,
-    })
-    rimLight.setEulerAngles(8, -40, 0)
-    sceneRoot.addChild(rimLight)
-  }
+  const rimLight = new pc.Entity('rim-light')
+  rimLight.addComponent('light', {
+    type: 'directional',
+    color: new pc.Color(0.7, 0.84, 1.0),
+    intensity: high ? 0.85 : 0.58,
+    castShadows: false,
+  })
+  rimLight.setEulerAngles(8, -48, 0)
+  sceneRoot.addChild(rimLight)
+
+  const contactFill = new pc.Entity('contact-fill')
+  contactFill.addComponent('light', {
+    type: 'directional',
+    color: new pc.Color(0.42, 0.48, 0.58),
+    intensity: high ? 0.22 : 0.16,
+    castShadows: false,
+  })
+  contactFill.setEulerAngles(78, 0, 0)
+  sceneRoot.addChild(contactFill)
+
+  const scoreboard = createScoreboard(app, pc, sceneRoot)
 
   const applyOpponentVisibility = () => {
     racers.f1.enabled = opponent === 'f1'
@@ -274,6 +274,7 @@ export async function buildPassScene(
     racers.jet.setLocalPosition(startPositions.jet)
     racers.jet.setLocalEulerAngles(startRotations.jet)
     applyOpponentVisibility()
+    scoreboard.setOpponent(next)
   }
 
   const getOpponent = () => opponent
@@ -284,6 +285,7 @@ export async function buildPassScene(
       racers[id].setLocalEulerAngles(startRotations[id])
     })
     applyOpponentVisibility()
+    scoreboard.reset()
   }
 
   resetRacers()
@@ -302,5 +304,6 @@ export async function buildPassScene(
     setOpponent,
     setTreeLights: environment.setTreeLights,
     resetRacers,
+    scoreboard,
   }
 }

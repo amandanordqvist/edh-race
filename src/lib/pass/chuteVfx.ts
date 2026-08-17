@@ -2,12 +2,22 @@ import type { Entity } from 'playcanvas'
 
 import { createMaterial, createPrimitive, type PlayCanvasNamespace } from './scenePrimitives'
 
-const CHUTE_TRAIL_LENGTH = 2.9
-const CHUTE_CANOPY_DIAMETER = 1.34
-const CHUTE_LINE_THICKNESS = 0.028
-const CHUTE_PAIR_Z = 0.4
-/** Rear anchor in local Camaro space (car forward is +X). */
+const TRAIL_LENGTH = 5.4
+const CANOPY_LENGTH = 1.55
+const CANOPY_WIDTH = 1.05
+const LINE_THICKNESS = 0.014
+const PAIR_Z = 0.52
+/** Rear pack in Camaro space (car forward is +X). */
 const REAR_ANCHOR: [number, number, number] = [-1.62, 1.02, 0]
+
+const RIM_RAYS: ReadonlyArray<readonly [number, number]> = [
+  [0, 1],
+  [0.82, 0.45],
+  [0.82, -0.35],
+  [0, -0.55],
+  [-0.82, -0.35],
+  [-0.82, 0.45],
+]
 
 type ChuteVfxOptions = {
   pc: PlayCanvasNamespace
@@ -16,123 +26,132 @@ type ChuteVfxOptions = {
 }
 
 type Canopy = {
-  disc: Entity
-  stripe: Entity
-  goreA: Entity
-  goreB: Entity
-  line: Entity
+  root: Entity
+  bag: Entity
+  fold: Entity
+  lip: Entity
+  pack: Entity
+  lines: Entity[]
+}
+
+function orientLine(
+  entity: Entity,
+  ax: number,
+  ay: number,
+  az: number,
+  bx: number,
+  by: number,
+  bz: number,
+): void {
+  const dx = bx - ax
+  const dy = by - ay
+  const dz = bz - az
+  const length = Math.max(0.1, Math.hypot(dx, dy, dz))
+  entity.setLocalPosition((ax + bx) * 0.5, (ay + by) * 0.5, (az + bz) * 0.5)
+  entity.setLocalScale(LINE_THICKNESS, length, LINE_THICKNESS)
+  const yaw = (Math.atan2(dz, dx) * 180) / Math.PI
+  const tilt = (Math.atan2(dy, Math.hypot(dx, dz)) * 180) / Math.PI
+  entity.setLocalEulerAngles(0, yaw, 90 - tilt)
 }
 
 /**
- * Twin doorslammer chutes. World-space so they don't inherit the Camaro scale.
- * Sit above the chase-cam eyeline — follow looks under the canopies, not into them.
+ * Twin doorslammer chutes as elongated nylon bags — not perfect spheres —
+ * so the finish camera can keep the car readable.
  */
 export function createChuteVfx(opts: ChuteVfxOptions) {
   const { pc, parent, camaro } = opts
 
-  const canopyMat = createMaterial(pc, {
-    diffuse: [0.78, 0.22, 0.14],
-    emissive: [0.16, 0.04, 0.02],
-    emissiveIntensity: 0.12,
+  const nylon = createMaterial(pc, {
+    diffuse: [0.62, 0.12, 0.1],
     metalness: 0.02,
-    gloss: 0.1,
+    gloss: 0.16,
   })
-  canopyMat.opacity = 0
-  canopyMat.blendType = pc.BLEND_NORMAL
-  canopyMat.depthWrite = false
-  canopyMat.update()
-
-  const stripeMat = createMaterial(pc, {
-    diffuse: [0.94, 0.94, 0.95],
-    emissive: [0.1, 0.1, 0.1],
-    emissiveIntensity: 0.08,
+  const nylonFold = createMaterial(pc, {
+    diffuse: [0.48, 0.08, 0.08],
     metalness: 0.02,
+    gloss: 0.12,
+  })
+  const skirt = createMaterial(pc, {
+    diffuse: [0.88, 0.88, 0.9],
+    metalness: 0.03,
+    gloss: 0.2,
+  })
+  const cord = createMaterial(pc, {
+    diffuse: [0.68, 0.68, 0.7],
+    metalness: 0.08,
     gloss: 0.14,
   })
-  stripeMat.opacity = 0
-  stripeMat.blendType = pc.BLEND_NORMAL
-  stripeMat.depthWrite = false
-  stripeMat.update()
-
-  const lineMat = createMaterial(pc, {
-    diffuse: [0.82, 0.82, 0.84],
-    metalness: 0.04,
-    gloss: 0.12,
+  const packMat = createMaterial(pc, {
+    diffuse: [0.14, 0.14, 0.15],
+    metalness: 0.2,
+    gloss: 0.28,
   })
 
   const makeCanopy = (name: string): Canopy => {
-    const disc = createPrimitive(pc, {
-      name: `${name}-disc`,
+    const root = new pc.Entity(name)
+    root.enabled = false
+    parent.addChild(root)
+
+    const bag = createPrimitive(pc, {
+      name: `${name}-bag`,
       type: 'sphere',
-      position: [0, -30, 0],
+      position: [0, 0, 0],
       scale: [0.01, 0.01, 0.01],
-      material: canopyMat,
-      castShadows: false,
-      receiveShadows: false,
+      material: nylon,
+      castShadows: true,
+      receiveShadows: true,
     })
-    const stripe = createPrimitive(pc, {
-      name: `${name}-stripe`,
+    const fold = createPrimitive(pc, {
+      name: `${name}-fold`,
       type: 'sphere',
-      position: [0, -30, 0],
+      position: [0, 0, 0],
       scale: [0.01, 0.01, 0.01],
-      material: stripeMat,
+      material: nylonFold,
       castShadows: false,
-      receiveShadows: false,
+      receiveShadows: true,
     })
-    const goreA = createPrimitive(pc, {
-      name: `${name}-gore-a`,
-      type: 'sphere',
-      position: [0, -30, 0],
-      scale: [0.01, 0.01, 0.01],
-      material: stripeMat,
-      castShadows: false,
-      receiveShadows: false,
-    })
-    const goreB = createPrimitive(pc, {
-      name: `${name}-gore-b`,
-      type: 'sphere',
-      position: [0, -30, 0],
-      scale: [0.01, 0.01, 0.01],
-      material: stripeMat,
-      castShadows: false,
-      receiveShadows: false,
-    })
-    const line = createPrimitive(pc, {
-      name: `${name}-line`,
+    const lip = createPrimitive(pc, {
+      name: `${name}-lip`,
       type: 'cylinder',
-      position: [0, -30, 0],
-      scale: [CHUTE_LINE_THICKNESS, 0.01, CHUTE_LINE_THICKNESS],
-      material: lineMat,
+      position: [0, 0, 0],
+      scale: [0.01, 0.01, 0.01],
+      material: skirt,
       castShadows: false,
-      receiveShadows: false,
+      receiveShadows: true,
     })
-    line.setLocalEulerAngles(0, 0, 90)
-    parent.addChild(disc)
-    parent.addChild(stripe)
-    parent.addChild(goreA)
-    parent.addChild(goreB)
-    parent.addChild(line)
-    return { disc, stripe, goreA, goreB, line }
+    lip.setLocalEulerAngles(0, 0, 90)
+    const pack = createPrimitive(pc, {
+      name: `${name}-pack`,
+      type: 'box',
+      position: [0, 0, 0],
+      scale: [0.01, 0.01, 0.01],
+      material: packMat,
+      castShadows: false,
+    })
+    root.addChild(bag)
+    root.addChild(fold)
+    root.addChild(lip)
+    root.addChild(pack)
+
+    const lines = RIM_RAYS.map((_, i) => {
+      const line = createPrimitive(pc, {
+        name: `${name}-line-${i}`,
+        type: 'cylinder',
+        position: [0, 0, 0],
+        scale: [LINE_THICKNESS, 0.01, LINE_THICKNESS],
+        material: cord,
+        castShadows: false,
+        receiveShadows: false,
+      })
+      root.addChild(line)
+      return line
+    })
+
+    return { root, bag, fold, lip, pack, lines }
   }
 
   const left = makeCanopy('chute-l')
   const right = makeCanopy('chute-r')
-
-  const clamp01 = (v: number): number => Math.min(1, Math.max(0, v))
-
-  const hide = () => {
-    ;[left, right].forEach((canopy) => {
-      canopy.disc.setLocalPosition(0, -30, 0)
-      canopy.stripe.setLocalPosition(0, -30, 0)
-      canopy.goreA.setLocalPosition(0, -30, 0)
-      canopy.goreB.setLocalPosition(0, -30, 0)
-      canopy.line.setLocalPosition(0, -30, 0)
-    })
-    canopyMat.opacity = 0
-    stripeMat.opacity = 0
-    canopyMat.update()
-    stripeMat.update()
-  }
 
   const placeCanopy = (
     canopy: Canopy,
@@ -143,41 +162,50 @@ export function createChuteVfx(opts: ChuteVfxOptions) {
     value: number,
     time: number,
   ) => {
-    const trail = CHUTE_TRAIL_LENGTH * value
-    const sag = value * value * 0.38
-    const billowY = Math.sin(time * 3.1 + offsetZ * 4) * 0.045 * value
-    const billowZ = Math.cos(time * 2.4 + offsetZ * 3) * 0.03 * value
+    const trail = TRAIL_LENGTH * (0.22 + value * 0.78)
+    const sag = value * value * 0.7
+    const billowY = Math.sin(time * 2.2 + offsetZ * 5) * 0.06 * value
+    const billowZ = Math.cos(time * 1.8 + offsetZ * 4) * 0.04 * value
     const canopyX = rearX - trail
-    const canopyY = rearY + 0.68 + value * 0.2 - sag + billowY
+    const canopyY = rearY + 0.35 + value * 0.22 - sag + billowY
     const canopyZ = rearZ + offsetZ + billowZ
-    const grow = 0.12 + value * (CHUTE_CANOPY_DIAMETER - 0.12)
 
-    canopy.disc.setLocalPosition(canopyX, canopyY, canopyZ)
-    canopy.disc.setLocalScale(grow, grow * 0.14, grow)
-    canopy.stripe.setLocalPosition(canopyX + 0.012, canopyY + 0.018, canopyZ)
-    canopy.stripe.setLocalScale(grow * 1.02, grow * 0.055, grow * 0.18)
-    canopy.goreA.setLocalPosition(canopyX, canopyY + 0.01, canopyZ)
-    canopy.goreA.setLocalScale(grow * 0.22, grow * 0.05, grow * 1.02)
-    canopy.goreA.setLocalEulerAngles(0, 28, 0)
-    canopy.goreB.setLocalPosition(canopyX, canopyY + 0.01, canopyZ)
-    canopy.goreB.setLocalScale(grow * 0.22, grow * 0.05, grow * 1.02)
-    canopy.goreB.setLocalEulerAngles(0, -28, 0)
+    canopy.root.enabled = true
+    canopy.root.setLocalPosition(canopyX, canopyY, canopyZ)
+    canopy.root.setLocalEulerAngles(0, 0, -8 - value * 6)
 
-    const dx = canopyX - rearX
-    const dy = canopyY - rearY
-    const dz = canopyZ - rearZ
-    const lineLength = Math.max(0.12, Math.hypot(dx, dy, dz))
-    canopy.line.setLocalPosition(rearX + dx * 0.5, rearY + dy * 0.5, rearZ + dz * 0.5)
-    canopy.line.setLocalScale(CHUTE_LINE_THICKNESS, lineLength, CHUTE_LINE_THICKNESS)
-    const yaw = (Math.atan2(dz, dx) * 180) / Math.PI
-    const tilt = (Math.atan2(dy, Math.hypot(dx, dz)) * 180) / Math.PI
-    canopy.line.setLocalEulerAngles(0, yaw, 90 - tilt)
+    const length = 0.28 + value * (CANOPY_LENGTH - 0.28)
+    const width = 0.22 + value * (CANOPY_WIDTH - 0.22)
+    const height = width * 0.72
+    canopy.bag.setLocalPosition(-length * 0.05, 0, 0)
+    canopy.bag.setLocalScale(length, height, width)
+
+    canopy.fold.setLocalPosition(-length * 0.18, height * 0.12, width * 0.08)
+    canopy.fold.setLocalScale(length * 0.55, height * 0.55, width * 0.42)
+
+    const mouthX = length * 0.32
+    const rimR = width * 0.32
+    canopy.lip.setLocalPosition(mouthX, 0, 0)
+    canopy.lip.setLocalScale(rimR * 2, 0.04, rimR * 2)
+
+    const packX = rearX - canopyX
+    const packY = rearY - canopyY
+    const packZ = rearZ - canopyZ
+    canopy.pack.setLocalPosition(packX * 0.15, packY * 0.1, packZ * 0.1)
+    canopy.pack.setLocalScale(0.22 + value * 0.08, 0.16, 0.28)
+
+    canopy.lines.forEach((line, i) => {
+      const ray = RIM_RAYS[i]
+      if (!ray) return
+      orientLine(line, packX, packY, packZ, mouthX, ray[0] * rimR, ray[1] * rimR)
+    })
   }
 
   const update = (deploy01: number) => {
-    const value = clamp01(deploy01)
-    if (value <= 0) {
-      hide()
+    const value = Math.min(1, Math.max(0, deploy01))
+    if (value <= 0.02) {
+      left.root.enabled = false
+      right.root.enabled = false
       return
     }
 
@@ -187,27 +215,18 @@ export function createChuteVfx(opts: ChuteVfxOptions) {
     const rearZ = camPos.z + REAR_ANCHOR[2]
     const time = performance.now() * 0.001
 
-    placeCanopy(left, rearX, rearY, rearZ, CHUTE_PAIR_Z, value, time)
-    placeCanopy(right, rearX, rearY, rearZ, -CHUTE_PAIR_Z, value, time)
-
-    canopyMat.opacity = 0.88 * value
-    stripeMat.opacity = 0.78 * value
-    canopyMat.update()
-    stripeMat.update()
+    placeCanopy(left, rearX, rearY, rearZ, PAIR_Z, value, time)
+    placeCanopy(right, rearX, rearY, rearZ, -PAIR_Z, value, time)
   }
 
   const reset = () => {
-    hide()
+    left.root.enabled = false
+    right.root.enabled = false
   }
 
   const destroy = () => {
-    ;[left, right].forEach((canopy) => {
-      canopy.disc.destroy()
-      canopy.stripe.destroy()
-      canopy.goreA.destroy()
-      canopy.goreB.destroy()
-      canopy.line.destroy()
-    })
+    left.root.destroy()
+    right.root.destroy()
   }
 
   return { update, reset, destroy }

@@ -38,8 +38,8 @@ export async function applyPassEnvLighting(
     app.scene.skybox = skybox
     app.scene.envAtlas = envAtlas
     app.scene.skyboxMip = 0
-    app.scene.skyboxIntensity = 1.08
-    app.scene.ambientLight = new pc.Color(0.28, 0.3, 0.34)
+    app.scene.skyboxIntensity = 0.82
+    app.scene.ambientLight = new pc.Color(0.16, 0.18, 0.22)
 
     return true
   } catch (error) {

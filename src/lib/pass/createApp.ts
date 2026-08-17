@@ -53,7 +53,7 @@ export async function createPassApp(
 
   const parent = canvas.parentElement
   const observer = parent ? new ResizeObserver(() => resize()) : null
-  observer?.observe(parent)
+  if (parent) observer?.observe(parent)
 
   app.start()
 

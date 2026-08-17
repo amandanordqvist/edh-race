@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://edh-race.vercel.app/sv</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edh-race.vercel.app/sv" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/en</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edh-race.vercel.app/sv" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/sv/resa</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/resa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/journey" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/en/journey</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/resa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/journey" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/sv/maskinen</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/maskinen" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/machine" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/en/machine</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/maskinen" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/machine" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/sv/passet</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/passet" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/pass" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/en/pass</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/passet" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/pass" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/sv/resultat</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/resultat" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/results" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/en/results</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/resultat" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/results" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/sv/teamet</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/teamet" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/team" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/en/team</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/teamet" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/team" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/sv/media</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/media" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/media" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/en/media</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/media" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/media" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/sv/sponsorer</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/sponsorer" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/sponsors" />
+  </url>
+  <url>
+    <loc>https://edh-race.vercel.app/en/sponsors</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://edh-race.vercel.app/sv/sponsorer" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://edh-race.vercel.app/en/sponsors" />
+  </url>
+</urlset>

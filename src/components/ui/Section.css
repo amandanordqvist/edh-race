@@ -8,6 +8,12 @@
   margin-inline: auto;
 }
 
+@media (min-width: 768px) {
+  .section {
+    padding-inline: 1.75rem;
+  }
+}
+
 .section--wide .section__inner {
   width: min(100%, var(--content-wide));
 }
@@ -40,8 +46,8 @@
 }
 
 .section__lead {
-  font-size: 1rem;
+  font-size: var(--body-size);
   line-height: 1.65;
   color: rgba(243, 245, 248, 0.88);
-  max-width: 62ch;
+  max-width: 66ch;
 }

@@ -38,12 +38,10 @@ export function Header() {
         >
           <img
             src="/logo/logo-grey-png.png"
-            alt=""
+            alt={t.meta.siteName}
             width={64}
             height={64}
-            aria-hidden="true"
           />
-        
         </Link>
 
         <nav className="site-header__desktop" aria-label="Primary">
@@ -64,7 +62,7 @@ export function Header() {
           aria-controls="mobile-nav"
           onClick={() => setOpen((v) => !v)}
         >
-          <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
+          <span className="sr-only">{open ? t.common.closeMenu : t.common.openMenu}</span>
           <span className={`burger ${open ? 'is-open' : ''}`} aria-hidden="true">
             <i />
             <i />

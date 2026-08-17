@@ -1,18 +1,13 @@
 .home-next__shell {
   display: grid;
   gap: 0;
-  padding: 0.35rem;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-shell);
-  overflow: hidden;
 }
 
 .home-next__media {
   position: relative;
   min-height: clamp(11rem, 32vw, 16rem);
   overflow: hidden;
-  border-radius: var(--radius-core) var(--radius-core) 0 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .home-next__media img {
@@ -41,7 +36,7 @@
   background:
     linear-gradient(160deg, rgba(22, 28, 40, 0.95) 0%, rgba(16, 20, 28, 0.88) 100%);
   padding: clamp(1.5rem, 4vw, 2.25rem);
-  border-radius: 0 0 var(--radius-core) var(--radius-core);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
   box-shadow: var(--shadow-inset-highlight);
 }
 
@@ -56,11 +51,11 @@
 .home-next__label {
   font-family: var(--font-ui);
   font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--color-primary-blue);
-  margin: 0;
+  margin: 0 0 0.85rem;
 }
 
 .home-next__status {
@@ -117,9 +112,17 @@
     align-items: stretch;
   }
 
+  .home-next__shell:not(:has(.home-next__media)) {
+    grid-template-columns: 1fr;
+  }
+
+  .home-next__shell:not(:has(.home-next__media)) .home-next__card {
+    border-radius: var(--radius-md);
+  }
+
   .home-next__media {
     min-height: 100%;
-    border-radius: var(--radius-core) 0 0 var(--radius-core);
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
   }
 
   .home-next__media::after {
@@ -131,7 +134,7 @@
   }
 
   .home-next__card {
-    border-radius: 0 var(--radius-core) var(--radius-core) 0;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
     display: flex;
     flex-direction: column;
     justify-content: center;

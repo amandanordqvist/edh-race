@@ -28,7 +28,7 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
   const sideOffset = trackWidth / 2 + 8.8
 
   const field = createMaterial(pc, {
-    diffuse: [0.2, 0.22, 0.16],
+    diffuse: [0.28, 0.34, 0.22],
     metalness: 0.02,
     gloss: 0.06,
   })
@@ -91,25 +91,29 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
 
   if (!hideSkyPlanes) {
     const skyZenith = createMaterial(pc, {
-      diffuse: [0.38, 0.55, 0.78],
-      emissive: [0.16, 0.28, 0.48],
-      emissiveIntensity: 0.12,
+      diffuse: [0.28, 0.52, 0.92],
+      emissive: [0.42, 0.64, 0.98],
+      emissiveIntensity: 0.95,
       metalness: 0,
-      gloss: 0.04,
+      gloss: 0.02,
     })
     const skyHorizon = createMaterial(pc, {
-      diffuse: [0.78, 0.84, 0.9],
-      emissive: [0.42, 0.5, 0.62],
-      emissiveIntensity: 0.14,
+      diffuse: [0.78, 0.88, 0.98],
+      emissive: [0.72, 0.84, 0.98],
+      emissiveIntensity: 0.7,
       metalness: 0,
-      gloss: 0.04,
+      gloss: 0.02,
     })
     const skyHorizonCool = createMaterial(pc, {
-      diffuse: [0.62, 0.72, 0.86],
-      emissive: [0.28, 0.38, 0.55],
-      emissiveIntensity: 0.1,
+      diffuse: [0.58, 0.76, 0.96],
+      emissive: [0.52, 0.72, 0.96],
+      emissiveIntensity: 0.72,
       metalness: 0,
-      gloss: 0.04,
+      gloss: 0.02,
+    })
+    ;[skyZenith, skyHorizon, skyHorizonCool].forEach((material) => {
+      material.useLighting = false
+      material.update()
     })
     const skyPlanes: Array<{
       name: string
@@ -187,8 +191,8 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
 
   const bayCount = high ? 5 : 3
   const bayGap = 1.6
-  const standStart = 10
-  const standLength = trackLength - 16
+  const standStart = -4
+  const standLength = trackLength - 8
   const bayLength = (standLength - bayGap * (bayCount - 1)) / bayCount
 
   ;([-sideOffset, sideOffset] as number[]).forEach((z, sideIndex) => {
@@ -278,7 +282,7 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
   const bannerCount = high ? 4 : 3
   ;([-trackWidth / 2 - 1.15, trackWidth / 2 + 1.15] as number[]).forEach((z, side) => {
     for (let i = 0; i < bannerCount; i += 1) {
-      const x = 14 + i * ((trackLength - 28) / Math.max(1, bannerCount - 1))
+      const x = 4 + i * ((trackLength - 18) / Math.max(1, bannerCount - 1))
       sceneRoot.addChild(
         createPrimitive(pc, {
           name: `banner-frame-${side}-${i}`,
@@ -304,7 +308,7 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
 
   // Sparse tall flags — not a picket fence of poles.
   const flagSpacing = high ? 28 : 40
-  for (let x = 16; x < trackLength - 10; x += flagSpacing) {
+  for (let x = 6; x < trackLength - 10; x += flagSpacing) {
     sceneRoot.addChild(
       createPrimitive(pc, {
         name: `flag-pole-${x}`,

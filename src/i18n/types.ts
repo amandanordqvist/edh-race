@@ -16,6 +16,8 @@ export type Dictionary = {
   meta: {
     siteName: string
     tagline: string
+    homeTitle: string
+    homeDescription: string
   }
   nav: Record<NavKey, string>
   lang: {
@@ -39,66 +41,68 @@ export type Dictionary = {
     phone: string
     location: string
     locationValue: string
+    skipToContent: string
+    openMenu: string
+    closeMenu: string
   }
   home: {
     brand: string
     headline: string
     heroKicker: string
-    heroClass: string
     lead: string
+    ctaPass: string
     ctaTeam: string
-    ctaMachine: string
     statsTitle: string
-    statsLead: string
-    statsMeta: string
     stats: {
-      quarter: { code: string; value: string; unit: string; label: string }
-      topSpeed: { code: string; value: string; unit: string; label: string }
-      eighth: { code: string; value: string; unit: string; label: string }
-      base: { code: string; value: string; unit: string; label: string }
+      quarter: { value: string; unit: string; label: string }
+      topSpeed: { value: string; unit: string; label: string }
+      eighth: { value: string; unit: string; label: string }
+      eighthSpeed: { value: string; unit: string; label: string }
     }
     driverLabel: string
-    driverEyebrowMeta: string
     driverTitle: string
-    driverTagline: string
     driverBody: string
-    driverQuote: string
     driverCta: string
-    driverCtaSecondary: string
-    driverCredits: string
-    driverCardMeta: string
-    driverCardTime: string
     driverAlt: string
     machineLabel: string
     machineTitle: string
     machineBody: string
     machineCta: string
     machineAlt: string
+    machineSpecs: [string, string, string, string]
     teamLabel: string
     teamTitle: string
     teamBody: string
-    teamQuote: string
     teamCta: string
     teamPhotoAlt: string
     storyLabel: string
     storyTitle: string
     storyBody: string
     storyCta: string
+    storyCaptions: Record<string, string>
     nextRaceLabel: string
     nextRaceTitle: string
     nextRaceClassLabel: string
     nextRaceClass: string
     nextRaceStatus: string
-    nextRaceSeasonDone: string
+    nextRaceStatusLabel: string
+    nextRaceEmpty: string
     nextRaceCta: string
+    nextRaceDateLabel: string
+    nextRaceTrackLabel: string
+    nextRacePlaceLabel: string
+    nextRaceCountry: string
+    sponsorsLabel: string
     sponsorsTitle: string
     sponsorsBody: string
-    sponsorsBenefits: string[]
     sponsorsCta: string
+    sponsorsCtaSecondary: string
+    passTeaserLabel: string
     passTeaserTitle: string
     passTeaserBody: string
     passTeaserCta: string
     passTeaserAlt: string
+    passTeaserFacts: string
     imageFallback: string
   }
   pass: {
@@ -110,12 +114,14 @@ export type Dictionary = {
     unmute: string
     followCar: string
     zoomOut: string
+    heroEyebrow: string
     loading: string
     modelCredit: string
     modelCreditHref: string
     webglFallback: string
     continueJourney: string
     openTimeslip: string
+    seeTimeslip: string
     closeTimeslip: string
     readTimeslip: string
     gapAhead: string
@@ -127,9 +133,15 @@ export type Dictionary = {
     yourReaction: string
     reactionFaster: string
     cockpitView: string
+    cameraViews: string
+    laneBoard: string
     expandTrack: string
     collapseTrack: string
     scrubLabel: string
+    explorePass: string
+    heroWins: string
+    metersLeft: string
+    reactionLate: string
     chuteStatus: string
     scrubChute: string
     flyby: {
@@ -175,13 +187,25 @@ export type Dictionary = {
     sportWhy: {
       title: string
       body: string
+      bodySecondary?: string
     }
     anchorsTitle: string
+    progressMarks: {
+      sixty: string
+      eighth: string
+      quarter: string
+      trap: string
+    }
     anchors: {
       distance: string
       time: string
       speed: string
       trap: string
+    }
+    closing: {
+      title: string
+      body: string
+      cta: string
     }
     splitCallouts: {
       sixty: string
@@ -198,6 +222,8 @@ export type Dictionary = {
       rpmUnit: string
       tireLabel: string
       chutes: string
+      trap: string
+      win: string
     }
     timeslipSplits: {
       reaction: { label: string; meaning: string }

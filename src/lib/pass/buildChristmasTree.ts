@@ -14,6 +14,8 @@ type TreeBulb = {
   material: import('playcanvas').StandardMaterial
   activeIntensity: number
   idleIntensity: number
+  activeDiffuse: [number, number, number]
+  idleDiffuse: [number, number, number]
 }
 
 export type ChristmasTree = {
@@ -40,12 +42,17 @@ function createTreeBulb(
   color: [number, number, number],
   scale: number,
 ): TreeBulb {
+  const idleDiffuse: [number, number, number] = [
+    color[0] * 0.12,
+    color[1] * 0.12,
+    color[2] * 0.12,
+  ]
   const material = createMaterial(pc, {
-    diffuse: color,
+    diffuse: idleDiffuse,
     emissive: color,
-    emissiveIntensity: 0.08,
-    metalness: 0,
-    gloss: 0.62,
+    emissiveIntensity: 0,
+    metalness: 0.15,
+    gloss: 0.55,
   })
 
   return {
@@ -59,19 +66,23 @@ function createTreeBulb(
       receiveShadows: false,
     }),
     material,
-    activeIntensity: 4.2,
-    idleIntensity: 0.08,
+    activeIntensity: 2.4,
+    idleIntensity: 0,
+    activeDiffuse: color,
+    idleDiffuse,
   }
 }
 
 function setBulbState(bulb: TreeBulb, enabled: boolean): void {
+  const diffuse = enabled ? bulb.activeDiffuse : bulb.idleDiffuse
+  bulb.material.diffuse.set(...diffuse)
   bulb.material.emissiveIntensity = enabled ? bulb.activeIntensity : bulb.idleIntensity
   bulb.material.update()
 }
 
 /**
- * Dual-column Pro tree sitting between the lanes, slightly past the stage
- * beams — the NHRA silhouette the chase camera should read down-track.
+ * Dual-column Pro tree between the lanes — slim, dark housing, lenses that
+ * only glow when armed. Keeps visual priority on the Camaro.
  */
 export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
   const { pc, sceneRoot, quality, mesh } = opts
@@ -79,19 +90,19 @@ export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
   const useMesh = Boolean(mesh)
 
   const metal = createMaterial(pc, {
-    diffuse: [0.18, 0.19, 0.22],
-    metalness: 0.62,
-    gloss: 0.48,
+    diffuse: [0.12, 0.13, 0.15],
+    metalness: 0.65,
+    gloss: 0.42,
   })
   const housing = createMaterial(pc, {
-    diffuse: [0.06, 0.07, 0.08],
-    metalness: 0.4,
-    gloss: 0.32,
+    diffuse: [0.04, 0.045, 0.05],
+    metalness: 0.35,
+    gloss: 0.28,
   })
   const concrete = createMaterial(pc, {
-    diffuse: [0.72, 0.72, 0.7],
+    diffuse: [0.38, 0.37, 0.35],
     metalness: 0.08,
-    gloss: 0.16,
+    gloss: 0.14,
   })
 
   const tree = new pc.Entity('christmas-tree')
@@ -105,8 +116,8 @@ export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
       createPrimitive(pc, {
         name: 'tree-base',
         type: 'cylinder',
-        position: [0, 0.1, 0],
-        scale: [0.7, 0.2, 0.7],
+        position: [0, 0.08, 0],
+        scale: [0.45, 0.16, 0.45],
         material: concrete,
         castShadows: high,
       }),
@@ -115,8 +126,8 @@ export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
       createPrimitive(pc, {
         name: 'tree-pole',
         type: 'cylinder',
-        position: [0, 2.6, 0],
-        scale: [0.16, 5.2, 0.16],
+        position: [0, 2.35, 0],
+        scale: [0.1, 4.6, 0.1],
         material: metal,
         castShadows: high,
       }),
@@ -125,8 +136,8 @@ export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
       createPrimitive(pc, {
         name: 'tree-crossbar',
         type: 'box',
-        position: [0, 4.95, 0],
-        scale: [0.16, 0.14, 3.4],
+        position: [0, 4.55, 0],
+        scale: [0.12, 0.1, 2.6],
         material: metal,
         castShadows: high,
       }),
@@ -137,37 +148,41 @@ export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
   const amberBulbs: TreeBulb[] = []
   const greenBulbs: TreeBulb[] = []
 
-  // Two columns, one per lane. Lights face the drivers (−X).
-  ;([-1.05, 1.05] as number[]).forEach((laneZ, column) => {
+  // Compact lens columns — face the drivers (−X). Smaller when mesh is present
+  // so they sit as accents on the asset instead of floating orbs.
+  const laneSpan = useMesh ? 0.85 : 0.95
+  const faceX = useMesh ? -0.22 : -0.28
+  const bulbScale = useMesh ? 0.1 : 0.14
+
+  ;([-laneSpan, laneSpan] as number[]).forEach((laneZ, column) => {
     if (!useMesh) {
       tree.addChild(
         createPrimitive(pc, {
           name: `tree-board-${column}`,
           type: 'box',
-          position: [-0.18, 2.7, laneZ],
-          scale: [0.18, 4.4, 0.72],
+          position: [-0.14, 2.45, laneZ],
+          scale: [0.12, 3.8, 0.48],
           material: housing,
           castShadows: high,
         }),
       )
     }
 
-    const faceX = -0.32
     stageBulbs.push(
-      createTreeBulb(pc, `pre-stage-${column}`, [faceX, 4.55, laneZ], [0.95, 0.92, 0.35], 0.22),
-      createTreeBulb(pc, `stage-${column}`, [faceX, 4.12, laneZ], [0.95, 0.92, 0.35], 0.26),
+      createTreeBulb(pc, `pre-stage-${column}`, [faceX, 4.15, laneZ], [0.95, 0.9, 0.35], bulbScale),
+      createTreeBulb(pc, `stage-${column}`, [faceX, 3.78, laneZ], [0.95, 0.9, 0.35], bulbScale * 1.1),
     )
     amberBulbs.push(
-      createTreeBulb(pc, `amber-1-${column}`, [faceX, 3.45, laneZ], [0.95, 0.52, 0.08], 0.32),
-      createTreeBulb(pc, `amber-2-${column}`, [faceX, 2.85, laneZ], [0.95, 0.52, 0.08], 0.32),
-      createTreeBulb(pc, `amber-3-${column}`, [faceX, 2.25, laneZ], [0.95, 0.52, 0.08], 0.32),
+      createTreeBulb(pc, `amber-1-${column}`, [faceX, 3.2, laneZ], [0.95, 0.5, 0.08], bulbScale * 1.15),
+      createTreeBulb(pc, `amber-2-${column}`, [faceX, 2.72, laneZ], [0.95, 0.5, 0.08], bulbScale * 1.15),
+      createTreeBulb(pc, `amber-3-${column}`, [faceX, 2.24, laneZ], [0.95, 0.5, 0.08], bulbScale * 1.15),
     )
     greenBulbs.push(
-      createTreeBulb(pc, `green-${column}`, [faceX, 1.55, laneZ], [0.22, 0.88, 0.36], 0.38),
+      createTreeBulb(pc, `green-${column}`, [faceX, 1.7, laneZ], [0.2, 0.85, 0.32], bulbScale * 1.25),
     )
-    tree.addChild(
-      createTreeBulb(pc, `red-${column}`, [faceX, 0.95, laneZ], [0.9, 0.16, 0.14], 0.3).entity,
-    )
+
+    const red = createTreeBulb(pc, `red-${column}`, [faceX, 1.2, laneZ], [0.85, 0.14, 0.12], bulbScale * 1.1)
+    tree.addChild(red.entity)
   })
 
   ;[...stageBulbs, ...amberBulbs, ...greenBulbs].forEach((bulb) => {

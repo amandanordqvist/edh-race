@@ -10,6 +10,7 @@ type SmokePuff = {
   life: number
   baseScale: number
   drift: [number, number, number]
+  kind: 'tire' | 'dust'
 }
 
 type BurnoutSmokeOptions = {
@@ -21,7 +22,7 @@ type BurnoutSmokeOptions = {
   getRearAnchors?: () => [number, number, number][]
 }
 
-const POOL_SIZE = 22
+const POOL_SIZE = 36
 
 export function createBurnoutSmoke(opts: BurnoutSmokeOptions) {
   const { app, pc, parent, camaro, reducedMotion, getRearAnchors } = opts
@@ -30,13 +31,16 @@ export function createBurnoutSmoke(opts: BurnoutSmokeOptions) {
   let phase: PassPhase = 'idle'
   let spawnTimer = 0
   let poolIndex = 0
+  let raceProgress = 0
+  let raceSpeed = 0
+  let launchBurst = 0
   let updateHandler: ((dt: number) => void) | null = null
 
   for (let i = 0; i < POOL_SIZE; i += 1) {
     const material = createMaterial(pc, {
-      diffuse: [0.78, 0.8, 0.82],
-      emissive: [0.42, 0.44, 0.46],
-      emissiveIntensity: 0.08,
+      diffuse: [0.72, 0.74, 0.76],
+      emissive: [0.28, 0.3, 0.32],
+      emissiveIntensity: 0.05,
       metalness: 0,
       gloss: 0.02,
     })
@@ -63,60 +67,100 @@ export function createBurnoutSmoke(opts: BurnoutSmokeOptions) {
       life: 1,
       baseScale: 1,
       drift: [0, 0, 0],
+      kind: 'tire',
     })
   }
 
-  const spawnPuff = (side: -1 | 1, intensity: number) => {
+  const spawnPuff = (side: -1 | 1, intensity: number, kind: 'tire' | 'dust' = 'tire') => {
     const puff = pool[poolIndex % POOL_SIZE]
     poolIndex += 1
 
     const anchors = getRearAnchors?.() ?? []
     const anchor =
-      side < 0
-        ? (anchors[0] ?? null)
-        : (anchors[1] ?? anchors[0] ?? null)
+      side < 0 ? (anchors[0] ?? null) : (anchors[1] ?? anchors[0] ?? null)
 
     puff.age = 0
-    puff.life = 1.1 + Math.random() * 0.55
-    puff.baseScale = 0.38 + intensity * 0.22 + Math.random() * 0.12
-    puff.drift = [
-      0.25 + Math.random() * 0.45,
-      0.75 + Math.random() * 0.85,
-      side * (0.1 + Math.random() * 0.22),
-    ]
+    puff.kind = kind
+    puff.life = kind === 'dust' ? 0.55 + Math.random() * 0.35 : 1.0 + Math.random() * 0.55
+    puff.baseScale =
+      kind === 'dust'
+        ? 0.18 + intensity * 0.12 + Math.random() * 0.08
+        : 0.34 + intensity * 0.22 + Math.random() * 0.12
+    puff.drift =
+      kind === 'dust'
+        ? [
+            -0.4 - Math.random() * 0.8,
+            0.15 + Math.random() * 0.25,
+            side * (0.05 + Math.random() * 0.15),
+          ]
+        : [
+            0.15 + Math.random() * 0.4,
+            0.55 + Math.random() * 0.7,
+            side * (0.08 + Math.random() * 0.2),
+          ]
 
     if (anchor) {
       puff.entity.setLocalPosition(
-        anchor[0] + (Math.random() - 0.5) * 0.06,
-        anchor[1] + 0.04 + Math.random() * 0.06,
-        anchor[2] + side * 0.08,
+        anchor[0] + (Math.random() - 0.5) * 0.08,
+        kind === 'dust' ? 0.06 + Math.random() * 0.04 : anchor[1] + 0.04 + Math.random() * 0.05,
+        anchor[2] + side * (kind === 'dust' ? 0.12 : 0.08),
       )
     } else {
       const camPos = camaro.getLocalPosition()
       puff.entity.setLocalPosition(
         camPos.x - 1.35,
-        0.18 + Math.random() * 0.08,
+        kind === 'dust' ? 0.08 : 0.18 + Math.random() * 0.08,
         side * (0.88 + Math.random() * 0.1),
       )
     }
+
     const scale = puff.baseScale
-    puff.entity.setLocalScale(scale, scale * 0.7, scale)
-    puff.material.opacity = 0.22 + intensity * 0.1
+    puff.entity.setLocalScale(scale, scale * (kind === 'dust' ? 0.35 : 0.7), scale)
+    puff.material.diffuse.set(
+      kind === 'dust' ? 0.22 : 0.72,
+      kind === 'dust' ? 0.2 : 0.74,
+      kind === 'dust' ? 0.18 : 0.76,
+    )
+    puff.material.opacity = kind === 'dust' ? 0.18 + intensity * 0.1 : 0.2 + intensity * 0.1
     puff.material.update()
   }
 
   const update = (dt: number) => {
     if (reducedMotion) return
 
-    const active = phase === 'staging' || phase === 'amber'
-    const spawnRate = phase === 'staging' ? 0.055 : phase === 'amber' ? 0.08 : 0
+    launchBurst = Math.max(0, launchBurst - dt * 1.6)
 
-    if (active && spawnRate > 0) {
+    const burnoutActive = phase === 'staging' || phase === 'amber'
+    const launchActive = launchBurst > 0.05
+    // Thin tire smoke through the first ~60' so launch still feels dirty.
+    const earlyRace = phase === 'racing' && raceProgress < 0.18 && raceSpeed > 0.05
+
+    let spawnRate = 0
+    if (burnoutActive) {
+      spawnRate = phase === 'staging' ? 0.055 : 0.08
+    } else if (launchActive) {
+      spawnRate = 0.028
+    } else if (earlyRace) {
+      spawnRate = 0.07 + raceSpeed * 0.04
+    }
+
+    if (spawnRate > 0) {
       spawnTimer += dt
       while (spawnTimer >= spawnRate) {
         spawnTimer -= spawnRate
-        spawnPuff(-1, phase === 'amber' ? 1 : 0.75)
-        spawnPuff(1, phase === 'amber' ? 1 : 0.75)
+        const intensity = launchActive
+          ? 0.85 + launchBurst * 0.4
+          : earlyRace
+            ? 0.45 + raceSpeed * 0.35
+            : phase === 'amber'
+              ? 1
+              : 0.75
+        spawnPuff(-1, intensity, 'tire')
+        spawnPuff(1, intensity, 'tire')
+        if (launchActive || (earlyRace && Math.random() > 0.45)) {
+          spawnPuff(-1, intensity * 0.85, 'dust')
+          spawnPuff(1, intensity * 0.85, 'dust')
+        }
       }
     } else {
       spawnTimer = 0
@@ -141,26 +185,51 @@ export function createBurnoutSmoke(opts: BurnoutSmokeOptions) {
         pos.z + puff.drift[2] * dt,
       )
 
-      const grow = puff.baseScale * (1 + t * 1.8)
-      puff.entity.setLocalScale(grow, grow * 0.68, grow * 1.02)
+      const grow =
+        puff.kind === 'dust'
+          ? puff.baseScale * (1 + t * 1.1)
+          : puff.baseScale * (1 + t * 1.8)
+      puff.entity.setLocalScale(
+        grow,
+        grow * (puff.kind === 'dust' ? 0.32 : 0.68),
+        grow * (puff.kind === 'dust' ? 1.15 : 1.02),
+      )
 
-      const fadeIn = Math.min(1, puff.age / 0.14)
-      const fadeOut = 1 - Math.pow(t, 1.45)
-      puff.material.opacity = 0.28 * fadeIn * fadeOut
+      const fadeIn = Math.min(1, puff.age / 0.12)
+      const fadeOut = 1 - Math.pow(t, 1.4)
+      const peak = puff.kind === 'dust' ? 0.22 : 0.28
+      puff.material.opacity = peak * fadeIn * fadeOut
       puff.material.update()
     })
   }
 
   const onPhase = (next: PassPhase) => {
     phase = next
-    if (next === 'green' || next === 'idle' || next === 'finished') {
-      spawnTimer = 0
+    if (next === 'green') {
+      launchBurst = 1
+      // Immediate burst so the launch reads before the first update ticks.
+      for (let i = 0; i < 6; i += 1) {
+        spawnPuff(-1, 1.1, i % 2 === 0 ? 'tire' : 'dust')
+        spawnPuff(1, 1.1, i % 2 === 0 ? 'tire' : 'dust')
+      }
     }
+    if (next === 'idle' || next === 'finished') {
+      spawnTimer = 0
+      launchBurst = 0
+    }
+  }
+
+  const onRaceFrame = (progress01: number, speed01: number) => {
+    raceProgress = progress01
+    raceSpeed = speed01
   }
 
   const reset = () => {
     phase = 'idle'
     spawnTimer = 0
+    raceProgress = 0
+    raceSpeed = 0
+    launchBurst = 0
     pool.forEach((puff) => {
       puff.age = 999
       puff.material.opacity = 0
@@ -188,5 +257,5 @@ export function createBurnoutSmoke(opts: BurnoutSmokeOptions) {
 
   start()
 
-  return { onPhase, reset, destroy }
+  return { onPhase, onRaceFrame, reset, destroy }
 }

@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useLocale, useT } from '../../i18n'
 import { SITE } from '../../data/site'
-import { localePath } from '../../lib/paths'
+import { localePath, pageFromSlug } from '../../lib/paths'
 import { Button } from '../ui/Button'
 import {
   usePrimaryNavItems,
@@ -18,11 +18,15 @@ const SOCIAL = [
 export function Footer() {
   const t = useT()
   const locale = useLocale()
+  const { pathname } = useLocation()
+  const slug = pathname.split('/').filter(Boolean)[1]
+  const hideCta = pageFromSlug(slug) === 'pass'
   const primary = usePrimaryNavItems()
   const secondary = useSecondaryNavItems()
 
   return (
     <footer className="site-footer">
+      {hideCta ? null : (
       <div className="site-footer__cta">
         <h2 className="site-footer__cta-title">{t.footer.ctaTitle}</h2>
         <p className="site-footer__cta-body">{t.footer.ctaBody}</p>
@@ -30,6 +34,7 @@ export function Footer() {
           {t.nav.contact}
         </Button>
       </div>
+      )}
 
       <div className="site-footer__inner">
         <div className="site-footer__brand">

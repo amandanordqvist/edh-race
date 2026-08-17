@@ -4,9 +4,11 @@ import {
   simulatorRacers,
   type HudSplitId,
   type SimulatorRacerId,
+  type TimeslipSplit,
   type TimeslipSplitId,
 } from '../../data/simulator'
-import { type Dictionary, useLocale, useT } from '../../i18n'
+import { type Dictionary, type Locale, useLocale, useT } from '../../i18n'
+import { formatLocaleNumber } from '../../lib/formatLocaleNumber'
 import { localePath } from '../../lib/paths'
 import { Button } from '../ui/Button'
 import './PassArena.css'
@@ -85,8 +87,30 @@ export function getSplitCalloutText(t: Dictionary, id: HudSplitId) {
   }
 }
 
+function formatSplitValue(row: TimeslipSplit, locale: Locale): string {
+  switch (row.id) {
+    case 'reaction':
+      return `${formatLocaleNumber(edhTimeslipMeta.reaction, locale, 4)} s`
+    case 'sixty':
+    case 'threeThirty':
+    case 'quarter':
+      return `${formatLocaleNumber(row.et ?? 0, locale, 4)} s`
+    case 'eighth':
+      return `${formatLocaleNumber(row.et ?? 0, locale, 4)} s · 202 mph`
+    case 'thousand':
+      return `${formatLocaleNumber(row.et ?? 0, locale, 4)} s · 235 mph`
+    case 'trapMph':
+      return `${formatLocaleNumber(edhTimeslipMeta.trapMph, locale, 2)} mph`
+    default: {
+      const exhaustiveCheck: never = row.id
+      return exhaustiveCheck
+    }
+  }
+}
+
 export function PassTimeslip() {
   const t = useT()
+  const locale = useLocale()
 
   return (
     <article className="pass-timeslip" aria-label={t.pass.timeslipTitle}>
@@ -99,33 +123,24 @@ export function PassTimeslip() {
       </header>
 
       <div className="pass-timeslip__hero">
-        <p className="pass-timeslip__hero-et">{edhTimeslipMeta.et.toFixed(4)}</p>
+        <p className="pass-timeslip__hero-et">
+          {formatLocaleNumber(edhTimeslipMeta.et, locale, 4)}
+        </p>
         <p className="pass-timeslip__hero-unit">s</p>
         <p className="pass-timeslip__hero-meta">
           <span>{edhTimeslipMeta.driver}</span>
           <span>
-            {edhTimeslipMeta.trapMph.toFixed(2)} mph · {edhTimeslipMeta.trapKmh} km/h
+            {formatLocaleNumber(edhTimeslipMeta.trapMph, locale, 2)} mph · {edhTimeslipMeta.trapKmh} km/h
           </span>
         </p>
       </div>
-
-      <section className="pass-timeslip__context" aria-labelledby="pass-context-title">
-        <h3 id="pass-context-title" className="pass-timeslip__context-title">
-          {t.pass.context201.title}
-        </h3>
-        <p className="pass-timeslip__context-body">{t.pass.context201.body}</p>
-        <ul className="pass-timeslip__context-stats">
-          <li>{t.pass.context201.edrsStat}</li>
-          <li>{t.pass.context201.quarterStat}</li>
-        </ul>
-      </section>
 
       <p className="pass-timeslip__guide">{t.pass.timeslipGuide}</p>
 
       <ul className="pass-timeslip__splits">
         {edhTimeslipRows.map((row) => {
           const copy = getSplitCopy(t, row.id)
-          const highlight = row.id === 'quarter' || row.id === 'trapMph' || row.id === 'eighth'
+          const highlight = row.id === 'eighth' || row.id === 'quarter'
 
           return (
             <li
@@ -135,7 +150,7 @@ export function PassTimeslip() {
               <div className="pass-timeslip__split-top">
                 <span className="pass-timeslip__split-label">{copy.label}</span>
                 <span className="pass-timeslip__split-value">
-                  {row.value}
+                  {formatSplitValue(row, locale)}
                   {row.valueAlt ? (
                     <span className="pass-timeslip__split-alt"> · {row.valueAlt}</span>
                   ) : null}
@@ -147,31 +162,13 @@ export function PassTimeslip() {
         })}
       </ul>
 
-      <section className="pass-timeslip__anchors" aria-labelledby="pass-anchors-title">
-        <h3 id="pass-anchors-title" className="pass-timeslip__anchors-title">
-          {t.pass.anchorsTitle}
-        </h3>
-        <ul className="pass-timeslip__anchor-list">
-          <li>{t.pass.anchors.distance}</li>
-          <li>{t.pass.anchors.time}</li>
-          <li>{t.pass.anchors.speed}</li>
-          <li>{t.pass.anchors.trap}</li>
-        </ul>
-      </section>
-
-      <section className="pass-timeslip__sport" aria-labelledby="pass-sport-title">
-        <h3 id="pass-sport-title" className="pass-timeslip__sport-title">
-          {t.pass.sportWhy.title}
-        </h3>
-        <p className="pass-timeslip__sport-body">{t.pass.sportWhy.body}</p>
-      </section>
-
       <div className="pass-timeslip__compare">
         <p className="pass-timeslip__compare-title">{t.pass.timeslipCompareTitle}</p>
         <p className="pass-timeslip__compare-lead">{t.pass.timeslipCompareLead}</p>
         <ol className="pass-timeslip__rows">
           {orderedRacers.map((racer, index) => {
             const isHero = racer.id === 'camaro'
+            const etDigits = racer.id === 'camaro' ? 4 : 2
 
             return (
               <li
@@ -183,7 +180,9 @@ export function PassTimeslip() {
                     {index + 1}
                   </span>
                   <span className="pass-timeslip__name">{getCompareLabel(t, racer.id)}</span>
-                  <span className="pass-timeslip__et">{racer.et.toFixed(2)}s</span>
+                  <span className="pass-timeslip__et">
+                    {formatLocaleNumber(racer.et, locale, etDigits)}s
+                  </span>
                   <span className="pass-timeslip__speed">{racer.speedLabel}</span>
                 </div>
                 <p className="pass-timeslip__row-meaning">{getCompareMeaning(t, racer.id)}</p>

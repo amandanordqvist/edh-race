@@ -1,6 +1,5 @@
-import type { Application, Entity, Texture } from 'playcanvas'
+import type { Entity } from 'playcanvas'
 
-import { loadTextureAsset } from './loadTextureAsset'
 import {
   createMaterial,
   createPrimitive,
@@ -8,62 +7,57 @@ import {
 } from './scenePrimitives'
 import type { PassQuality } from './types'
 
-const LOGO_URL = '/logo/logo-hero.webp'
-
 type AttachDecalsOptions = {
-  app: Application
+  app: import('playcanvas').Application
   pc: PlayCanvasNamespace
   camaro: Entity
   quality: PassQuality
 }
 
-function addLogoDecal(
-  pc: PlayCanvasNamespace,
-  parent: Entity,
-  name: string,
-  position: [number, number, number],
-  euler: [number, number, number],
-  texture: Texture,
-  quality: PassQuality,
-): void {
-  const material = createMaterial(pc, {
-    diffuse: [1, 1, 1],
-    emissive: [0.85, 0.88, 0.95],
-    emissiveIntensity: quality === 'high' ? 0.22 : 0.12,
-    metalness: 0.05,
-    gloss: 0.35,
-  })
-  material.diffuseMap = texture
-  material.emissiveMap = texture
-  material.opacity = 0.92
-  material.blendType = pc.BLEND_NORMAL
-  material.depthWrite = false
-  material.update()
-
-  const decal = createPrimitive(pc, {
-    name,
-    type: 'plane',
-    position,
-    scale: [0.72, 0.72, 1],
-    material,
-    castShadows: false,
-    receiveShadows: false,
-  })
-  decal.setLocalEulerAngles(...euler)
-  parent.addChild(decal)
-}
-
+/**
+ * No logo textures in the 3D scene until they can target explicitly named
+ * body panels. Only adds a quiet rear-wing silhouette when missing.
+ */
 export async function attachCamaroDecals(opts: AttachDecalsOptions): Promise<void> {
-  const { app, pc, camaro, quality } = opts
+  const { pc, camaro } = opts
+  void opts.app
+  void opts.quality
 
-  try {
-    const asset = await loadTextureAsset(app, pc, LOGO_URL, 'edh-pass-logo')
-    const texture = asset.resource as Texture
+  if (camaro.findByName('camaro-wing')) return
 
-    // Parent camaro yaw is +90° (model +Z → world +X). Local ±Z is left/right of the car.
-    addLogoDecal(pc, camaro, 'camaro-decal-l', [-0.15, 0.72, 0.86], [90, 0, 0], texture, quality)
-    addLogoDecal(pc, camaro, 'camaro-decal-r', [-0.15, 0.72, -0.86], [90, 180, 0], texture, quality)
-  } catch (error) {
-    console.warn('[pass] Could not attach Camaro decals', error)
-  }
+  const wingMat = createMaterial(pc, {
+    diffuse: [0.08, 0.09, 0.11],
+    metalness: 0.35,
+    gloss: 0.42,
+  })
+  const uprightMat = createMaterial(pc, {
+    diffuse: [0.12, 0.13, 0.15],
+    metalness: 0.4,
+    gloss: 0.38,
+  })
+  const wing = new pc.Entity('camaro-wing')
+  wing.setLocalPosition(-1.55, 1.05, 0)
+  wing.addChild(
+    createPrimitive(pc, {
+      name: 'wing-blade',
+      type: 'box',
+      position: [0, 0.28, 0],
+      scale: [0.32, 0.04, 1.85],
+      material: wingMat,
+      castShadows: true,
+    }),
+  )
+  ;([-0.72, 0.72] as number[]).forEach((z, i) => {
+    wing.addChild(
+      createPrimitive(pc, {
+        name: `wing-upright-${i}`,
+        type: 'box',
+        position: [0.05, 0.12, z],
+        scale: [0.12, 0.28, 0.06],
+        material: uprightMat,
+        castShadows: true,
+      }),
+    )
+  })
+  camaro.addChild(wing)
 }

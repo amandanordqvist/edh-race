@@ -2,6 +2,7 @@ export type CalendarRound = {
   round: number
   dates: string
   venue: string
+  city: string
   /** ISO date — first day of the event, for “next start” */
   startDate: string
   isFinal?: boolean
@@ -16,16 +17,17 @@ export const venueImages: Record<string, string> = {
 }
 
 export const calendar2026: CalendarRound[] = [
-  { round: 1, dates: '5–7 Jun', venue: 'Tierp Arena', startDate: '2026-06-05' },
-  { round: 2, dates: '19–21 Jun', venue: 'Orsa (Tallhed)', startDate: '2026-06-19' },
-  { round: 3, dates: '3–5 Jul', venue: 'Sundsvall', startDate: '2026-07-03' },
-  { round: 4, dates: '11–12 Jul', venue: 'Piteå', startDate: '2026-07-11' },
-  { round: 5, dates: '17–18 Jul', venue: 'Piteå', startDate: '2026-07-17' },
-  { round: 6, dates: '21–23 Aug', venue: 'Sundsvall', startDate: '2026-08-21' },
+  { round: 1, dates: '5-7 Jun', venue: 'Tierp Arena', city: 'Tierp', startDate: '2026-06-05' },
+  { round: 2, dates: '19-21 Jun', venue: 'Orsa (Tallhed)', city: 'Orsa', startDate: '2026-06-19' },
+  { round: 3, dates: '3-5 Jul', venue: 'Sundsvall', city: 'Sundsvall', startDate: '2026-07-03' },
+  { round: 4, dates: '11-12 Jul', venue: 'Piteå', city: 'Piteå', startDate: '2026-07-11' },
+  { round: 5, dates: '17-18 Jul', venue: 'Piteå', city: 'Piteå', startDate: '2026-07-17' },
+  { round: 6, dates: '21-23 Aug', venue: 'Sundsvall', city: 'Sundsvall', startDate: '2026-08-21' },
   {
     round: 7,
-    dates: '25–27 Sep',
+    dates: '25-27 Sep',
     venue: 'Tierp Arena',
+    city: 'Tierp',
     startDate: '2026-09-25',
     isFinal: true,
   },

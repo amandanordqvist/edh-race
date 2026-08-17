@@ -1,23 +1,11 @@
 .pass-context {
   width: 100%;
   display: grid;
-  gap: clamp(1.5rem, 3vw, 2.5rem);
+  gap: clamp(1.75rem, 3.5vw, 2.75rem);
 }
 
 .pass-context__header {
-  max-width: 62ch;
-  display: grid;
-  gap: 0.6rem;
-}
-
-.pass-context__eyebrow {
-  margin: 0;
-  font-family: var(--font-ui);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-primary-blue);
+  max-width: 42rem;
 }
 
 .pass-context__title {
@@ -31,159 +19,152 @@
   color: var(--color-almost-white);
 }
 
-.pass-context__lead {
-  margin: 0;
-  font-size: clamp(0.95rem, 1.8vw, 1.05rem);
-  line-height: 1.6;
-  color: rgba(243, 245, 248, 0.72);
-}
-
-.pass-context__tiles {
+.pass-context__marks {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.85rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 1.5rem 1.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.pass-context__tile {
+.pass-context__mark {
   display: grid;
-  gap: 0.75rem;
-  padding: 1.15rem 1.15rem 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-md);
-  background:
-    linear-gradient(160deg, rgba(20, 24, 32, 0.85) 0%, rgba(10, 13, 18, 0.85) 100%);
-  transition: border-color 240ms ease, transform 240ms ease, background 240ms ease;
+  gap: 0.35rem;
+  padding: 0;
+  border: 0;
+  background: none;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .pass-context__tile:hover {
-    border-color: rgba(42, 79, 154, 0.32);
-    background:
-      linear-gradient(160deg, rgba(24, 30, 42, 0.9) 0%, rgba(12, 16, 22, 0.9) 100%);
-    transform: translateY(-2px);
-  }
-}
-
-.pass-context__tile-value {
+.pass-context__mark-value {
   margin: 0;
   display: inline-flex;
   align-items: baseline;
   gap: 0.35rem;
 }
 
-.pass-context__tile-kicker {
+.pass-context__mark-kicker {
   font-family: var(--font-display);
-  font-size: clamp(2.1rem, 4.2vw, 2.8rem);
+  font-size: clamp(2rem, 4.4vw, 2.85rem);
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.01em;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
   color: var(--color-almost-white);
   font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
 }
 
-.pass-context__tile-unit {
+.pass-context__mark-unit {
   font-family: var(--font-ui);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.5);
+}
+
+.pass-context__mark-label {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  text-transform: lowercase;
-  color: rgba(243, 245, 248, 0.55);
+  text-transform: uppercase;
+  color: rgba(243, 245, 248, 0.62);
 }
 
-.pass-context__tile-body {
-  margin: 0;
-  font-size: 0.9rem;
+.pass-context__mark-note {
+  margin: 0.2rem 0 0;
+  max-width: 28ch;
+  font-size: 0.88rem;
   line-height: 1.5;
-  color: rgba(243, 245, 248, 0.72);
+  color: rgba(243, 245, 248, 0.68);
 }
 
 .pass-context__split {
   display: grid;
-  gap: 1.5rem;
-  padding: clamp(1.25rem, 2.4vw, 1.75rem);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-md);
-  background:
-    linear-gradient(140deg, rgba(18, 24, 36, 0.9) 0%, rgba(8, 10, 14, 0.9) 100%);
-}
-
-.pass-context__split-copy {
-  display: grid;
-  gap: 0.5rem;
-  max-width: 60ch;
+  gap: 1.15rem;
+  max-width: 46rem;
 }
 
 .pass-context__split-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
   font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: 0.02em;
+  line-height: 1.15;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--color-almost-white);
 }
 
-.pass-context__split-body {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: rgba(243, 245, 248, 0.72);
-}
-
-.pass-context__split-stats {
+.pass-context__lanes {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 1.1rem;
 }
 
-.pass-context__split-stat {
+.pass-context__lane {
   display: grid;
-  gap: 0.45rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  gap: 0.4rem;
 }
 
-.pass-context__split-stat--hero {
-  border-color: rgba(42, 79, 154, 0.32);
-  background:
-    linear-gradient(90deg, rgba(42, 79, 154, 0.22) 0%, rgba(42, 79, 154, 0.04) 70%, transparent 100%);
+.pass-context__lane-bar {
+  display: block;
+  height: 3px;
+  background: var(--color-primary-blue);
 }
 
-.pass-context__stat-tag {
+.pass-context__lane--eighth .pass-context__lane-bar {
+  width: 50%;
+  opacity: 0.7;
+}
+
+.pass-context__lane--quarter .pass-context__lane-bar {
+  width: 100%;
+}
+
+.pass-context__lane-distance {
+  margin: 0;
   font-family: var(--font-ui);
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-primary-blue);
 }
 
-.pass-context__stat-body {
+.pass-context__lane-stats {
   margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: rgba(243, 245, 248, 0.82);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-almost-white);
+  font-variant-numeric: tabular-nums;
 }
 
-@media (min-width: 960px) {
-  .pass-context__split {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-    align-items: start;
-    gap: 2rem;
-  }
+.pass-context__split-body,
+.pass-context__split-note {
+  margin: 0;
+  max-width: 58ch;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(243, 245, 248, 0.7);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .pass-context__tile {
-    transition: none;
+.pass-context__split-note {
+  color: rgba(243, 245, 248, 0.55);
+}
+
+@media (min-width: 900px) {
+  .pass-context__marks {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.75rem 1.5rem;
   }
 }

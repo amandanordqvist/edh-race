@@ -1,11 +1,11 @@
 :root {
   /* Surfaces — cool Scandinavian charcoal, not pure black */
-  --color-almost-black: #0a0c10;
-  --color-surface: #10141c;
-  --color-surface-raised: #161c28;
+  --color-almost-black: #111a2b;
+  --color-surface: #1f2228;
+  --color-surface-raised: #202a3c;
   --color-primary-blue: #2a4f9a;
   --color-primary-blue-deep: #1b3e84;
-  --color-supporting-navy: #1a2436;
+  --color-supporting-navy: #333c4e;
   --color-silver-gray: #c4c9d4;
   --color-almost-white: #f3f5f8;
   --color-hairline: rgba(168, 173, 184, 0.22);
@@ -13,7 +13,7 @@
 
   /* Depth — tinted, never harsh black drops */
   --shadow-deep:
-    0 28px 56px rgba(6, 10, 18, 0.55),
+    0 28px 56px rgba(18, 29, 52, 0.55),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --shadow-soft: 0 12px 40px rgba(8, 14, 28, 0.35);
   --shadow-blue-glow: 0 0 28px rgba(42, 79, 154, 0.35);
@@ -36,10 +36,12 @@
 
   /* Layout */
   --header-height: 72px;
-  --content-max: 1180px;
-  --content-wide: 1360px;
-  --section-pad: clamp(3.25rem, 7vw, 5.5rem);
-  --section-pad-bottom: clamp(3.5rem, 8vw, 6rem);
+  --content-max: 80rem;
+  --content-wide: 80rem;
+  --section-pad: 3.25rem;
+  --section-pad-bottom: 3.5rem;
+  --grid-gap: 1.25rem;
+  --body-size: 1rem;
 
   /* Motion — strong custom curves; UI stays under 300ms */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);

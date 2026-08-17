@@ -21,11 +21,13 @@ import type { PassBridgeHandlers, PassPhase, PassRaceFrame } from './types'
 
 const GREEN_HOLD_MS = 180
 const REDUCED_MOTION_FLASH_MS = 200
-const FINISH_HOLD_MS = 1600
+const FINISH_HOLD_MS = 80
 const HERO_ET = simulatorRacers.find((racer) => racer.id === 'camaro')?.et ?? 5.7451
 const HERO_TOP_SPEED = 415
 /** How long we wait for the user to tap after green before auto-launching. */
 const AUTO_LAUNCH_TIMEOUT_MS = 2500
+/** Hold the Camaro in shutdown long enough for chutes, then freeze. */
+const HERO_SETTLE_S = 1.15
 
 /** Slow-mo window around the hero finish line (in sim seconds). */
 const SLOW_MO_START = HERO_ET - 0.22
@@ -95,7 +97,7 @@ export function createRaceController(opts: RaceControllerOptions) {
     restoreTimeScale()
   }
 
-  const coastDistance = SHUTDOWN_LENGTH * 0.58
+  const coastDistance = SHUTDOWN_LENGTH * 0.34
 
   const racerWorldX = (elapsedS: number, racerId: (typeof simulatorRacers)[number]['id']): number => {
     const racer = simulatorRacers.find((entry) => entry.id === racerId)
@@ -105,6 +107,21 @@ export function createRaceController(opts: RaceControllerOptions) {
         ? Math.min(1, camaroStripProgress(elapsedS))
         : comparisonStripProgress(Math.min(1, elapsedS / et))
     return raceU * scene.trackLength + shutdownCoast01(elapsedS, et) * coastDistance
+  }
+
+  const pushScoreboard = (elapsedS: number) => {
+    const opponentId = scene.getOpponent()
+    const opponent = simulatorRacers.find((racer) => racer.id === opponentId)
+    const opponentEt = opponent?.et ?? HERO_ET
+    const racing = elapsedS > 0.001
+    scene.scoreboard.update({
+      heroEt: racing ? Math.min(elapsedS, HERO_ET) : null,
+      heroTrap: elapsedS >= HERO_ET - 0.0005 ? HERO_TOP_SPEED : null,
+      heroWin: elapsedS >= HERO_ET - 0.0005,
+      opponentId,
+      opponentEt: racing ? Math.min(elapsedS, opponentEt) : null,
+      opponentTrap: elapsedS >= opponentEt - 0.0005 ? (opponent?.trapKmh ?? null) : null,
+    })
   }
 
   const parkInShutdown = () => {
@@ -117,7 +134,7 @@ export function createRaceController(opts: RaceControllerOptions) {
   const finishRace = (clock: number) => {
     finishing = false
     stopUpdate()
-    applyRacerMotion(Math.max(simElapsed, HERO_ET + SHUTDOWN_COAST_S))
+    applyRacerMotion(simElapsed)
     handlers.onClock(clock)
     setPhase('finished')
     handlers.onFinished()
@@ -135,6 +152,8 @@ export function createRaceController(opts: RaceControllerOptions) {
       const pos = entity.getLocalPosition()
       entity.setLocalPosition(racerWorldX(elapsedS, racer.id), pos.y, pos.z)
     })
+
+    pushScoreboard(elapsedS)
   }
 
   const runRace = () => {
@@ -149,6 +168,7 @@ export function createRaceController(opts: RaceControllerOptions) {
         gapM: 0,
         timeScale: 1,
         chuteDeploy01: 1,
+        opponentClock: simulatorRacers.find((r) => r.id === scene.getOpponent())?.et ?? HERO_ET,
       })
       finishRace(HERO_ET)
       return
@@ -162,7 +182,7 @@ export function createRaceController(opts: RaceControllerOptions) {
 
     const opponentId = scene.getOpponent()
     const opponentEt = simulatorRacers.find((r) => r.id === opponentId)?.et ?? HERO_ET
-    const raceEndS = Math.max(HERO_ET + SHUTDOWN_COAST_S, opponentEt)
+    const raceEndS = HERO_ET + HERO_SETTLE_S
 
     updateHandler = (dt: number) => {
       // dt is already scaled by app.timeScale — accumulator naturally slows
@@ -201,6 +221,7 @@ export function createRaceController(opts: RaceControllerOptions) {
         gapM,
         timeScale,
         chuteDeploy01,
+        opponentClock: Math.min(simElapsed, opponentEt),
         splitHit: split?.id ?? null,
       })
       handlers.onClock(heroClock)
@@ -309,6 +330,7 @@ export function createRaceController(opts: RaceControllerOptions) {
       gapM,
       timeScale: 1,
       chuteDeploy01: chute01,
+      opponentClock: Math.min(t, opponentEt),
       splitHit: null,
     })
     handlers.onClock(heroClock)

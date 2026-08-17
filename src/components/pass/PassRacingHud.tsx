@@ -1,50 +1,54 @@
-import { edhTimeslipMeta } from '../../data/simulator'
+import { useEffect, useRef, useState } from 'react'
+
 import { useT } from '../../i18n'
 import type { PassPhase } from '../../lib/pass/types'
 
 type PassRacingHudProps = {
   phase: PassPhase
-  clock: number
   speedKmh: number
-  gapM: number
+  remainingM: number
   chuteDeploy01: number
 }
 
-/**
- * Secondary telemetry only — keep the strip + Camaro readable.
- * Timeslip pedagogy lives in the split banner / finish panel, not here.
- */
-export function PassRacingHud({ phase, clock, speedKmh, gapM, chuteDeploy01 }: PassRacingHudProps) {
-  const t = useT()
+const SPEED_MILESTONES = [100, 200, 300, 400] as const
 
-  const showReaction = phase === 'green' || phase === 'racing' || phase === 'finished'
-  const reaction = showReaction ? edhTimeslipMeta.reaction : null
-  const elapsed = phase === 'racing' || phase === 'finished' ? clock : 0
+/**
+ * Live speed + meters remaining. Off-center so the car keeps the middle.
+ */
+export function PassRacingHud({
+  phase,
+  speedKmh,
+  remainingM,
+  chuteDeploy01,
+}: PassRacingHudProps) {
+  const t = useT()
+  const [pulse, setPulse] = useState(false)
+  const hitRef = useRef<Set<number>>(new Set())
+
   const speedDisplay = phase === 'racing' ? Math.round(speedKmh) : 0
-  const showGap = phase === 'racing' && chuteDeploy01 < 0.2 && Math.abs(gapM) > 1.5
-  const gapAbs = Math.round(Math.abs(gapM))
-  const gapLead = gapM >= 0
+  const showRemaining = phase === 'racing' && chuteDeploy01 < 0.25 && remainingM > 0
   const showChutes = phase === 'racing' && chuteDeploy01 > 0.15
 
+  useEffect(() => {
+    if (phase !== 'racing') {
+      hitRef.current.clear()
+      return
+    }
+    SPEED_MILESTONES.forEach((mark) => {
+      if (speedKmh >= mark && !hitRef.current.has(mark)) {
+        hitRef.current.add(mark)
+        setPulse(true)
+        window.setTimeout(() => setPulse(false), 320)
+      }
+    })
+  }, [speedKmh, phase])
+
   return (
-    <div className="pass-racing-hud" aria-hidden="true">
+    <div
+      className={`pass-racing-hud${pulse ? ' pass-racing-hud--pulse' : ''}`}
+      aria-hidden="true"
+    >
       <div className="pass-racing-hud__rail">
-        <div className="pass-racing-hud__chip">
-          <span className="pass-racing-hud__chip-label">{t.pass.racingHud.elapsed}</span>
-          <span className="pass-racing-hud__chip-value">
-            {elapsed > 0 ? elapsed.toFixed(3) : '0.000'}
-          </span>
-        </div>
-
-        {reaction !== null ? (
-          <div className="pass-racing-hud__chip">
-            <span className="pass-racing-hud__chip-label">{t.pass.racingHud.reaction}</span>
-            <span className="pass-racing-hud__chip-value pass-racing-hud__chip-value--sm">
-              {reaction.toFixed(3)}
-            </span>
-          </div>
-        ) : null}
-
         <div className="pass-racing-hud__chip pass-racing-hud__chip--speed">
           <span className="pass-racing-hud__chip-value pass-racing-hud__chip-value--speed">
             {speedDisplay || '0'}
@@ -52,27 +56,23 @@ export function PassRacingHud({ phase, clock, speedKmh, gapM, chuteDeploy01 }: P
           <span className="pass-racing-hud__chip-label">{t.pass.racingHud.speedUnit}</span>
         </div>
 
+        {showRemaining ? (
+          <div className="pass-racing-hud__chip pass-racing-hud__chip--remain">
+            <span className="pass-racing-hud__chip-value pass-racing-hud__chip-value--sm">
+              {Math.round(remainingM)}
+            </span>
+            <span className="pass-racing-hud__chip-label">
+              m {t.pass.metersLeft}
+            </span>
+          </div>
+        ) : null}
+
         {showChutes ? (
           <div className="pass-racing-hud__chip pass-racing-hud__chip--chutes">
             <span className="pass-racing-hud__chip-label">{t.pass.racingHud.chutes}</span>
           </div>
         ) : null}
       </div>
-
-      {showGap ? (
-        <div
-          className={`pass-racing-hud__gap${gapLead ? ' pass-racing-hud__gap--lead' : ' pass-racing-hud__gap--trail'}`}
-        >
-          <span className="pass-racing-hud__gap-arrow" aria-hidden="true">
-            {gapLead ? '↑' : '↓'}
-          </span>
-          <span className="pass-racing-hud__gap-value">{gapAbs}</span>
-          <span className="pass-racing-hud__gap-unit">m</span>
-          <span className="pass-racing-hud__gap-vs">
-            {gapLead ? t.pass.gapAhead : t.pass.gapBehind}
-          </span>
-        </div>
-      ) : null}
     </div>
   )
 }

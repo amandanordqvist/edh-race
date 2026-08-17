@@ -15,8 +15,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = locale
-    document.title = `${t.meta.siteName} — ${t.meta.tagline}`
-  }, [locale, t.meta.siteName, t.meta.tagline])
+  }, [locale])
 
   const value = useMemo(() => ({ locale, t }), [locale, t])
 

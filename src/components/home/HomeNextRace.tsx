@@ -13,48 +13,50 @@ export function HomeNextRace() {
 
   return (
     <Section className="home-next" wide>
-      <Reveal className="home-next__shell" y={40}>
-        <div className="home-next__media" aria-hidden="true">
-          <img
-            src="/images/IMG_4819.JPG"
-            alt=""
-            width={1600}
-            height={1000}
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-        <div className="home-next__card">
-          <div className="home-next__head">
-            <p className="home-next__label">{t.home.nextRaceLabel}</p>
-            {next ? <p className="home-next__status">{t.home.nextRaceStatus}</p> : null}
+      <Reveal className="home-next__shell" y={32}>
+        {next ? (
+          <div className="home-next__media" aria-hidden="true">
+            <img
+              src="/images/IMG_4819.JPG"
+              alt=""
+              width={1600}
+              height={1000}
+              loading="lazy"
+              decoding="async"
+            />
           </div>
+        ) : null}
+        <div className="home-next__card">
+          <p className="home-next__label">{t.home.nextRaceLabel}</p>
           <h2 className="home-next__title">{t.home.nextRaceTitle}</h2>
 
           {next ? (
             <dl className="home-next__facts">
               <div>
-                <dt>{t.results.round}</dt>
-                <dd>
-                  {next.round}
-                  {next.isFinal ? ` · ${t.results.final}` : ''}
-                </dd>
+                <dt>{t.home.nextRaceDateLabel}</dt>
+                <dd>{next.dates}</dd>
               </div>
               <div>
-                <dt>{t.common.location}</dt>
+                <dt>{t.home.nextRaceTrackLabel}</dt>
                 <dd>{next.venue}</dd>
               </div>
               <div>
-                <dt>{t.results.colEvent}</dt>
-                <dd>{next.dates}</dd>
+                <dt>{t.home.nextRacePlaceLabel}</dt>
+                <dd>
+                  {next.city}, {t.home.nextRaceCountry}
+                </dd>
               </div>
               <div>
                 <dt>{t.home.nextRaceClassLabel}</dt>
                 <dd>{t.home.nextRaceClass}</dd>
               </div>
+              <div>
+                <dt>{t.home.nextRaceStatusLabel}</dt>
+                <dd>{t.home.nextRaceStatus}</dd>
+              </div>
             </dl>
           ) : (
-            <p className="home-next__done">{t.home.nextRaceSeasonDone}</p>
+            <p className="home-next__done">{t.home.nextRaceEmpty}</p>
           )}
 
           <Button to={localePath(locale, 'results')} icon>

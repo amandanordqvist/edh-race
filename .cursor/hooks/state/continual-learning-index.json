@@ -82,8 +82,8 @@
       "lastProcessedAt": "2026-08-12T11:43:43.211581+00:00"
     },
     "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/b72b0ad9-4a45-4361-b1b6-3eb98722bcd2/b72b0ad9-4a45-4361-b1b6-3eb98722bcd2.jsonl": {
-      "mtimeMs": 1786547693308.254,
-      "lastProcessedAt": "2026-08-12T15:26:22.704302+00:00"
+      "mtimeMs": 1786558109095.3418,
+      "lastProcessedAt": "2026-08-12T18:11:05.995311+00:00"
     },
     "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/b72b0ad9-4a45-4361-b1b6-3eb98722bcd2/subagents/199d6b4f-c7b7-4818-bcb4-55d8d93ce67c.jsonl": {
       "mtimeMs": 1786435023832.7512,
@@ -178,8 +178,8 @@
       "lastProcessedAt": "2026-08-12T11:43:43.211581+00:00"
     },
     "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/f9b77049-296e-4dcc-a5b7-1ced68372aa9/f9b77049-296e-4dcc-a5b7-1ced68372aa9.jsonl": {
-      "mtimeMs": 1786521990301.2815,
-      "lastProcessedAt": "2026-08-12T11:43:43.211581+00:00"
+      "mtimeMs": 1786556360209.1653,
+      "lastProcessedAt": "2026-08-12T18:11:05.995311+00:00"
     },
     "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/f9b77049-296e-4dcc-a5b7-1ced68372aa9/subagents/4c16783c-bf2f-4755-b3ae-3fa09f1bad15.jsonl": {
       "mtimeMs": 1786521798125.656,
@@ -198,16 +198,40 @@
       "lastProcessedAt": "2026-08-12T15:26:22.704302+00:00"
     },
     "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/a2875ecf-5de4-42ba-86b2-cfbbd341b1cc/a2875ecf-5de4-42ba-86b2-cfbbd341b1cc.jsonl": {
-      "mtimeMs": 1786548228226.7932,
-      "lastProcessedAt": "2026-08-12T15:26:22.704302+00:00"
+      "mtimeMs": 1786548392018.6235,
+      "lastProcessedAt": "2026-08-12T18:11:05.995311+00:00"
     },
     "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/a2875ecf-5de4-42ba-86b2-cfbbd341b1cc/subagents/2e68aca3-353e-44d3-91d5-4fe665b4cc26.jsonl": {
-      "mtimeMs": 1786548275632.6301,
-      "lastProcessedAt": "2026-08-12T15:26:22.704302+00:00"
+      "mtimeMs": 1786548388642.769,
+      "lastProcessedAt": "2026-08-12T18:11:05.995311+00:00"
     },
     "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/b72b0ad9-4a45-4361-b1b6-3eb98722bcd2/subagents/e5cc49e4-7792-4438-b8a8-967c5a7709d2.jsonl": {
       "mtimeMs": 1786541433253.7268,
       "lastProcessedAt": "2026-08-12T15:26:22.704302+00:00"
+    },
+    "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/4df9385b-12db-4ddb-99b5-713818f18df6/4df9385b-12db-4ddb-99b5-713818f18df6.jsonl": {
+      "mtimeMs": 1786558102969.415,
+      "lastProcessedAt": "2026-08-12T18:11:05.995311+00:00"
+    },
+    "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/cd552fbc-40d2-41a6-a813-320ed1919f2d/cd552fbc-40d2-41a6-a813-320ed1919f2d.jsonl": {
+      "mtimeMs": 1786558256019.4385,
+      "lastProcessedAt": "2026-08-12T18:11:05.995311+00:00"
+    },
+    "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/4df9385b-12db-4ddb-99b5-713818f18df6/subagents/512a814c-df96-4a1a-a694-220348165a98.jsonl": {
+      "mtimeMs": 1786558108185.9656,
+      "lastProcessedAt": "2026-08-12T18:11:05.995311+00:00"
+    },
+    "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/b2872fb8-6dda-42a9-bed9-ddde15f88da5/b2872fb8-6dda-42a9-bed9-ddde15f88da5.jsonl": {
+      "mtimeMs": 1786605680.1561353,
+      "lastProcessedAt": "2026-08-13T07:23:02.649365+00:00"
+    },
+    "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/b2872fb8-6dda-42a9-bed9-ddde15f88da5/subagents/22184ec8-42be-43ee-834a-a1cc8d2810ec.jsonl": {
+      "mtimeMs": 1786605707.0215602,
+      "lastProcessedAt": "2026-08-13T07:23:02.649365+00:00"
+    },
+    "/Users/amandanordqvisted/.cursor/projects/Users-amandanordqvisted-edh-race/agent-transcripts/b2872fb8-6dda-42a9-bed9-ddde15f88da5/subagents/5268ab79-f89a-418f-b564-4f8358495c6b.jsonl": {
+      "mtimeMs": 1786600031.9116166,
+      "lastProcessedAt": "2026-08-13T07:23:02.649365+00:00"
     }
   }
 }

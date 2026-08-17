@@ -35,9 +35,9 @@ export function buildShutdown(opts: ShutdownOptions): void {
   const sandLen = SHUTDOWN_LENGTH * 0.38
 
   const asphalt = createMaterial(pc, {
-    diffuse: [0.045, 0.046, 0.05],
-    metalness: 0.16,
-    gloss: 0.28,
+    diffuse: [0.026, 0.027, 0.03],
+    metalness: 0.14,
+    gloss: 0.22,
   })
   const rubber = createMaterial(pc, {
     diffuse: [0.028, 0.028, 0.03],
@@ -50,14 +50,14 @@ export function buildShutdown(opts: ShutdownOptions): void {
     gloss: 0.28,
   })
   const sand = createMaterial(pc, {
-    diffuse: [0.42, 0.36, 0.26],
+    diffuse: [0.08, 0.07, 0.055],
     metalness: 0.02,
-    gloss: 0.08,
+    gloss: 0.05,
   })
   const sandDark = createMaterial(pc, {
-    diffuse: [0.32, 0.27, 0.2],
+    diffuse: [0.055, 0.05, 0.042],
     metalness: 0.02,
-    gloss: 0.06,
+    gloss: 0.04,
   })
   const net = createMaterial(pc, {
     diffuse: [0.18, 0.19, 0.21],

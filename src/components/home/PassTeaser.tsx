@@ -1,30 +1,68 @@
-import { useState } from 'react'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useRef, useState } from 'react'
 import { useLocale, useT } from '../../i18n'
 import { localePath } from '../../lib/paths'
 import { Button } from '../ui/Button'
-import { Reveal } from '../ui/Reveal'
 import { Section } from '../ui/Section'
 import './PassTeaser.css'
+
+gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 export function PassTeaser() {
   const t = useT()
   const locale = useLocale()
   const [failed, setFailed] = useState(false)
+  const frameRef = useRef<HTMLDivElement>(null)
+  const copyRef = useRef<HTMLDivElement>(null)
+  const mediaRef = useRef<HTMLElement>(null)
+
+  useGSAP(
+    () => {
+      const frame = frameRef.current
+      const copy = copyRef.current
+      const media = mediaRef.current
+      if (!frame || !copy || !media) return
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        gsap.set([copy, media], { clearProps: 'opacity,transform', opacity: 1, y: 0, scale: 1 })
+        return
+      }
+
+      gsap.set(copy, { opacity: 0, y: 24 })
+      gsap.set(media, { opacity: 0, scale: 1.04 })
+
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: frame,
+            start: 'top 78%',
+            end: 'top 32%',
+            scrub: 0.8,
+          },
+        })
+        .to(media, { opacity: 1, scale: 1, ease: 'none' }, 0)
+        .to(copy, { opacity: 1, y: 0, ease: 'none' }, 0.12)
+    },
+    { scope: frameRef },
+  )
 
   return (
     <Section className="pass-teaser" wide>
-      <div className="pass-teaser__frame">
-        <Reveal className="pass-teaser__copy" y={32}>
-          <h2 className="section__title">{t.home.passTeaserTitle}</h2>
-          <p className="section__lead">{t.home.passTeaserBody}</p>
+      <div ref={frameRef} className="pass-teaser__frame">
+        <div ref={copyRef} className="pass-teaser__copy">
+          <p className="pass-teaser__label">{t.home.passTeaserLabel}</p>
+          <h2 className="pass-teaser__title">{t.home.passTeaserTitle}</h2>
+          <p className="pass-teaser__lead">{t.home.passTeaserBody}</p>
           <div className="pass-teaser__actions">
             <Button to={localePath(locale, 'pass')} icon>
               {t.home.passTeaserCta}
             </Button>
           </div>
-        </Reveal>
+        </div>
 
-        <Reveal className="pass-teaser__media" as="figure" delay={0.08} y={28} variant="media">
+        <figure ref={mediaRef} className="pass-teaser__media">
           {failed ? (
             <div className="pass-teaser__fallback" role="img" aria-label={t.home.imageFallback}>
               <span>{t.home.imageFallback}</span>
@@ -32,16 +70,19 @@ export function PassTeaser() {
           ) : (
             <img
               className="pass-teaser__image"
-              src="/images/santapod.jpeg"
+              src="/images/journey/webp/2024-santapod6-1200.webp"
+              srcSet="/images/journey/webp/2024-santapod6-960.webp 960w, /images/journey/webp/2024-santapod6-1200.webp 1200w"
+              sizes="(min-width: 960px) 52vw, 100vw"
               alt={t.home.passTeaserAlt}
-              width={1600}
-              height={1000}
+              width={1200}
+              height={800}
               decoding="async"
               loading="lazy"
               onError={() => setFailed(true)}
             />
           )}
-        </Reveal>
+          <figcaption className="pass-teaser__facts">{t.home.passTeaserFacts}</figcaption>
+        </figure>
       </div>
     </Section>
   )

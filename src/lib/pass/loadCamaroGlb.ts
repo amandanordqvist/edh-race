@@ -21,6 +21,8 @@ const CAMARO_GROUND_CLEARANCE = 0.04
  */
 const CAMARO_YAW_FLIP_DEG: 0 | 180 = 0
 
+const EDH_BLUE: [number, number, number] = [48 / 255, 82 / 255, 168 / 255]
+
 type LoadCamaroOptions = {
   app: Application
   pc: PlayCanvasNamespace
@@ -33,6 +35,78 @@ export type LoadedCamaro = {
   hasTextures: boolean
 }
 
+function isBodyPaintName(name: string): boolean {
+  const n = name.toLowerCase()
+  return (
+    n.includes('bodywork') ||
+    n.includes('paint') ||
+    n.includes('carpaint') ||
+    (n.includes('body') && !n.includes('nobody'))
+  )
+}
+
+function isGlassName(name: string): boolean {
+  const n = name.toLowerCase()
+  return (
+    n.includes('glass') ||
+    n.includes('window') ||
+    n.includes('windscreen') ||
+    n.includes('windshield') ||
+    n.includes('canopy')
+  )
+}
+
+function isTireName(name: string): boolean {
+  const n = name.toLowerCase()
+  return n.includes('tire') || n.includes('tyre') || n.includes('rubber') || n.includes('wheel')
+}
+
+function isChromeName(name: string): boolean {
+  const n = name.toLowerCase()
+  return (
+    n.includes('chrome') ||
+    n.includes('exhaust') ||
+    n.includes('chassis') ||
+    (n.includes('metal') && !n.includes('body'))
+  )
+}
+
+function applyEdhBodyPaint(material: StandardMaterial, quality: PassQuality): void {
+  material.name = 'edh-bodywork'
+  material.diffuse.set(...EDH_BLUE)
+  material.emissive.set(0.05, 0.08, 0.15)
+  material.emissiveIntensity = quality === 'high' ? 0.14 : 0.09
+  material.useMetalness = true
+  material.metalness = 0.5
+  material.gloss = 0.92
+  // Never keep albedo maps that could paint other shared instances blue.
+  material.diffuseMap = null
+  material.emissiveMap = null
+  material.update()
+}
+
+function applyNeutralGlass(material: StandardMaterial, pc: PlayCanvasNamespace): void {
+  material.name = 'edh-glass'
+  material.diffuse.set(0.12, 0.12, 0.13)
+  material.emissive.set(0, 0, 0)
+  material.emissiveIntensity = 0
+  material.useMetalness = true
+  material.metalness = 0
+  material.gloss = 0.85
+  material.opacity = 0.28
+  material.blendType = pc.BLEND_NORMAL
+  material.depthWrite = false
+  material.cull = pc.CULLFACE_NONE
+  material.diffuseMap = null
+  material.emissiveMap = null
+  material.update()
+}
+
+/**
+ * Clone every mesh material so body / glass / tires never share instances
+ * with each other or with the strip. Blue paint only on explicitly named
+ * body/paint meshes.
+ */
 function prepareCamaroMaterials(
   root: Entity,
   pc: PlayCanvasNamespace,
@@ -46,73 +120,45 @@ function prepareCamaroMaterials(
     const render = entity.render
     if (!render) return
 
+    const entityName = entity.name ?? ''
+
     render.meshInstances.forEach((instance) => {
       const source = instance.material as StandardMaterial
-      const materialName = (source.name ?? '').toLowerCase()
+      const materialName = source.name ?? ''
+      const label = `${entityName} ${materialName}`
       const textured = Boolean(source.diffuseMap)
-      const isGlass = materialName.includes('glass') || materialName.includes('window')
-      const isChrome = materialName.includes('chrome') || materialName.includes('metal')
-      const isTire = materialName.includes('tire') || materialName.includes('tyre') || materialName.includes('rubber')
+      if (textured) hasTextures = true
 
-      if (textured) {
-        hasTextures = true
-        source.useMetalness = true
-        source.emissive.set(0.16, 0.16, 0.18)
-        source.emissiveIntensity = 0.22
-        source.update()
-        if (!bodyMaterial) bodyMaterial = source
-      } else if (materialName.includes('bodywork') || !bodyMaterial) {
-        if (materialName.includes('bodywork')) {
-          const tinted = source.clone()
-          tinted.name = 'edh-bodywork'
-          tinted.diffuse.set(28 / 255, 58 / 255, 128 / 255)
-          tinted.emissive.set(0.06, 0.08, 0.14)
-          tinted.emissiveIntensity = quality === 'high' ? 0.28 : 0.16
-          tinted.useMetalness = true
-          tinted.metalness = 0.62
-          tinted.gloss = 0.78
-          tinted.update()
-          instance.material = tinted
-          bodyMaterial = tinted
-        } else if (!bodyMaterial) {
-          bodyMaterial = source
-        }
-      }
+      // Always clone — mutating shared GLB materials bleeds paint onto glass/track.
+      const material = source.clone()
+      instance.material = material
 
-      if (isGlass) {
-        const glass = source.clone()
-        glass.opacity = 0.35
-        glass.diffuse.set(0.08, 0.1, 0.14)
-        glass.emissive.set(0.02, 0.03, 0.05)
-        glass.emissiveIntensity = 0.1
-        glass.useMetalness = true
-        glass.metalness = 0.45
-        glass.gloss = 0.92
-        glass.blendType = pc.BLEND_NORMAL
-        glass.depthWrite = false
-        glass.cull = pc.CULLFACE_NONE
-        glass.update()
-        instance.material = glass
-      }
-
-      if (isChrome && !textured) {
-        const chrome = source.clone()
-        chrome.diffuse.set(0.72, 0.74, 0.78)
-        chrome.useMetalness = true
-        chrome.metalness = 0.95
-        chrome.gloss = 0.88
-        chrome.update()
-        instance.material = chrome
-      }
-
-      if (isTire && !textured) {
-        const tire = source.clone()
-        tire.diffuse.set(0.04, 0.04, 0.045)
-        tire.useMetalness = true
-        tire.metalness = 0.05
-        tire.gloss = 0.18
-        tire.update()
-        instance.material = tire
+      if (isGlassName(label)) {
+        applyNeutralGlass(material, pc)
+      } else if (isBodyPaintName(label)) {
+        applyEdhBodyPaint(material, quality)
+        bodyMaterial = material
+      } else if (isTireName(label)) {
+        material.name = 'edh-tire'
+        material.diffuse.set(0.045, 0.045, 0.05)
+        material.emissive.set(0, 0, 0)
+        material.emissiveIntensity = 0
+        material.useMetalness = true
+        material.metalness = 0.02
+        material.gloss = 0.1
+        material.update()
+      } else if (isChromeName(label) && !isBodyPaintName(label)) {
+        material.name = 'edh-chrome'
+        material.diffuse.set(0.72, 0.74, 0.78)
+        material.useMetalness = true
+        material.metalness = 0.94
+        material.gloss = 0.9
+        material.emissiveIntensity = 0
+        material.update()
+      } else if (textured) {
+        // Keep scan albedo on non-body parts — do not force blue.
+        material.useMetalness = true
+        material.update()
       }
 
       instance.castShadow = cast
@@ -126,11 +172,11 @@ function prepareCamaroMaterials(
 
   return {
     bodyMaterial: createMaterial(pc, {
-      diffuse: [28 / 255, 58 / 255, 128 / 255],
-      emissive: [0.06, 0.08, 0.14],
-      emissiveIntensity: quality === 'high' ? 0.28 : 0.16,
-      metalness: 0.62,
-      gloss: 0.78,
+      diffuse: EDH_BLUE,
+      emissive: [0.05, 0.08, 0.15],
+      emissiveIntensity: quality === 'high' ? 0.14 : 0.09,
+      metalness: 0.5,
+      gloss: 0.92,
     }),
     hasTextures,
   }
@@ -159,7 +205,6 @@ function fitCamaroToStrip(camaro: Entity, modelRoot: Entity): void {
   const modelLength = Math.max(sizeX, sizeZ, 0.001)
   const scale = CAMARO_TARGET_LENGTH / modelLength
 
-  // Longest horizontal axis → +X, then optional flip for nose direction.
   const alignYaw = lengthAlongX ? 0 : 90
   const yawDeg = alignYaw + CAMARO_YAW_FLIP_DEG
 
@@ -169,15 +214,12 @@ function fitCamaroToStrip(camaro: Entity, modelRoot: Entity): void {
   camaro.setLocalEulerAngles(0, yawDeg, 0)
   camaro.setLocalScale(scale, scale, scale)
 
-  // Center on lane first (identity-ish X/Z), then re-measure world AABB for ground.
   if (alignYaw === 0) {
     camaro.setLocalPosition(0.4 - centerX * scale, 0, -centerZ * scale)
   } else {
-    // +90° yaw: model (x,z) → world (z, -x)
     camaro.setLocalPosition(0.4 - centerZ * scale, 0, centerX * scale)
   }
 
-  // Flip 180 keeps lateral centering; only X flips relative to strip.
   if (CAMARO_YAW_FLIP_DEG === 180) {
     const pos = camaro.getLocalPosition()
     camaro.setLocalPosition(0.4 - (pos.x - 0.4), pos.y, -pos.z)

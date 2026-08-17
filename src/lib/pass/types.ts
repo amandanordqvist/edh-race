@@ -64,5 +64,7 @@ export type PassRaceFrame = {
   timeScale: number
   /** 0-1 drag chute opening, from "just past the finish line" onwards. */
   chuteDeploy01: number
+  /** Opponent elapsed seconds, clamped to their ET once they finish. */
+  opponentClock: number
   splitHit?: import('../../data/simulator').HudSplitId | null
 }
