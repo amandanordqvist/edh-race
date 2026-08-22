@@ -18,9 +18,9 @@
 .home-machine__img {
   width: 100%;
   height: auto;
-  aspect-ratio: 8 / 5;
+  aspect-ratio: 2 / 1;
   object-fit: cover;
-  object-position: 55% 55%;
+  object-position: 24% 48%;
   border-radius: var(--radius-md);
   display: block;
 }

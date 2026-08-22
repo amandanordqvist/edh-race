@@ -39,6 +39,8 @@ export type TimelineEntry = {
   chapter: TimelineChapter
   weight: TimelineWeight
   outcome: TimelineOutcome
+  /** Cursor holds on this beat while the reader sits in the scene. */
+  hold?: boolean
   /** Present only where the year had a measured pass. */
   distance?: TimelineDistance
   et?: string
@@ -46,13 +48,6 @@ export type TimelineEntry = {
   kmh?: string
   media?: JourneyMedia
 }
-
-export const timelineChapters: TimelineChapter[] = [
-  'roots',
-  'build',
-  'elite',
-  'record',
-]
 
 /**
  * `as const satisfies` rather than a `: TimelineEntry[]` annotation — the
@@ -67,11 +62,11 @@ export const timeline = [
     weight: 'regular',
     outcome: 'quiet',
     media: {
-      src: '/images/journey/webp/camaro70-1600.webp',
+      src: '/images/journey/webp/journey-1970s-camaro.webp',
       srcSet:
-        '/images/journey/webp/camaro70-960.webp 960w, /images/journey/webp/camaro70-1600.webp 1600w',
-      width: 1600,
-      height: 1067,
+        '/images/journey/webp/journey-1970s-camaro-960.webp 960w, /images/journey/webp/journey-1970s-camaro.webp 1536w',
+      width: 1536,
+      height: 1024,
     },
   },
   {
@@ -81,9 +76,11 @@ export const timeline = [
     weight: 'regular',
     outcome: 'quiet',
     media: {
-      src: '/images/journey/webp/car-2004.webp',
-      width: 720,
-      height: 537,
+      src: '/images/journey/webp/ebay.webp',
+      srcSet:
+        '/images/journey/webp/ebay-960.webp 960w, /images/journey/webp/ebay.webp 1536w',
+      width: 1536,
+      height: 1024,
     },
   },
   {
@@ -142,22 +139,16 @@ export const timeline = [
     id: '2016-680',
     year: '2016',
     chapter: 'build',
-    weight: 'regular',
+    weight: 'record',
     outcome: 'race',
+    hold: true,
     distance: '402m',
     et: '6.80',
     media: {
-      src: '/images/journey/webp/2016-camaro.webp',
-      width: 640,
-      height: 424,
+      src: '/images/journey/webp/camaro-3944.webp',
+      width: 920,
+      height: 612,
     },
-  },
-  {
-    id: '2016-crossroads',
-    year: '2016',
-    chapter: 'build',
-    weight: 'regular',
-    outcome: 'setback',
   },
   {
     id: '2016-2017-blower',
@@ -292,33 +283,10 @@ export type TimelineId = (typeof timeline)[number]['id']
 /**
  * A real entry: same shape as `TimelineEntry` but with `id` narrowed to the
  * known literals, so translation lookups need no cast. Kept as one object type
- * rather than a union of the 17 literals, which would break `media` narrowing
+ * rather than a union of the literals, which would break `media` narrowing
  * for the entries that omit it.
  */
 export type JourneyBeatEntry = Omit<TimelineEntry, 'id'> & { id: TimelineId }
-
-/** The 2016 low point is rendered as its own set piece, not inside a chapter. */
-export const CROSSROADS_ID = '2016-crossroads' satisfies TimelineId
-
-export function entriesForChapter(
-  chapter: TimelineChapter,
-): readonly JourneyBeatEntry[] {
-  return timeline.filter(
-    (entry) => entry.chapter === chapter && entry.id !== CROSSROADS_ID,
-  )
-}
-
-/**
- * Range label for a chapter. Year strings are display text and may already be a
- * range ('2016–2017') or non-numeric ('1970s'), so take the first year's opening
- * token and the last year's closing token rather than joining them raw.
- */
-export function chapterSpan(chapter: TimelineChapter): string {
-  const entries = entriesForChapter(chapter)
-  const first = entries[0]?.year.split('–').at(0) ?? ''
-  const last = entries[entries.length - 1]?.year.split('–').at(-1) ?? ''
-  return first === last ? first : `${first}–${last}`
-}
 
 export function entryById(id: TimelineId): JourneyBeatEntry {
   const entry = timeline.find((item) => item.id === id)
@@ -327,8 +295,7 @@ export function entryById(id: TimelineId): JourneyBeatEntry {
 }
 
 /**
- * Rows the running timeslip renders, in scroll order. Crossroads is included
- * so the cursor pauses on it as its own blank row, and the two silent
+ * Rows the running timeslip renders, in scroll order. The two silent
  * bookends sit where the calendar has gaps (2011–2012 and 2022).
  */
 export type TimeslipRow =
@@ -348,9 +315,9 @@ export const timelineBookends: readonly {
 ]
 
 /**
- * The full reading sequence of the page's running timeslip: every beat (including
- * the crossroads) interleaved with the two silent bookends. Deriving this once
- * keeps the timeslip, scroll spy and reveal effects reading the same list.
+ * The full reading sequence of the page's running timeslip: every beat
+ * interleaved with the two silent bookends. Deriving this once keeps the
+ * timeslip, scroll spy and reveal effects reading the same list.
  */
 export function timeslipRows(): readonly TimeslipRow[] {
   const bookendsByAnchor = new Map(

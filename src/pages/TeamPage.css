@@ -1,18 +1,6 @@
-.team-page__intro {
-  position: relative;
-}
-
-.team-page__intro .section__inner {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 2rem;
-  align-items: end;
-}
-
 .team-page__copy {
-  position: relative;
-  z-index: 1;
+  max-width: 40rem;
+  margin-bottom: 1.75rem;
 }
 
 .team-page__title {
@@ -20,10 +8,11 @@
   letter-spacing: 0.01em;
   line-height: 0.92;
   max-width: 8ch;
-  margin-bottom: 1.5rem;
+  margin: 0 0 1.25rem;
 }
 
 .team-page__lead {
+  margin: 0;
   font-size: clamp(1.05rem, 2vw, 1.2rem);
   line-height: 1.65;
   color: rgba(243, 245, 248, 0.78);
@@ -34,26 +23,11 @@
   margin: 0;
 }
 
-.team-page__photo-shell {
-  padding: 0.35rem;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-shell);
-  overflow: hidden;
-}
-
-.team-page__photo-shell img {
+.team-page__photo img {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
-  object-position: center 40%;
-  border-radius: var(--radius-core);
-}
-
-@media (min-width: 960px) {
-  .team-page__intro .section__inner {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    gap: 2.5rem;
-  }
+  object-position: center 36%;
+  border-radius: var(--radius-md);
 }

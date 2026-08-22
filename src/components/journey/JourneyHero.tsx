@@ -4,9 +4,8 @@ import { Section } from '../ui/Section'
 import './JourneyHero.css'
 
 /**
- * Staging: a blank timeslip form waits at the top of the page, every field
- * empty. The childhood quote sits beside it. Once the reader starts scrolling,
- * the cursor picks up in the running spine and the rows start filling in.
+ * Staging: Anders' own line beside the moped plate, then the timeslip
+ * on the left picks up the first year.
  */
 export function JourneyHero() {
   const t = useT()
@@ -28,57 +27,19 @@ export function JourneyHero() {
           </figure>
         </Reveal>
 
-        <Reveal className="journey-hero__form" variant="media" delay={0.08}>
-          <BlankTimeslipForm />
+        <Reveal className="journey-hero__media" variant="media" delay={0.08}>
+          <img
+            src="/images/journey/webp/journey-1973.webp"
+            srcSet="/images/journey/webp/journey-1973-960.webp 960w, /images/journey/webp/journey-1973.webp 1312w"
+            sizes="(min-width: 900px) 36vw, 92vw"
+            width={1312}
+            height={736}
+            alt={t.journey.heroAlt}
+            decoding="async"
+            fetchPriority="high"
+          />
         </Reveal>
       </div>
     </Section>
-  )
-}
-
-/**
- * The hero's blank timeslip: no year, no distance, no ET. Same grammar as the
- * running spine on the left of the page (same column widths, same tabular
- * numerals) so the reader recognises it later as the object they were shown.
- */
-function BlankTimeslipForm() {
-  const t = useT()
-
-  return (
-    <article
-      className="journey-hero-slip"
-      aria-label={t.journey.timeslip.eyebrow}
-    >
-      <header className="journey-hero-slip__header">
-        <div>
-          <p className="journey-hero-slip__eyebrow">
-            {t.journey.timeslip.eyebrow}
-          </p>
-          <p className="journey-hero-slip__event">{t.journey.timeslip.event}</p>
-        </div>
-        <p className="journey-hero-slip__distance">
-          {t.journey.timeslip.distance}
-        </p>
-      </header>
-
-      <dl className="journey-hero-slip__grid">
-        <div>
-          <dt>{t.journey.timeslip.colYear}</dt>
-          <dd>—</dd>
-        </div>
-        <div>
-          <dt>{t.journey.timeslip.colDistance}</dt>
-          <dd>—</dd>
-        </div>
-        <div>
-          <dt>{t.journey.timeslip.colEt}</dt>
-          <dd>—</dd>
-        </div>
-        <div>
-          <dt>{t.journey.timeslip.colOutcome}</dt>
-          <dd>—</dd>
-        </div>
-      </dl>
-    </article>
   )
 }

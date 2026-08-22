@@ -1,4 +1,9 @@
-import { getNextCalendarRound } from '../../data/calendar'
+import {
+  formatCalendarDates,
+  getNextCalendarRound,
+  getVenueImage,
+  getVenueImagePosition,
+} from '../../data/calendar'
 import { useLocale, useT } from '../../i18n'
 import { localePath } from '../../lib/paths'
 import { Button } from '../ui/Button'
@@ -17,12 +22,13 @@ export function HomeNextRace() {
         {next ? (
           <div className="home-next__media" aria-hidden="true">
             <img
-              src="/images/IMG_4819.JPG"
+              src={getVenueImage(next.venue)}
               alt=""
               width={1600}
               height={1000}
               loading="lazy"
               decoding="async"
+              style={{ objectPosition: getVenueImagePosition(next.venue) }}
             />
           </div>
         ) : null}
@@ -33,8 +39,12 @@ export function HomeNextRace() {
           {next ? (
             <dl className="home-next__facts">
               <div>
+                <dt>{t.home.nextRaceEventLabel}</dt>
+                <dd>{next.name}</dd>
+              </div>
+              <div>
                 <dt>{t.home.nextRaceDateLabel}</dt>
-                <dd>{next.dates}</dd>
+                <dd>{formatCalendarDates(next.startDate, next.endDate, locale)}</dd>
               </div>
               <div>
                 <dt>{t.home.nextRaceTrackLabel}</dt>
@@ -43,7 +53,7 @@ export function HomeNextRace() {
               <div>
                 <dt>{t.home.nextRacePlaceLabel}</dt>
                 <dd>
-                  {next.city}, {t.home.nextRaceCountry}
+                  {next.city}, {t.home.countries[next.country]}
                 </dd>
               </div>
               <div>

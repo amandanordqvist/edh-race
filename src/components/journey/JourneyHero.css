@@ -22,6 +22,10 @@
   z-index: 1;
 }
 
+.journey-hero__copy {
+  max-width: 46rem;
+}
+
 .journey-hero__grid {
   display: grid;
   gap: clamp(2rem, 5vw, 3.5rem);
@@ -96,93 +100,28 @@
   color: var(--color-silver-gray);
 }
 
-/*
- * The blank hero timeslip. Same visual grammar as the running spine so the
- * reader recognises it later.
- */
-.journey-hero-slip {
-  border: 1px solid var(--color-hairline);
+.journey-hero__media {
+  margin: 0;
+  max-width: 40rem;
+}
+
+.journey-hero__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1312 / 736;
+  object-fit: cover;
   border-radius: var(--radius-sm);
-  padding: 1rem 1.1rem 1.05rem;
-  background: rgba(255, 255, 255, 0.02);
-  max-width: 30rem;
-}
-
-.journey-hero-slip__header {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-  padding-bottom: 0.7rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.journey-hero-slip__eyebrow,
-.journey-hero-slip__event,
-.journey-hero-slip__distance {
-  margin: 0;
-  font-family: var(--font-ui);
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.journey-hero-slip__eyebrow {
-  font-weight: 700;
-  color: var(--color-primary-blue);
-}
-
-.journey-hero-slip__event {
-  margin-top: 0.2rem;
-  letter-spacing: 0.08em;
-  color: rgba(243, 245, 248, 0.55);
-}
-
-.journey-hero-slip__distance {
-  color: rgba(243, 245, 248, 0.42);
-  text-align: right;
-}
-
-.journey-hero-slip__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.9rem 1rem;
-  margin: 0;
-}
-
-.journey-hero-slip__grid > div {
-  display: grid;
-  gap: 0.15rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.journey-hero-slip__grid dt {
-  font-family: var(--font-ui);
-  font-size: 0.62rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(243, 245, 248, 0.35);
-}
-
-.journey-hero-slip__grid dd {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(1.8rem, 3.6vw, 2.4rem);
-  line-height: 1;
-  letter-spacing: 0.02em;
-  color: rgba(243, 245, 248, 0.55);
-  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--color-hairline);
+  background: var(--color-supporting-navy);
 }
 
 @media (min-width: 900px) {
   .journey-hero__grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 40rem);
   }
 
-  .journey-hero__form {
+  .journey-hero__media {
     justify-self: end;
     width: 100%;
   }

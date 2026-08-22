@@ -98,7 +98,15 @@ export function Footer() {
       </div>
 
       <div className="site-footer__bar">
-        <p className="site-footer__rights">{t.footer.rights}</p>
+        <div className="site-footer__meta">
+          <p className="site-footer__rights">{t.footer.rights}</p>
+          <p className="site-footer__credit">
+            {t.footer.madeBy}{' '}
+            <a href={SITE.maker.href} target="_blank" rel="noreferrer">
+              {SITE.maker.name}
+            </a>
+          </p>
+        </div>
         <ul className="site-footer__social" aria-label={t.footer.social}>
           {SOCIAL.map((item) => (
             <li key={item.id}>

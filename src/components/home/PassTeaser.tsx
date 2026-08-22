@@ -70,12 +70,10 @@ export function PassTeaser() {
           ) : (
             <img
               className="pass-teaser__image"
-              src="/images/journey/webp/2024-santapod6-1200.webp"
-              srcSet="/images/journey/webp/2024-santapod6-960.webp 960w, /images/journey/webp/2024-santapod6-1200.webp 1200w"
-              sizes="(min-width: 960px) 52vw, 100vw"
+              src="/images/santa-pod.JPG"
               alt={t.home.passTeaserAlt}
-              width={1200}
-              height={800}
+              width={1024}
+              height={683}
               decoding="async"
               loading="lazy"
               onError={() => setFailed(true)}

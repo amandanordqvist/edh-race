@@ -54,6 +54,14 @@
     filter var(--duration-med) var(--ease-out);
 }
 
+.sponsor-strip__logo--lead {
+  min-height: 9rem;
+}
+
+.sponsor-strip__logo--lead img {
+  height: 6.5rem;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .sponsor-strip__logo:hover img {
     opacity: 1;
@@ -74,5 +82,13 @@
 
   .sponsor-strip__logo img {
     height: 5rem;
+  }
+
+  .sponsor-strip__logo--lead {
+    min-height: 10rem;
+  }
+
+  .sponsor-strip__logo--lead img {
+    height: 7.5rem;
   }
 }

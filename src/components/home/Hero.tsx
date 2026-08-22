@@ -136,7 +136,7 @@ export function Hero() {
             muted
             loop
             playsInline
-            poster="/images/IMG_1860.JPG"
+            poster="/images/hero-poster.webp"
           >
             <source src="/movies/hero.mp4" type="video/mp4" />
           </video>
@@ -144,10 +144,10 @@ export function Hero() {
           <img
             ref={posterRef}
             className="hero__poster"
-            src="/images/IMG_1860.JPG"
+            src="/images/hero-poster.webp"
             alt=""
-            width={1600}
-            height={900}
+            width={1920}
+            height={1281}
             decoding="async"
           />
         )}
@@ -170,8 +170,8 @@ export function Hero() {
           </picture>
         </h1>
         <div ref={ctaRef} className="hero__cta">
-          <Button to={localePath(locale, 'team')} icon>
-            {t.home.ctaTeam}
+          <Button to={localePath(locale, 'journey')} icon>
+            {t.home.ctaJourney}
           </Button>
           <Button to={localePath(locale, 'machine')} variant="ghost">
             {t.home.ctaMachine}

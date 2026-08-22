@@ -122,7 +122,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   .site-footer__col a:hover,
-  .site-footer__social a:hover {
+  .site-footer__social a:hover,
+  .site-footer__credit a:hover {
     color: var(--color-almost-white);
   }
 
@@ -147,10 +148,28 @@
   gap: 0.85rem 1.5rem;
 }
 
-.site-footer__rights {
+.site-footer__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1.1rem;
+}
+
+.site-footer__rights,
+.site-footer__credit {
   margin: 0;
   font-size: 0.82rem;
   color: rgba(196, 201, 212, 0.65);
+}
+
+.site-footer__credit {
+  color: rgba(196, 201, 212, 0.5);
+}
+
+.site-footer__credit a {
+  color: inherit;
+  text-underline-offset: 0.18em;
+  transition: color var(--duration-fast) var(--ease-out);
 }
 
 .site-footer__social {

@@ -54,6 +54,7 @@ export function PassArena() {
   const [flybys, setFlybys] = useState<{ id: FlybyKey; expiresAt: number }[]>([])
   const flybysHitRef = useRef<Set<FlybyKey>>(new Set())
   const [finishReady, setFinishReady] = useState(false)
+  const [hintsDismissed, setHintsDismissed] = useState(false)
 
   const commandsRef = useRef<PassCommands | null>(null)
   const webglRetryRef = useRef(false)
@@ -99,8 +100,17 @@ export function PassArena() {
     [muted, opponent],
   )
 
+  const dismissHints = useCallback(() => setHintsDismissed(true), [])
+
+  useEffect(() => {
+    if (phase !== 'idle' || hintsDismissed) return
+    const timer = window.setTimeout(() => setHintsDismissed(true), 6500)
+    return () => window.clearTimeout(timer)
+  }, [phase, hintsDismissed])
+
   const handleStage = useCallback(() => {
     setUserReactionS(null)
+    setHintsDismissed(true)
     commandsRef.current?.stage()
   }, [])
 
@@ -218,6 +228,7 @@ export function PassArena() {
         <PassCanvas
           muted={muted}
           reducedMotion={reducedMotion}
+          onInspectInteract={dismissHints}
           onPhase={(next) => {
             setPhase(next)
             if (next !== 'racing') {
@@ -379,7 +390,7 @@ export function PassArena() {
 
           <div className="pass-arena__footer">
             {phase === 'idle' ? (
-              <div className="pass-arena__idle-hints">
+              <div className={`pass-arena__idle-hints${hintsDismissed ? ' is-dismissed' : ''}`}>
                 <p className="pass-arena__inspect-hint">{t.pass.inspectHint}</p>
                 <p className="pass-arena__reaction-hint">{t.pass.reactionHint}</p>
                 <button

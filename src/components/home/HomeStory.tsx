@@ -1,5 +1,8 @@
-import { useState } from 'react'
-import { entryById, type JourneyMedia } from '../../data/timeline'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useRef, useState } from 'react'
+import { entryById, type JourneyMedia, type TimelineWeight } from '../../data/timeline'
 import { useLocale, useT } from '../../i18n'
 import { localePath } from '../../lib/paths'
 import { Button } from '../ui/Button'
@@ -7,19 +10,112 @@ import { Reveal } from '../ui/Reveal'
 import { Section } from '../ui/Section'
 import './HomeStory.css'
 
-const STORY_IDS = [
-  '2024-santapod',
-  '2023-beast',
-  '2016-680',
+gsap.registerPlugin(ScrollTrigger, useGSAP)
+
+/** Garage → 6.80 → plate record → rebuild → Santa Pod */
+const TEASER_IDS = [
   '2010-nitrous',
+  '2016-680',
   '2021-record',
-  '2018-runnerup',
+  '2023-beast',
+  '2024-santapod',
 ] as const
 
 export function HomeStory() {
   const t = useT()
   const locale = useLocale()
-  const beats = STORY_IDS.map((id) => entryById(id))
+  const pinRef = useRef<HTMLDivElement>(null)
+  const viewportRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const progressRef = useRef<HTMLDivElement>(null)
+  const beats = TEASER_IDS.map((id) => entryById(id))
+
+  useGSAP(
+    () => {
+      const pin = pinRef.current
+      const viewport = viewportRef.current
+      const track = trackRef.current
+      const progress = progressRef.current
+      if (!pin || !viewport || !track || !progress) return
+
+      const mm = gsap.matchMedia()
+
+      mm.add(
+        '(min-width: 900px) and (prefers-reduced-motion: no-preference)',
+        () => {
+          const cards = gsap.utils.toArray<HTMLElement>('.home-story__beat', track)
+          const getTravel = () => Math.max(0, track.scrollWidth - viewport.clientWidth)
+          let active = 0
+
+          gsap.set(progress, { scaleX: 0, transformOrigin: 'left center' })
+          gsap.set(cards, { opacity: 0.55, scale: 0.96, transformOrigin: 'center center' })
+          if (cards[0]) gsap.set(cards[0], { opacity: 1, scale: 1 })
+
+          const tween = gsap.to(track, {
+            x: () => -getTravel(),
+            ease: 'none',
+            scrollTrigger: {
+              trigger: pin,
+              start: () => {
+                const raw = getComputedStyle(document.documentElement)
+                  .getPropertyValue('--header-height')
+                  .trim()
+                const header = Number.parseFloat(raw) || 72
+                return `top top+=${header}`
+              },
+              end: () => `+=${getTravel() * 1.15}`,
+              pin: true,
+              scrub: 0.65,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              onUpdate: (self) => {
+                gsap.set(progress, { scaleX: self.progress })
+                const view = viewport.getBoundingClientRect()
+                const centerX = view.left + view.width / 2
+                let next = 0
+                let nearest = Infinity
+                cards.forEach((card, index) => {
+                  const box = card.getBoundingClientRect()
+                  const distance = Math.abs(box.left + box.width / 2 - centerX)
+                  if (distance < nearest) {
+                    nearest = distance
+                    next = index
+                  }
+                })
+                if (next === active) return
+                gsap.to(cards[active], {
+                  opacity: 0.55,
+                  scale: 0.96,
+                  duration: 0.15,
+                  ease: 'power2.out',
+                  overwrite: 'auto',
+                })
+                gsap.to(cards[next], {
+                  opacity: 1,
+                  scale: 1,
+                  duration: 0.15,
+                  ease: 'power2.out',
+                  overwrite: 'auto',
+                })
+                active = next
+              },
+            },
+          })
+
+          return () => {
+            tween.scrollTrigger?.kill()
+            tween.kill()
+            gsap.set(track, { clearProps: 'transform' })
+            gsap.set(progress, { clearProps: 'transform' })
+            gsap.set(cards, { clearProps: 'opacity,transform' })
+          }
+        },
+      )
+
+      return () => mm.revert()
+    },
+    { dependencies: [beats.length] },
+  )
 
   return (
     <Section className="home-story" wide>
@@ -29,18 +125,32 @@ export function HomeStory() {
         <p className="home-story__body">{t.home.storyBody}</p>
       </Reveal>
 
-      <div className="home-story__mosaic">
-        {beats.map((beat, index) => (
-          <StoryPlate
-            key={beat.id}
-            size={index === 0 ? 'hero' : index < 3 ? 'mid' : 'small'}
-            year={beat.year}
-            caption={t.home.storyCaptions[beat.id] ?? ''}
-            media={beat.media}
-            fallback={t.home.imageFallback}
-            eager={index === 0}
-          />
-        ))}
+      <div ref={pinRef} className="home-story__pin">
+        <div
+          ref={viewportRef}
+          className="home-story__viewport"
+          role="region"
+          aria-label={t.home.storyTitle}
+        >
+          <div ref={trackRef} className="home-story__track">
+            {beats.map((beat, index) => (
+              <StoryBeat
+                key={beat.id}
+                year={beat.year}
+                weight={beat.weight}
+                mark={t.journey.marks[beat.id]}
+                caption={t.home.storyCaptions[beat.id] ?? ''}
+                media={beat.media}
+                fallback={t.home.imageFallback}
+                eager={index === 0}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="home-story__progress" aria-hidden="true">
+          <div ref={progressRef} className="home-story__progress-fill" />
+        </div>
       </div>
 
       <Reveal className="home-story__cta" delay={0.06} y={20}>
@@ -52,16 +162,18 @@ export function HomeStory() {
   )
 }
 
-function StoryPlate({
-  size,
+function StoryBeat({
   year,
+  weight,
+  mark,
   caption,
   media,
   fallback,
   eager,
 }: {
-  size: 'hero' | 'mid' | 'small'
   year: string
+  weight: TimelineWeight
+  mark?: string
   caption: string
   media?: JourneyMedia
   fallback: string
@@ -70,35 +182,32 @@ function StoryPlate({
   const [failed, setFailed] = useState(false)
 
   return (
-    <figure className={`home-story__plate home-story__plate--${size}`}>
-      {media && !failed ? (
-        <img
-          className="home-story__img"
-          src={media.src}
-          srcSet={media.srcSet}
-          sizes={
-            size === 'hero'
-              ? '(min-width: 900px) 70vw, 100vw'
-              : size === 'mid'
-                ? '(min-width: 900px) 34vw, 100vw'
-                : '(min-width: 900px) 22vw, 100vw'
-          }
-          alt=""
-          width={media.width}
-          height={media.height}
-          loading={eager ? 'eager' : 'lazy'}
-          decoding="async"
-          onError={() => setFailed(true)}
-        />
-      ) : (
-        <div className="home-story__fallback">{fallback}</div>
-      )}
-      {caption ? (
-        <figcaption>
-          <span className="home-story__year">{year}</span>
-          <span className="home-story__caption">{caption}</span>
-        </figcaption>
-      ) : null}
-    </figure>
+    <article className={`home-story__beat home-story__beat--${weight}`}>
+      <header className="home-story__meta">
+        <p className="home-story__year">{year}</p>
+        {mark ? <p className="home-story__mark">{mark}</p> : null}
+      </header>
+
+      <figure className="home-story__media">
+        {media && !failed ? (
+          <img
+            className="home-story__img"
+            src={media.src}
+            srcSet={media.srcSet}
+            sizes="(min-width: 900px) 26rem, 80vw"
+            alt=""
+            width={media.width}
+            height={media.height}
+            loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+            onError={() => setFailed(true)}
+          />
+        ) : (
+          <div className="home-story__fallback">{fallback}</div>
+        )}
+      </figure>
+
+      {caption ? <p className="home-story__text">{caption}</p> : null}
+    </article>
   )
 }

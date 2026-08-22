@@ -54,11 +54,9 @@
   z-index: 2;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
   background:
-    radial-gradient(120% 90% at 50% 58%, transparent 58%, rgba(4, 6, 10, 0.18) 100%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
-  background-size: auto, 180px 180px;
-  opacity: 0.28;
-  mix-blend-mode: soft-light;
+    radial-gradient(120% 90% at 50% 58%, transparent 58%, rgba(4, 6, 10, 0.18) 100%);
+  opacity: 1;
+  mix-blend-mode: normal;
 }
 
 .pass-arena__shade {
@@ -221,6 +219,22 @@
   align-items: flex-start;
   gap: 0.4rem;
   pointer-events: auto;
+  transition: opacity var(--duration-med) var(--ease-out);
+}
+
+.pass-arena__idle-hints.is-dismissed {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pass-arena__idle-hints.is-dismissed .pass-arena__timeslip-link {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pass-arena__idle-hints {
+    transition: none;
+  }
 }
 
 .pass-arena__inspect-hint {
@@ -1328,6 +1342,7 @@
   background: linear-gradient(90deg, rgba(50, 30, 18, 0.85) 0%, rgba(18, 22, 30, 0.85) 100%);
   backdrop-filter: blur(6px);
   color: rgba(255, 220, 190, 0.98);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.65);
   font-family: var(--font-ui);
   font-size: 0.62rem;
   font-weight: 700;
@@ -1404,7 +1419,8 @@
   font-weight: 600;
   letter-spacing: 0.03em;
   line-height: 1.3;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.72), 0 0 18px rgba(0, 0, 0, 0.35);
   text-align: center;
   transform: translateX(-50%);
   pointer-events: none;
@@ -1589,6 +1605,7 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.42);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
 }
 
 .pass-racing-hud__chip-value {
@@ -1599,7 +1616,7 @@
   letter-spacing: 0.02em;
   color: rgba(255, 255, 255, 0.92);
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.72), 0 0 20px rgba(0, 0, 0, 0.4);
   transition: color 180ms ease, text-shadow 180ms ease, transform 180ms ease;
 }
 

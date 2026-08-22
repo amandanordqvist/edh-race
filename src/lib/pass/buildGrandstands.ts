@@ -1,4 +1,4 @@
-import type { Entity, StandardMaterial } from 'playcanvas'
+import type { Application, Entity, StandardMaterial } from 'playcanvas'
 
 import type { PassQuality } from './types'
 import { createCrowdPalette, spawnCrowdOnBay } from './buildCrowd'
@@ -15,6 +15,7 @@ type GrandstandOptions = {
   trackWidth: number
   quality: PassQuality
   hideSkyPlanes?: boolean
+  app?: Application
 }
 
 /**
@@ -22,7 +23,7 @@ type GrandstandOptions = {
  * Avoids one endless Lego slab and unique-material crowd cubes.
  */
 export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
-  const { pc, sceneRoot, trackLength, trackWidth, quality, hideSkyPlanes } = opts
+  const { pc, sceneRoot, trackLength, trackWidth, quality, hideSkyPlanes, app } = opts
   const high = quality === 'high'
   const halfTrack = trackLength / 2
   const sideOffset = trackWidth / 2 + 8.8
@@ -62,7 +63,7 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
     metalness: 0.08,
     gloss: 0.2,
   })
-  const crowdPalette = createCrowdPalette(pc)
+  const crowdPalette = createCrowdPalette(pc, app)
   const bannerNavy = createMaterial(pc, {
     diffuse: [0.1, 0.16, 0.28],
     metalness: 0.05,

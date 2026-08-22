@@ -79,7 +79,7 @@
   width: 3.5rem;
   height: 3.5rem;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 18%;
   border-radius: var(--radius-sm);
   display: block;
   flex-shrink: 0;

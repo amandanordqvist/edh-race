@@ -112,6 +112,22 @@
   margin: 0;
 }
 
+.journey-beat__quote {
+  margin: 1.1rem 0 0;
+  max-width: 46ch;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(42, 79, 154, 0.5);
+}
+
+.journey-beat__quote p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.05rem, 2vw, 1.28rem);
+  line-height: 1.35;
+  color: rgba(243, 245, 248, 0.92);
+}
+
 .journey-beat__media {
   margin: 1.1rem 0 0;
   width: 100%;

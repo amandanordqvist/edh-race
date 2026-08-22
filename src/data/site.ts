@@ -15,4 +15,8 @@ export const SITE = {
     instagram: 'https://www.instagram.com/',
     youtube: 'https://www.youtube.com/',
   },
+  maker: {
+    name: 'AINE',
+    href: 'https://ai-ne.se',
+  },
 } as const

@@ -80,8 +80,3 @@ export const bestTimes: BestTime[] = [
     speed: '249.19 km/h',
   },
 ]
-
-/** Landmark quarter-mile pass — Results hero */
-export const landmarkPass = {
-  image: '/images/journey/2024-santapod4.JPG',
-}

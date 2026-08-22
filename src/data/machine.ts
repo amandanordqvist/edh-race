@@ -4,19 +4,20 @@ export type SpecRow = {
 }
 
 export const machineSpecs: SpecRow[] = [
-  { key: 'model', value: 'Chevrolet Camaro (2018)' },
+  { key: 'model', value: 'Chevrolet Camaro' },
   { key: 'class', value: 'Top Doorslammer' },
   { key: 'body', value: 'Five Star carbon fibre body (USA)' },
-  { key: 'engine', value: 'BAE (Brad Anderson Engineering) 521 Hemi' },
+  { key: 'chassis', value: 'Chromoly tube chassis by Mats Brag (MB)' },
+  { key: 'engine', value: 'BAE 521 Hemi V8 (Brad Anderson Engineering)' },
   { key: 'displacement', value: '521 ci (8.5 L)' },
-  { key: 'power', value: '~3,500 – 4,000 hp' },
-  { key: 'transmission', value: 'Coan 400 with sprag clutch' },
+  { key: 'blower', value: 'PSI screw blower' },
+  { key: 'power', value: '~3,500–4,000+ hp' },
+  { key: 'transmission', value: 'Coan 400 3-speed racing automatic' },
   { key: 'crankshaft', value: 'Sonny' },
-  { key: 'fuel', value: 'Methanol (~25 L per pass)' },
-  {
-    key: 'weight',
-    value: '~1,140 kg (class min. 1,179 kg incl. driver after finish)',
-  },
+  { key: 'rear', value: 'MB rear axle, four-link suspension' },
+  { key: 'fuel', value: 'Methanol' },
+  { key: 'weight', value: '1140 kg (incl. driver and 25 L methanol)' },
+  { key: 'safety', value: 'Dual parachutes' },
 ]
 
 export const hotspotIds = ['engine', 'compressor', 'chassis', 'fourLink'] as const

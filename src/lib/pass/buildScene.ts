@@ -2,12 +2,15 @@ import type { Application, Entity, Texture, Vec3 } from 'playcanvas'
 
 import { buildPassEnvironment, type TreeMode } from './buildEnvironment'
 import { attachCamaroDecals } from './attachCamaroDecals'
+import { attachPassBloom, attachPassSunLights } from './buildLighting'
 import { buildPassVehicles, type VehicleId } from './buildVehicles'
+import { applyPassEnvLighting } from './loadEnvLighting'
 import { loadCamaroGlb } from './loadCamaroGlb'
 import { loadFittedGlb } from './loadFittedGlb'
 import { createScoreboard, type PassScoreboard } from './createScoreboard'
 import { loadTextureAsset } from './loadTextureAsset'
 import { LANE_FAR_Z, LANE_NEAR_Z } from './passLayout'
+import { attachContactShadow } from './scenePrimitives'
 import type { PassOpponentId, PassQuality } from './types'
 
 type PlayCanvasNamespace = typeof import('playcanvas')
@@ -31,6 +34,7 @@ export type PassScene = {
   setTreeLights: (mode: TreeMode) => void
   resetRacers: () => void
   scoreboard: PassScoreboard
+  setSpeedFeel: (speed01: number) => void
 }
 
 export async function buildPassScene(
@@ -47,6 +51,12 @@ export async function buildPassScene(
   app.scene.fog.color = new pc.Color(0.62, 0.76, 0.92)
   app.scene.fog.start = quality === 'high' ? 72 : 48
   app.scene.fog.end = quality === 'high' ? 210 : 160
+
+  const ibl = await applyPassEnvLighting(app, pc, quality)
+  if (ibl) {
+    app.scene.fog.start = quality === 'high' ? 160 : 100
+    app.scene.fog.end = quality === 'high' ? 380 : 240
+  }
 
   // Barrier boards stay tone-only — skip logo fetches until body-mapped decals exist.
   const sponsorTextures: import('./buildBarrierBoards').SponsorTextureEntry[] = []
@@ -74,6 +84,10 @@ export async function buildPassScene(
       name: 'christmas-tree-glb',
       target: { kind: 'height', meters: 4.6 },
       groundClearance: 0,
+      stripLargerThan: 2.8,
+      stripYSpread: 2.6,
+      stripSpheresLargerThan: 0.22,
+      maxFittedExtent: 8,
     })
   } catch (error) {
     console.warn('[pass] Christmas tree GLB unavailable — using primitive tree', error)
@@ -82,6 +96,8 @@ export async function buildPassScene(
   const environment = buildPassEnvironment(pc, sceneRoot, quality, sponsorTextures, {
     asphaltRough,
     christmasTreeMesh,
+    hideSkyPlanes: false,
+    app,
   })
   const vehicles = buildPassVehicles(pc, quality)
 
@@ -123,6 +139,7 @@ export async function buildPassScene(
       groundClearance: 0.03,
       stripLargerThan: 7,
       stripYSpread: 3.2,
+      stripSpheresLargerThan: 1.4,
       maxFittedHeight: 2.4,
       maxFittedExtent: 6.5,
     })
@@ -142,6 +159,7 @@ export async function buildPassScene(
       target: { kind: 'length', meters: 9 },
       groundClearance: 0.06,
       minFitScale: 0.001,
+      stripSpheresLargerThan: 2.2,
       maxFittedHeight: 10,
       maxFittedExtent: 22,
     })
@@ -179,8 +197,10 @@ export async function buildPassScene(
   Object.values(racers).forEach((racer) => {
     sceneRoot.addChild(racer)
   })
+  attachContactShadow(pc, racers.f1, [1.85, 0.012, 0.88])
+  attachContactShadow(pc, racers.jet, [3.8, 0.014, 1.7])
 
-  const skyClear = new pc.Color(0.52, 0.7, 0.92)
+  const skyClear = new pc.Color(0.42, 0.64, 0.92)
   const camera = new pc.Entity('pass-camera')
   camera.addComponent('camera', {
     clearColor: skyClear,
@@ -188,9 +208,9 @@ export async function buildPassScene(
     nearClip: 0.2,
     farClip: environment.trackLength * 3,
   })
-  const inspectYaw = (14 * Math.PI) / 180
-  const inspectPitch = (6 * Math.PI) / 180
-  const inspectRadius = 7.6
+  const inspectYaw = (18 * Math.PI) / 180
+  const inspectPitch = (12 * Math.PI) / 180
+  const inspectRadius = 8.4
   const heroX = startPositions.camaro.x
   const heroZ = startPositions.camaro.z
   const cosPitch = Math.cos(inspectPitch)
@@ -202,63 +222,13 @@ export async function buildPassScene(
   camera.lookAt(heroX + 1.2, 0.72, heroZ)
   sceneRoot.addChild(camera)
 
-  const high = quality === 'high'
-
-  // High daytime sun from the left, sky fill from the right.
-  const keyLight = new pc.Entity('key-light')
-  keyLight.addComponent('light', {
-    type: 'directional',
-    color: new pc.Color(1.0, 0.94, 0.82),
-    intensity: high ? 2.45 : 2.05,
-    castShadows: true,
-    shadowDistance: high ? 90 : 70,
-    shadowResolution: high ? 2048 : 1024,
-    shadowBias: 0.06,
-    normalOffsetBias: 0.055,
-    shadowType: pc.SHADOW_PCF3_32F,
+  attachPassSunLights({
+    pc,
+    sceneRoot,
+    quality,
+    kind: ibl ? 'ibl' : 'procedural',
   })
-  keyLight.setEulerAngles(46, 52, 0)
-  sceneRoot.addChild(keyLight)
-
-  const fillLight = new pc.Entity('fill-light')
-  fillLight.addComponent('light', {
-    type: 'directional',
-    color: new pc.Color(0.55, 0.7, 0.92),
-    intensity: high ? 0.72 : 0.55,
-    castShadows: false,
-  })
-  fillLight.setEulerAngles(38, -155, 0)
-  sceneRoot.addChild(fillLight)
-
-  const groundBounce = new pc.Entity('ground-bounce')
-  groundBounce.addComponent('light', {
-    type: 'directional',
-    color: new pc.Color(0.18, 0.17, 0.15),
-    intensity: high ? 0.12 : 0.09,
-    castShadows: false,
-  })
-  groundBounce.setEulerAngles(-58, 18, 0)
-  sceneRoot.addChild(groundBounce)
-
-  const rimLight = new pc.Entity('rim-light')
-  rimLight.addComponent('light', {
-    type: 'directional',
-    color: new pc.Color(0.7, 0.84, 1.0),
-    intensity: high ? 0.85 : 0.58,
-    castShadows: false,
-  })
-  rimLight.setEulerAngles(8, -48, 0)
-  sceneRoot.addChild(rimLight)
-
-  const contactFill = new pc.Entity('contact-fill')
-  contactFill.addComponent('light', {
-    type: 'directional',
-    color: new pc.Color(0.42, 0.48, 0.58),
-    intensity: high ? 0.22 : 0.16,
-    castShadows: false,
-  })
-  contactFill.setEulerAngles(78, 0, 0)
-  sceneRoot.addChild(contactFill)
+  const speedFeel = attachPassBloom({ app, pc, camera, quality })
 
   const scoreboard = createScoreboard(app, pc, sceneRoot)
 
@@ -305,5 +275,6 @@ export async function buildPassScene(
     setTreeLights: environment.setTreeLights,
     resetRacers,
     scoreboard,
+    setSpeedFeel: speedFeel.setSpeed01,
   }
 }

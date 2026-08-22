@@ -2,13 +2,13 @@ import type { Entity } from 'playcanvas'
 
 import { createMaterial, createPrimitive, type PlayCanvasNamespace } from './scenePrimitives'
 
-const TRAIL_LENGTH = 5.4
+const TRAIL_LENGTH = 3.4
 const CANOPY_LENGTH = 1.55
-const CANOPY_WIDTH = 1.05
+const CANOPY_WIDTH = 1.15
 const LINE_THICKNESS = 0.014
-const PAIR_Z = 0.52
-/** Rear pack in Camaro space (car forward is +X). */
-const REAR_ANCHOR: [number, number, number] = [-1.62, 1.02, 0]
+const PAIR_Z = 0.48
+/** World offset from Camaro origin: behind the bumper, above the packs. */
+const HITCH_OFFSET: [number, number, number] = [-1.85, 0.98, 0]
 
 const RIM_RAYS: ReadonlyArray<readonly [number, number]> = [
   [0, 1],
@@ -32,6 +32,10 @@ type Canopy = {
   lip: Entity
   pack: Entity
   lines: Entity[]
+}
+
+function isFiniteVec(x: number, y: number, z: number): boolean {
+  return Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)
 }
 
 function orientLine(
@@ -98,7 +102,7 @@ export function createChuteVfx(opts: ChuteVfxOptions) {
       position: [0, 0, 0],
       scale: [0.01, 0.01, 0.01],
       material: nylon,
-      castShadows: true,
+      castShadows: false,
       receiveShadows: true,
     })
     const fold = createPrimitive(pc, {
@@ -162,20 +166,24 @@ export function createChuteVfx(opts: ChuteVfxOptions) {
     value: number,
     time: number,
   ) => {
-    const trail = TRAIL_LENGTH * (0.22 + value * 0.78)
-    const sag = value * value * 0.7
-    const billowY = Math.sin(time * 2.2 + offsetZ * 5) * 0.06 * value
-    const billowZ = Math.cos(time * 1.8 + offsetZ * 4) * 0.04 * value
+    const trail = TRAIL_LENGTH * (0.28 + value * 0.72)
+    const sag = value * value * 0.45
+    const billowY = Math.sin(time * 2.2 + offsetZ * 5) * 0.05 * value
+    const billowZ = Math.cos(time * 1.8 + offsetZ * 4) * 0.03 * value
     const canopyX = rearX - trail
-    const canopyY = rearY + 0.35 + value * 0.22 - sag + billowY
+    const canopyY = rearY + 0.28 + value * 0.16 - sag + billowY
     const canopyZ = rearZ + offsetZ + billowZ
+    if (!isFiniteVec(canopyX, canopyY, canopyZ)) {
+      canopy.root.enabled = false
+      return
+    }
 
     canopy.root.enabled = true
-    canopy.root.setLocalPosition(canopyX, canopyY, canopyZ)
+    canopy.root.setPosition(canopyX, canopyY, canopyZ)
     canopy.root.setLocalEulerAngles(0, 0, -8 - value * 6)
 
-    const length = 0.28 + value * (CANOPY_LENGTH - 0.28)
-    const width = 0.22 + value * (CANOPY_WIDTH - 0.22)
+    const length = 0.55 + value * (CANOPY_LENGTH - 0.55)
+    const width = 0.48 + value * (CANOPY_WIDTH - 0.48)
     const height = width * 0.72
     canopy.bag.setLocalPosition(-length * 0.05, 0, 0)
     canopy.bag.setLocalScale(length, height, width)
@@ -201,6 +209,12 @@ export function createChuteVfx(opts: ChuteVfxOptions) {
     })
   }
 
+  const hitch = (): [number, number, number] | null => {
+    const pos = camaro.getPosition()
+    if (!isFiniteVec(pos.x, pos.y, pos.z)) return null
+    return [pos.x + HITCH_OFFSET[0], pos.y + HITCH_OFFSET[1], pos.z + HITCH_OFFSET[2]]
+  }
+
   const update = (deploy01: number) => {
     const value = Math.min(1, Math.max(0, deploy01))
     if (value <= 0.02) {
@@ -209,14 +223,16 @@ export function createChuteVfx(opts: ChuteVfxOptions) {
       return
     }
 
-    const camPos = camaro.getWorldTransform().getTranslation()
-    const rearX = camPos.x + REAR_ANCHOR[0]
-    const rearY = camPos.y + REAR_ANCHOR[1]
-    const rearZ = camPos.z + REAR_ANCHOR[2]
-    const time = performance.now() * 0.001
+    const rear = hitch()
+    if (!rear) {
+      left.root.enabled = false
+      right.root.enabled = false
+      return
+    }
 
-    placeCanopy(left, rearX, rearY, rearZ, PAIR_Z, value, time)
-    placeCanopy(right, rearX, rearY, rearZ, -PAIR_Z, value, time)
+    const time = performance.now() * 0.001
+    placeCanopy(left, rear[0], rear[1], rear[2], PAIR_Z, value, time)
+    placeCanopy(right, rear[0], rear[1], rear[2], -PAIR_Z, value, time)
   }
 
   const reset = () => {

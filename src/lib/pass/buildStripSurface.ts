@@ -43,6 +43,9 @@ export function buildStripSurface(opts: StripSurfaceOptions): void {
   if (asphaltRough) {
     asphaltRough.addressU = pc.ADDRESS_REPEAT
     asphaltRough.addressV = pc.ADDRESS_REPEAT
+    asphalt.diffuseMap = asphaltRough
+    asphalt.diffuseMapTiling.set(22, 3.2)
+    asphalt.diffuse.set(0.22, 0.22, 0.24)
     asphalt.glossMap = asphaltRough
     asphalt.glossInvert = true
     asphalt.glossMapTiling.set(22, 3.2)

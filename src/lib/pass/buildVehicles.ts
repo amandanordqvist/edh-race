@@ -2,6 +2,7 @@ import type { Entity } from 'playcanvas'
 
 import type { PassQuality } from './types'
 import {
+  attachContactShadow,
   createMaterial,
   createPrimitive,
   shadowsEnabled,
@@ -44,10 +45,10 @@ export function buildPassVehicles(
 
   const camaroBlue = createMaterial(pc, {
     diffuse: [42 / 255, 72 / 255, 148 / 255],
-    emissive: [0.04, 0.06, 0.12],
-    emissiveIntensity: quality === 'high' ? 0.16 : 0.1,
-    metalness: 0.55,
-    gloss: 0.88,
+    metalness: 0.06,
+    gloss: 0.86,
+    clearCoat: quality === 'high' ? 0.72 : 0.45,
+    clearCoatGloss: 0.92,
   })
   const camaroDark = createMaterial(pc, {
     diffuse: [0.07, 0.08, 0.1],
@@ -55,9 +56,10 @@ export function buildPassVehicles(
     gloss: 0.32,
   })
   const camaroGlass = createMaterial(pc, {
-    diffuse: [0.1, 0.14, 0.2],
-    metalness: 0.55,
-    gloss: 0.9,
+    diffuse: [0.04, 0.05, 0.06],
+    metalness: 0,
+    gloss: 0.72,
+    opacity: 0.42,
   })
   const rubber = createMaterial(pc, {
     diffuse: [0.05, 0.05, 0.055],
@@ -206,6 +208,7 @@ export function buildPassVehicles(
   addWheel(pc, camaro, 'camaro-wheel-fr', [1.15, 0.18, -0.78], [0.32, 0.16, 0.32], rubber, cast)
   addWheel(pc, camaro, 'camaro-wheel-rl', [-1.05, 0.28, 0.88], [0.55, 0.32, 0.55], rubber, cast)
   addWheel(pc, camaro, 'camaro-wheel-rr', [-1.05, 0.28, -0.88], [0.55, 0.32, 0.55], rubber, cast)
+  attachContactShadow(pc, camaro)
 
   const f1 = new pc.Entity('f1')
   f1.setLocalPosition(0.2, 0.2, -2.55)

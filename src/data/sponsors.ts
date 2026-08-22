@@ -5,7 +5,7 @@ export type Sponsor = {
 }
 
 export const sponsors: Sponsor[] = [
-  { id: 'aine', name: 'AINE', logo: '/sponsorer/AINE.png' },
+  { id: 'aine', name: 'AINE', logo: '/sponsorer/2.png' },
   { id: 'olle', name: 'Olle Edhs Tvätt & Kyl', logo: '/sponsorer/olle.jpg' },
   { id: 'sitech', name: 'SITECH', logo: '/sponsorer/SITECH.jpg' },
 ]

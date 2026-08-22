@@ -3,7 +3,6 @@ export type TeamMember = {
   name: string
   group: 'crew' | 'support'
   image?: string
-  featured?: boolean
 }
 
 export const team: TeamMember[] = [
@@ -12,7 +11,6 @@ export const team: TeamMember[] = [
     name: 'Anders Edh',
     group: 'crew',
     image: '/images/team/anders.png',
-    featured: true,
   },
   {
     id: 'martin',
@@ -31,5 +29,20 @@ export const team: TeamMember[] = [
     name: 'John Claussen',
     group: 'crew',
     image: '/images/team/john.png',
+  },
+  {
+    id: 'olle',
+    name: 'Olle Edh',
+    group: 'support',
+  },
+  {
+    id: 'marie',
+    name: 'Marie Andersson Hållén',
+    group: 'support',
+  },
+  {
+    id: 'amanda',
+    name: 'Amanda Nordqvist Ed',
+    group: 'support',
   },
 ]

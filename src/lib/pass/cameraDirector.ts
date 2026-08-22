@@ -9,18 +9,18 @@ const ZOOM_LERP = 5.5
 const SLOW_MO_MIN_SCALE = 0.32
 
 /** Idle inspect orbit — default is a low rear 3/4; orbit is voluntary. */
-const INSPECT_RADIUS_DEFAULT = 7.6
+const INSPECT_RADIUS_DEFAULT = 8.4
 const INSPECT_RADIUS_MIN = 5.2
 const INSPECT_RADIUS_MAX = 12.5
-const INSPECT_PITCH_MIN = 3
+const INSPECT_PITCH_MIN = 6
 const INSPECT_PITCH_MAX = 28
 const INSPECT_YAW_SENS = 95
 const INSPECT_PITCH_SENS = 55
 const INSPECT_AUTO_YAW_DEG = 8
 const INSPECT_IDLE_RESUME_S = 2.6
 /** Slight yaw so the Christmas tree sits to the side, not dead-center. */
-const INSPECT_START_YAW = 14
-const INSPECT_START_PITCH = 6
+const INSPECT_START_YAW = 18
+const INSPECT_START_PITCH = 12
 
 type Pose = {
   position: [number, number, number]
@@ -77,25 +77,32 @@ function treeInsertPose(heroX: number, heroZ: number): Pose {
  * Chase camera — starts farther, closes in as speed rises so the car grows to
  * ~15% of frame height. Slight Z offset for a cinematic composition.
  */
-function followPose(heroX: number, heroZ: number, speed01: number, accel01 = 0): Pose {
-  const closeIn = speed01 * 2.6 + accel01 * 0.6
-  const distance = 7.1 - closeIn
+function followPose(
+  heroX: number,
+  heroZ: number,
+  speed01: number,
+  accel01 = 0,
+  chute01 = 0,
+): Pose {
+  const closeIn = speed01 * 2.2 + accel01 * 0.5
+  const chuteBack = chute01 * 1.6
+  const distance = 7.4 - closeIn + chuteBack
   return {
     position: [
       heroX - distance,
-      0.58 + speed01 * 0.04,
-      heroZ + 0.72 + speed01 * 0.18,
+      0.38 + speed01 * 0.03 + chute01 * 0.12,
+      heroZ + 0.55 + speed01 * 0.12,
     ],
-    look: [heroX + 4.5 + speed01 * 2.5, 0.72, heroZ + 0.15],
-    fov: 34 + speed01 * 5 + accel01 * 3,
+    look: [heroX + 5.2 + speed01 * 3.2, 0.52 + chute01 * 0.12, heroZ + 0.1],
+    fov: 38 + speed01 * 12 + accel01 * 5 - chute01 * 3,
   }
 }
 
-/** Finish 3/4: low, beside the car, looking at the body and chutes. */
+/** Finish 3/4: beside the car so body and chutes stay in frame. */
 function finishSettlePose(heroX: number, heroZ: number): Pose {
   return {
-    position: [heroX - 6.4, 0.82, heroZ + 5.6],
-    look: [heroX + 0.35, 0.58, heroZ - 0.12],
+    position: [heroX - 6.4, 0.92, heroZ + 5.4],
+    look: [heroX + 0.2, 0.62, heroZ - 0.08],
     fov: 34,
   }
 }
@@ -118,8 +125,8 @@ function sideRailPose(heroX: number, trackLength: number): Pose {
 function cockpitPose(heroX: number, heroZ: number, speed01: number, accel01 = 0): Pose {
   return {
     position: [heroX + 1.35, 1.25 + speed01 * 0.05, heroZ],
-    look: [heroX + 32, 1.05 + speed01 * 0.1, heroZ],
-    fov: 66 + speed01 * 7 + accel01 * 6,
+    look: [heroX + 32, 0.95 + speed01 * 0.12, heroZ],
+    fov: 68 + speed01 * 10 + accel01 * 6,
   }
 }
 
@@ -257,8 +264,9 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
           }
           return pov
         }
-        const follow = followPose(heroX, heroZ, raceSpeed, accelAmount)
-        const settle = mixPose(follow, finishSettlePose(heroX, heroZ), chuteAmount)
+        const follow = followPose(heroX, heroZ, raceSpeed, accelAmount, chuteAmount)
+        const sideMix = Math.min(1, chuteAmount * 1.85)
+        const settle = mixPose(follow, finishSettlePose(heroX, heroZ), sideMix)
         const wide = mixPose(settle, sideRailPose(heroX, trackLength), zoomCurrent)
         const withSlow =
           slowMoAmount > 0 ? mixPose(wide, heroFinishPose(heroX, heroZ), slowMoAmount) : wide

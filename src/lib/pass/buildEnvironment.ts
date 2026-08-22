@@ -1,4 +1,4 @@
-import type { Entity, Texture } from 'playcanvas'
+import type { Application, Entity, Texture } from 'playcanvas'
 
 import { buildBarrierBoards, type SponsorTextureEntry } from './buildBarrierBoards'
 import { buildChristmasTree, type TreeMode } from './buildChristmasTree'
@@ -37,6 +37,7 @@ export function buildPassEnvironment(
     asphaltRough?: Texture | null
     christmasTreeMesh?: Entity | null
     hideSkyPlanes?: boolean
+    app?: Application
   } = {},
 ): PassEnvironment {
   const high = quality === 'high'
@@ -145,6 +146,7 @@ export function buildPassEnvironment(
     trackWidth: TRACK_WIDTH,
     quality,
     hideSkyPlanes: extras.hideSkyPlanes,
+    app: extras.app,
   })
 
   buildBarrierBoards({

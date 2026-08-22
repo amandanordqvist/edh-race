@@ -28,8 +28,8 @@ function formatStat(n: number, decimals: number, sep: '.' | ','): string {
 
 export function PerformanceStrip() {
   const t = useT()
-  const { quarter, topSpeed, eighth, eighthSpeed } = t.home.stats
-  const cards: StatCard[] = [quarter, topSpeed, eighth, eighthSpeed]
+  const { quarter, topSpeed, eighth, championship } = t.home.stats
+  const cards: StatCard[] = [quarter, topSpeed, eighth, championship]
   const boardRef = useRef<HTMLDivElement>(null)
 
   useGSAP(
@@ -69,7 +69,7 @@ export function PerformanceStrip() {
     },
     {
       scope: boardRef,
-      dependencies: [quarter.value, topSpeed.value, eighth.value, eighthSpeed.value],
+      dependencies: [quarter.value, topSpeed.value, eighth.value, championship.value],
     },
   )
 

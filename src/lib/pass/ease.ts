@@ -172,7 +172,7 @@ export function shutdownCoast01(elapsedS: number, et: number): number {
 /** Trap speed decay after ET — chutes bite, HUD leaves 415 km/h behind. */
 export function camaroCoastSpeedKmh(elapsedS: number, et: number, topSpeedKmh = 415): number {
   const trap = camaroDisplaySpeedKmh(Math.min(elapsedS, et), topSpeedKmh)
-  return trap * (1 - shutdownCoast01(elapsedS, et) * 0.82)
+  return trap * (1 - shutdownCoast01(elapsedS, et) * 0.97)
 }
 
 export function camaroCoastSpeed01(elapsedS: number, et: number, topSpeedKmh = 415): number {

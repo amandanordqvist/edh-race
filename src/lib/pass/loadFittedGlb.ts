@@ -1,6 +1,12 @@
 import type { Application, ContainerResource, Entity } from 'playcanvas'
 
-import { collectModelBounds, forEachEntity, hideMeshesFarFromMedianY, hideOversizedMeshInstances } from './camaroRig'
+import {
+  collectModelBounds,
+  forEachEntity,
+  hideMeshesFarFromMedianY,
+  hideOversizedMeshInstances,
+  hideSphericalMeshes,
+} from './camaroRig'
 import { loadContainerAsset } from './loadGlbAsset'
 import { shadowsEnabled, type PlayCanvasNamespace } from './scenePrimitives'
 import type { PassQuality } from './types'
@@ -27,6 +33,8 @@ type LoadFittedGlbOptions = {
   stripLargerThan?: number
   /** Hide leftover parts farther than this from the median Y. */
   stripYSpread?: number
+  /** Hide near-spherical meshes at least this large (Sketchfab studio orbs). */
+  stripSpheresLargerThan?: number
 }
 
 const MIN_FIT_SCALE = 0.05
@@ -55,6 +63,7 @@ export async function loadFittedGlb(opts: LoadFittedGlbOptions): Promise<Entity>
     minFitScale = MIN_FIT_SCALE,
     stripLargerThan,
     stripYSpread,
+    stripSpheresLargerThan,
   } = opts
 
   const asset = await loadContainerAsset(app, pc, url, name)
@@ -71,6 +80,9 @@ export async function loadFittedGlb(opts: LoadFittedGlbOptions): Promise<Entity>
   }
   if (typeof stripYSpread === 'number') {
     hideMeshesFarFromMedianY(modelRoot, stripYSpread)
+  }
+  if (typeof stripSpheresLargerThan === 'number') {
+    hideSphericalMeshes(modelRoot, stripSpheresLargerThan)
   }
 
   const abort = (reason: string): never => {

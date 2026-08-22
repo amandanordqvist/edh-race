@@ -1,9 +1,10 @@
 import type { Application, ContainerResource, Entity, StandardMaterial } from 'playcanvas'
 
 import type { PassQuality } from './types'
-import { collectModelBounds, forEachEntity } from './camaroRig'
+import { collectModelBounds, forEachEntity, hideSphericalMeshes } from './camaroRig'
 import { loadContainerAsset } from './loadGlbAsset'
 import {
+  attachContactShadow,
   createMaterial,
   shadowsEnabled,
   type PlayCanvasNamespace,
@@ -74,26 +75,28 @@ function isChromeName(name: string): boolean {
 function applyEdhBodyPaint(material: StandardMaterial, quality: PassQuality): void {
   material.name = 'edh-bodywork'
   material.diffuse.set(...EDH_BLUE)
-  material.emissive.set(0.05, 0.08, 0.15)
-  material.emissiveIntensity = quality === 'high' ? 0.14 : 0.09
+  material.emissive.set(0, 0, 0)
+  material.emissiveIntensity = 0
   material.useMetalness = true
-  material.metalness = 0.5
-  material.gloss = 0.92
-  // Never keep albedo maps that could paint other shared instances blue.
+  material.metalness = 0.06
+  material.gloss = 0.86
   material.diffuseMap = null
   material.emissiveMap = null
+  const coat = material as StandardMaterial & { clearCoat?: number; clearCoatGloss?: number }
+  coat.clearCoat = quality === 'high' ? 0.72 : 0.45
+  coat.clearCoatGloss = 0.92
   material.update()
 }
 
 function applyNeutralGlass(material: StandardMaterial, pc: PlayCanvasNamespace): void {
   material.name = 'edh-glass'
-  material.diffuse.set(0.12, 0.12, 0.13)
+  material.diffuse.set(0.04, 0.05, 0.06)
   material.emissive.set(0, 0, 0)
   material.emissiveIntensity = 0
   material.useMetalness = true
   material.metalness = 0
-  material.gloss = 0.85
-  material.opacity = 0.28
+  material.gloss = 0.72
+  material.opacity = 0.42
   material.blendType = pc.BLEND_NORMAL
   material.depthWrite = false
   material.cull = pc.CULLFACE_NONE
@@ -173,10 +176,10 @@ function prepareCamaroMaterials(
   return {
     bodyMaterial: createMaterial(pc, {
       diffuse: EDH_BLUE,
-      emissive: [0.05, 0.08, 0.15],
-      emissiveIntensity: quality === 'high' ? 0.14 : 0.09,
-      metalness: 0.5,
-      gloss: 0.92,
+      metalness: 0.06,
+      gloss: 0.86,
+      clearCoat: quality === 'high' ? 0.72 : 0.45,
+      clearCoatGloss: 0.92,
     }),
     hasTextures,
   }
@@ -246,6 +249,7 @@ export async function loadCamaroGlb(opts: LoadCamaroOptions): Promise<LoadedCama
 
   const modelRoot = resource.instantiateRenderEntity()
   modelRoot.name = 'camaro-glb'
+  hideSphericalMeshes(modelRoot, 1.15)
 
   const camaro = new pc.Entity('camaro')
   camaro.addChild(modelRoot)
@@ -253,6 +257,7 @@ export async function loadCamaroGlb(opts: LoadCamaroOptions): Promise<LoadedCama
   fitCamaroToStrip(camaro, modelRoot)
 
   const { bodyMaterial, hasTextures } = prepareCamaroMaterials(modelRoot, pc, quality)
+  attachContactShadow(pc, camaro)
 
   return { entity: camaro, bodyMaterial, hasTextures }
 }

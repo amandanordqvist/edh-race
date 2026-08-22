@@ -71,6 +71,31 @@ export function hideOversizedMeshInstances(root: Entity, maxExtent: number): num
   return hidden
 }
 
+/**
+ * Hide Sketchfab studio orbs / HDRI preview spheres. A mesh counts as a
+ * sphere when its AABB is nearly cubic and at least `minExtent` metres.
+ */
+export function hideSphericalMeshes(root: Entity, minExtent: number): number {
+  let hidden = 0
+  forEachEntity(root, (entity) => {
+    const render = entity.render
+    if (!render) return
+    render.meshInstances.forEach((instance) => {
+      const he = instance.aabb.halfExtents
+      const max = Math.max(he.x, he.y, he.z)
+      const min = Math.min(he.x, he.y, he.z)
+      if (max < 0.001) return
+      const spherical = min / max > 0.72
+      const extent = max * 2
+      if (spherical && extent >= minExtent) {
+        instance.visible = false
+        hidden += 1
+      }
+    })
+  })
+  return hidden
+}
+
 /** Keep the densest vertical cluster so exploded Sketchfab parts drop out. */
 export function hideMeshesFarFromMedianY(root: Entity, maxDelta: number): number {
   const samples: Array<{ instance: { visible: boolean }; y: number }> = []

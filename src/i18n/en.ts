@@ -3,20 +3,20 @@ import type { Dictionary } from './types'
 export const en: Dictionary = {
   meta: {
     siteName: 'EDH Racing',
-    tagline: 'Top Doorslammer team from Hudiksvall',
-    homeTitle: 'EDH Racing | Top Doorslammer Team from Hudiksvall',
+    tagline: 'Top Doorslammer from Hudiksvall',
+    homeTitle: 'EDH Racing | From Hudiksvall to the European sharp end',
     homeDescription:
-      'Follow EDH Racing and Anders Edh in the hunt for the next record. Discover the 5.74-second Camaro, the team, the results and upcoming races.',
+      'EDH Racing — Top Doorslammer from Hudiksvall. 3,500+ hp. 5.74 seconds. 415 km/h. Follow Anders Edh, the Camaro, the crew and the hunt for the next record.',
   },
   nav: {
     home: 'Home',
     journey: 'The Journey',
     machine: 'The Machine',
-    pass: 'The pass',
+    pass: 'The Pass',
     results: 'Results',
     team: 'The Team',
     media: 'Media',
-    contact: 'Sponsors',
+    contact: 'Partners',
   },
   lang: {
     sv: 'SV',
@@ -29,9 +29,10 @@ export const en: Dictionary = {
     contact: 'Contact',
     social: 'Social',
     rights: '© EDH Racing. All rights reserved.',
-    ctaTitle: 'After the pass',
+    madeBy: 'Site by',
+    ctaTitle: 'Be part of the journey',
     ctaBody:
-      'If the times, the car and the quiet work in Hudiksvall feel right: get in touch. We are a small team.',
+      'Questions about the team, sponsorship, or booking Anders and the car for an event? Get in touch.',
   },
   common: {
     comingSoon: 'Coming soon',
@@ -46,49 +47,66 @@ export const en: Dictionary = {
   },
   home: {
     brand: 'EDH Racing',
-    headline: '5.74 seconds. The hunt continues.',
-    heroKicker: 'Swedish Top Doorslammer team',
-    lead: 'EDH Racing is a Swedish Top Doorslammer team from Hudiksvall. Follow Anders Edh, the blue Camaro and the work behind a quarter mile at over 415 km/h.',
-    ctaPass: 'Experience the record pass',
+    headline: 'From Hudiksvall to the European sharp end',
+    heroKicker: 'Top Doorslammer',
+    lead: 'EDH Racing — Top Doorslammer at the edge of what physics allows. 3,500+ hp. 5.74 seconds. 415 km/h.',
+    ctaPass: 'Experience the pass',
+    ctaJourney: 'Follow the journey',
     ctaTeam: 'Meet the team',
-    statsTitle: 'Personal bests',
+    ctaMachine: 'See the car',
+    statsTitle: 'Facts & records',
     stats: {
-      quarter: { value: '5.74', unit: 's', label: 'Personal best over 402 metres' },
-      topSpeed: { value: '415', unit: 'km/h', label: 'Trap speed' },
-      eighth: { value: '3.80', unit: 's', label: 'Personal best over 201 metres' },
-      eighthSpeed: { value: '330', unit: 'km/h', label: 'Trap speed over 201 metres' },
+      quarter: {
+        value: '5.74',
+        unit: 's',
+        label: 'Quarter mile · Santa Pod 2024',
+      },
+      topSpeed: {
+        value: '415',
+        unit: 'km/h',
+        label: 'Faster than a jet at takeoff',
+      },
+      eighth: {
+        value: '3.80',
+        unit: 's',
+        label: 'Eighth mile · 327 km/h',
+      },
+      championship: {
+        value: '1st',
+        unit: '',
+        label: 'European Top Doorslammer 2019',
+      },
     },
     driverLabel: 'The driver',
-    driverTitle: 'Calm outside the car. Full focus when the lights come on.',
+    driverTitle: 'Anders Edh',
     driverBody:
-      'Anders Edh is the driver behind EDH Racing. In a car where everything happens in a few seconds, the result is built on experience, feel and the ability to make the right call before the car leaves the start line.',
+      'Holding it flat at 415 km/h is an incredibly extreme experience. That is where everything comes to a point — focus is total, and reaction time is everything. Welcome to the digital pits of EDH Racing. From Hudiksvall, Anders and the crew have spent two decades proving that nights in the garage can move the limit.',
     driverCta: 'Get to know Anders',
     driverAlt: 'Driver Anders Edh in front of the EDH Racing Top Doorslammer Camaro',
     machineLabel: 'The machine',
-    machineTitle: 'Built for one job.',
+    machineTitle: 'The Beast',
     machineBody:
-      'Under the body sits a tube chassis built by Mats Brag, a 521 cubic-inch BAE Hemi, a screw blower, methanol and a Coan TH400. The result is a Camaro built to turn power into controlled acceleration.',
+      'Not a modified street car. Five Star carbon fibre from the US, a Mats Brag tube chassis, BAE 521 Hemi, PSI screw blower, methanol and a Coan 400. Built to take loads most cars never see.',
     machineCta: 'Explore the car',
-    machineAlt: 'Anders Edh’s blue Top Doorslammer Camaro in the pits at Santa Pod',
-    machineSpecs: ['521 CUI', 'BAE HEMI', 'SCREW BLOWER', 'METHANOL'],
+    machineAlt: 'The EDH Racing blue Top Doorslammer Camaro with the engine exposed in the pits',
+    machineSpecs: ['BAE 521', 'PSI BLOWER', '1140 KG', 'METHANOL'],
     teamLabel: 'The team',
     teamTitle: 'Nobody runs 415 km/h alone.',
     teamBody:
-      'Every pass starts long before the start line. EDH Racing is driver, mechanics, data, decisions and people who trust each other when the margins are hundredths.',
+      'Drag racing is a team sport. Without mechanics who can pull an engine and put it back together in two hours in the pits, you never reach the finish line.',
     teamCta: 'Meet the team',
     teamPhotoAlt: 'The EDH Racing team working on the Camaro during a race weekend',
     storyLabel: 'The journey',
-    storyTitle: 'A new car. A new chapter.',
+    storyTitle: 'From a moped to 5.74',
     storyBody:
-      'The Camaro was built in 2023. Since then every test, every setback and every race weekend has been about understanding the car, finding the balance and moving the limit one hundredth at a time.',
+      'What started as a nine-year-old’s moped dreams became one of Europe’s quickest drag cars. The same line, almost twenty years — from a sliding street car to The Beast on the strip.',
     storyCta: 'Follow the journey',
     storyCaptions: {
-      '2024-santapod': 'Santa Pod. The record row is written.',
-      '2023-beast': 'A new Camaro takes shape in the shop.',
-      '2016-680': 'The last season with the steel body.',
-      '2010-nitrous': 'Nitrous. The car gets serious.',
-      '2021-record': '3.89 s over 201 metres.',
-      '2018-runnerup': 'Runner-up in EDRS.',
+      '2010-nitrous': 'Nitrous. The street car becomes a racer.',
+      '2016-680': '6.80. Then almost walking away.',
+      '2021-record': '3.89 in the steel car. Last season in it.',
+      '2023-beast': 'A new Camaro. The first season went wrong.',
+      '2024-santapod': 'Santa Pod. 5.74 s and 415 km/h.',
     },
     nextRaceLabel: 'Next start',
     nextRaceTitle: 'The next time the quiet breaks.',
@@ -98,28 +116,32 @@ export const en: Dictionary = {
     nextRaceStatusLabel: 'Status',
     nextRaceEmpty: 'The next race will be announced soon.',
     nextRaceCta: 'Full calendar',
+    nextRaceEventLabel: 'Event',
     nextRaceDateLabel: 'Date',
     nextRaceTrackLabel: 'Track',
     nextRacePlaceLabel: 'Place',
-    nextRaceCountry: 'Sweden',
+    countries: {
+      sweden: 'Sweden',
+      england: 'England',
+    },
     sponsorsLabel: 'Partners',
-    sponsorsTitle: 'Build the next chapter with us.',
+    sponsorsTitle: 'Be part of the journey.',
     sponsorsBody:
-      'As a partner to EDH Racing you become part of the team’s next chapter, on the strip, in the pits and in the story around the car. We build partnerships that are visible, credible and long-term.',
+      'EDH Racing runs at Tierp Arena, Mantorp Park and Santa Pod Raceway. A small team built on precision, craft and family — and a car that clocks 5.74 seconds.',
     sponsorsCta: 'Become a partner',
     sponsorsCtaSecondary: 'See our partners',
     passTeaserLabel: 'The record pass',
-    passTeaserTitle: 'Six seconds that changed everything.',
+    passTeaserTitle: '5.74 seconds at Santa Pod.',
     passTeaserBody:
-      'At Santa Pod the clocks stopped at 5.74 seconds and 415 km/h. Follow the car from the start line, see the marks along the strip and understand what every hundredth means.',
+      'After eight test hits where the car would not hook, the sixth pass lined up. Anders ran 5.74 seconds at 415 km/h. Follow the pass from the start line.',
     passTeaserCta: 'Experience the pass',
-    passTeaserAlt: 'Anders Edh’s blue Top Doorslammer Camaro in the pits at Santa Pod',
+    passTeaserAlt: 'Anders Edh’s blue Top Doorslammer Camaro in a burnout at Santa Pod',
     passTeaserFacts: 'Santa Pod · 402 metres · 5.7451 seconds · 415 km/h',
     imageFallback: 'Image could not be loaded',
   },
   pass: {
-    title: 'The pass',
-    lead: 'Santa Pod. A quarter mile. Over 400 km/h. 5.745 seconds against Formula 1 or a passenger jet.',
+    title: 'The Pass',
+    lead: 'Santa Pod. A quarter mile. 5.745 seconds and 415 km/h — against Formula 1 or a passenger jet.',
     stage: 'Start the pass',
     again: 'Race again',
     mute: 'Mute',
@@ -179,7 +201,7 @@ export const en: Dictionary = {
     },
     compareMeaning: {
       camaro:
-        'A real Doorslammers pass from a standing start: 5.745 s and about 415 km/h over 402 m.',
+        'A real Doorslammers pass from a standing start: 5.745 s and 415 km/h over 402 m.',
       f1:
         'Approximate time for an F1 car from a standing start over the same 402 m. Slower hook at 60′ — built for circuit laps, not a drag launch.',
       jet:
@@ -192,9 +214,9 @@ export const en: Dictionary = {
     timeslipGuide: 'How to read the slip — each row is a timing mark along the strip.',
     timeslipCompareTitle: 'Why F1 and the jet?',
     timeslipCompareLead:
-      'This is not a real race between the vehicles. It is an educational comparison: the same 402 m, standing start, one rival in the other lane. The point is how extreme doorslammer acceleration really is.',
+      'This is not a real race between the vehicles. It is an educational comparison: the same 402 m, standing start, one rival in the other lane. The point is how hard doorslammer acceleration really is.',
     primerLead:
-      'EDH usually races 201 m in the European Drag Racing Series. Here you run a quarter-mile pass (402 m) from Santa Pod — the full acceleration, from zero to 415 km/h.',
+      'EDH usually races 201 m in the European Drag Racing Series. Here you run a quarter-mile pass (402 m) from Santa Pod — from zero to 415 km/h.',
     inspectHint: 'Drag to spin the car · scroll to zoom',
     context201: {
       title: '201 m and 402 m',
@@ -225,8 +247,8 @@ export const en: Dictionary = {
       trap: 'Trap speed is speed at the finish line, not average speed. The car is fastest just before the chutes.',
     },
     closing: {
-      title: 'The next pass starts here',
-      body: 'Want to be there when EDH Racing chases the next record? Become part of the team’s next chapter.',
+      title: 'Be part of the journey',
+      body: 'Want to stand beside EDH Racing for the next record hunt? Get in touch.',
       cta: 'Become a partner',
     },
     splitCallouts: {
@@ -280,65 +302,65 @@ export const en: Dictionary = {
     },
   },
   journey: {
-    title: 'A running timeslip',
+    title: 'The Journey',
     intro:
-      'A garage in Hudiksvall. A Camaro. A number that keeps falling. The whole career fits inside the times at the finish line — read the rows as they get filled in.',
-    beatChildhood: 'The beginning',
-    beatPhilosophy: 'The philosophy',
+      'A mini moped in Hudiksvall. A Camaro that was never meant to race. Then a button in Sundsvall — and everything that followed.',
+    heroAlt: 'A boy on a mini moped in Hudiksvall',
+    beatChildhood: 'The spark',
+    beatPhilosophy: 'Still going',
     quote1:
-      'I still remember the feeling when the engine started and the vibrations went through the bars. That feeling has never left me.',
+      'All the neighbours five years older had American cars. It was the coolest thing you could have. There was nothing to discuss.',
     quote1Attr: 'Anders Edh',
     philosophy:
-      'Anders does not buy ready-made answers. He builds, develops and tunes in the garage in Hudiksvall, and digs into details others often skip.',
-    quote2:
-      'Anyone can look up the information. The hard part is knowing what to look up.',
+      'He does not buy ready-made answers. He builds, tunes and digs into details others skip — in the same garage in Hudiksvall. The car has more to give. Now it is about building on from here.',
+    quote2: 'When I go into stage, concentration is 100 percent.',
     quote2Attr: 'Anders Edh',
     spineLabel: 'Timeslip: rows of a career',
-    crossroadsLabel: 'The crossroads · 2016',
-    crossroadsBody:
-      'The fastest year yet, and still no fields were filled in. The car sat in the garage. The economy was recounted. No new time was recorded. Anders considered selling everything.',
-    crossroadsCaption: 'Blank timeslip. Nothing measured.',
     finalRowCaption: 'The next row gets written at the track.',
-    chapters: {
-      roots: 'Roots',
-      build: 'Build',
-      elite: 'The tracks',
-      record: 'Record',
-    },
     timeline: {
       '1970s-first-camaro':
-        'Sixteen years old, Anders buys his first Camaro (a 1971) for SEK 14,800. No times measured — only the feeling of owning an American car.',
+        'At nine it was a mini moped. At sixteen the neighbours had American cars, five years older, and there was nothing to discuss. Anders saved SEK 14,800 and bought a 1971 Camaro. That is where the fascination with engines started. Racing was not in the picture.',
       '2004-ebay':
-        'New Year’s Eve. An impulse buy on eBay. A 1970 Camaro rolls off the boat from New Jersey.',
+        'He was going to buy a boat in the US. Freight got too expensive. New Year’s Eve 2004, in a cabin in Vemdalen with no internet on the phone, he walked down to the hotel computer nook and saw he was the highest bidder on a dark-blue 1970 Camaro from New Jersey. The plan was to cruise around and have something to tinker with.',
       '2005-license':
-        'Kjell-Åke Kring drags Anders into the sport. Racing licence in Söderhamn. Mechanic Martin Ekstedt shows up in the garage.',
+        'An offhand line to Kjell-Åke Kring from Norrbo: it might be fun to try the car on a track. A few weeks later — a licence in Söderhamn, three runs. The engine from the US never arrived; the builder got sick. Only the nitrous came. Anders put it on the engine he had, and ran it in Sundsvall.',
       '2006-10s':
-        'First season with the clock running. The quarter mile — 402 metres — falls on ten seconds flat.',
+        'Martin Ekstedt looked into the garage out of curiosity. The evenings multiplied. In 2006 he started coming to the races. That year: ten flat on 402 metres, in a car that still had more in common with a street car than what Anders sits in today.',
       '2010-nitrous':
-        'Nitrous in the engine. The quarter mile drops to 7.80 s. The steel-body car starts getting serious.',
+        'Bit by bit they stripped it, rebuilt, tested, adjusted. By 2010 they had cut more than two seconds — 7.80. Chasing tenths is like fine-tuning a Swiss watch while it is running. Nitrous gave brutal gains, but there was a limit before something gave way.',
       '2013-chassis':
-        'The car comes apart completely. A tube chassis is welded up from scratch. The street car stops existing — a race machine replaces it.',
+        'Then the whole car came apart. Nothing of the street car was left. Tube chassis, a new foundation, all of it built to cut hundredths. It took time. Nothing about it felt impossible.',
       '2016-680':
-        'The fastest season yet with the steel body. 6.80 s over 402 m. Costs set hard limits at the same time.',
-      '2016-crossroads': 'Blank row. No time measured.',
+        '6.80 on 402 metres. Years in the garage, every bolt. A time few could even dream of. Instead of euphoria, another feeling crept in: was this everything? Anders felt done.',
       '2016-2017-blower':
-        'A new direction. A screw blower on the Chevrolet engine replaces the nitrous. The rebuild takes a whole winter.',
+        'Then a Chevy supercharged engine turned up. Anders called Mats Brag, who put him on to Fredrik Lundh. Going from nitrous to a blower is not an engine swap — it is a new way to drive. All the power arrives at once. The smallest mistake can cost the season. Back to square one.',
       '2017-edrs6':
-        'New distance — 201 m in the European Drag Racing Series. 4.15 s straight out of the box. Sixth overall.',
+        'New distance, 201 metres. After a few hits: 4.15. Some things they brought with them. The rest they had to learn again.',
       '2018-runnerup':
-        'Runner-up in the Summit Racing EDRS Series in Top Doorslammer. Season read all the way through.',
+        'Runner-up in the Summit Racing EDRS Series in Top Doorslammer. The season read all the way through.',
       '2019-champion':
-        'Nordic champion in Top Doorslammer. 1st in EDRS.',
+        'An engine failure at home in June. The crew works round the clock, takes Swedish Championship silver in Sundsvall, and the season ends in Kauhava, Finland: champions of the European Top Doorslammer Series. Hemi engine. Finland. The title.',
       '2021-record':
-        'Final season with the steel body. 3.89 s over 201 m — then the fastest doorslammer record in Europe.',
+        'Final season with the steel body. 3.89 over 201 metres. It had not been done in Europe. A little against the laws of physics — and the thing he is most proud of.',
       '2023-beast':
-        'The Beast takes shape. Carbon-fibre body, BAE 521 engine, MB chassis. The car exists, but the time has not been measured yet.',
+        'A new Camaro. Chassis by Mats Brag, a Five Star carbon body. The first season went sideways — the tune was off, the car shook the tyres. Weight distribution mattered more than they had thought. Autumn and winter: shifting weight between the axles. The time would have to wait.',
       '2024-santapod':
-        'Santa Pod, England. 5.7451 s @ 415 km/h. The record row of the career.',
+        'Santa Pod. First hit 0.92 at 60 foot — solid, not perfect. Five rounds on the four-link. On the sixth, it all landed: 5.7451 seconds, 415 km/h. Then Mantorp. The gearbox would not hold. Three events of tracing it before the sprag showed up damaged. In Sundsvall they changed it. In Hudiksvall they could finally trust the box again.',
       '2025-podium':
-        'Andreas Gröning joins. Third overall in EDRS Top Doorslammer.',
+        'Andreas Gröning joins. Third overall in EDRS Top Doorslammer. The foundation is there. Now it is about getting more out of the combination.',
       '2026-season':
-        'Win in the first start at Santa Pod. 3.87 s on the asphalt track in Hudiksvall after four-link and weight-balance work.',
+        'Win in the first start at Santa Pod. 3.87 s on the asphalt in Hudiksvall after four-link and weight-balance work. The next row gets written at the track.',
+    },
+    quotes: {
+      '2004-ebay':
+        'What I did not know then was that that purchase would change my life completely.',
+      '2005-license':
+        'You pressed a button and it just took off. The adrenaline, the kick, the focus. I loved it.',
+      '2016-680': 'I was ready to sell everything.',
+      '2016-2017-blower':
+        'About as big a shift as going from ordinary skis to carving.',
+      '2021-record':
+        'What I am most proud of is running 3.89 in a steel-body car.',
     },
     marks: {
       '2006-10s': '10.00 s',
@@ -353,7 +375,7 @@ export const en: Dictionary = {
     },
     timeslip: {
       eyebrow: 'EDH Racing · Timeslip',
-      event: 'Career · 1970s–2026',
+      event: 'Career · 1973–2026',
       distance: 'Read top to bottom',
       colYear: 'Year',
       colDistance: 'Distance',
@@ -384,7 +406,7 @@ export const en: Dictionary = {
   machine: {
     title: 'The Machine',
     intro:
-      'Chevrolet Camaro The Beast: what it is built from, and how it works. For anyone who wants to look under the skin.',
+      'Chevrolet Camaro The Beast is not a modified production car. It is a precision-built piece of kit, made to take enormous loads.',
     chassisTitle: 'Interactive chassis',
     chassisBody:
       'Tap the points to read about the BAE 521, PSI blower, MB chassis and 4-link.',
@@ -392,108 +414,107 @@ export const en: Dictionary = {
     turntableHint: 'Drag or pick an angle',
     turntableLabel: 'Explore The Beast: drag, use arrow keys, or choose an angle',
     specsTitle: 'Technical specifications',
-    narrativeTitle: 'Forces & curiosities',
-    extremeForcesTitle: 'Forces in the chutes',
+    narrativeTitle: 'Did you know?',
+    extremeForcesTitle: 'What air does at 415 km/h',
     extremeForces:
-      'The parachutes at the finish have to bring the car down from 415 km/h. At Santa Pod the force was so high the chutes lifted the rear off the ground.',
-    speedCompareTitle: 'Compared with a jet on takeoff',
+      'At the finish line at 415 km/h the air loads the body so hard that a little play in the pedals, or a throttle blade a degree off, can change how the car behaves. When the chutes fire, the whole rear sometimes lifts off the ground.',
+    speedCompareTitle: '0–100 — and a jet at takeoff',
     speedCompare:
-      'At 415 km/h the car is faster than many passenger jets during takeoff (around 290 km/h).',
-    logisticsTitle: 'Logistics',
+      '0 to 100 km/h takes under a second, harder than in a fighter jet. At 415 km/h the Camaro is faster than many passenger jets on takeoff, around 290 km/h.',
+    logisticsTitle: 'Thirsty — and expensive to move',
     logistics:
-      'Taking the car through Europe costs time and money. Ferry and freight to England alone sit above SEK 30,000 per trip.',
+      'The engine uses about 15–20 litres of methanol in a single run, including the burnout and a pass under six seconds. Taking the car through Europe costs time and money. Ferry and freight to England alone sit above SEK 30,000 per trip.',
     compareCamaro: 'The Beast',
     compareJet: 'Passenger jet (takeoff)',
     hotspots: {
       engine: {
-        title: 'BAE 521 Hemi engine',
-        body: '8.5-litre blown methanol engine. Roughly 2,500–3,000 horsepower.',
+        title: 'BAE 521 Hemi V8',
+        body: '8.5-litre Brad Anderson Engineering Hemi, fed on straight methanol. Roughly 3,500–4,000+ horsepower.',
       },
       compressor: {
         title: 'PSI screw blower',
-        body: 'Steady, high boost to the engine.',
+        body: 'Pushes air in at high, steady boost. Nitrous made way for this kind of throttle response.',
       },
       chassis: {
         title: 'Mats Brag (MB) chassis',
-        body: 'Chromoly tube chassis.',
+        body: 'Chromoly tube chassis, built by Mats Brag.',
       },
       fourLink: {
         title: 'MB 4-Link',
-        body: 'Adjustable rear suspension that sets chassis angle and how power hits the asphalt.',
+        body: 'MB-designed rear axle with four-link suspension. Sets chassis angle and how power hits the asphalt — what turned the Santa Pod pass around.',
       },
     },
     specLabels: {
       model: 'Model',
       class: 'Class',
       body: 'Body',
+      chassis: 'Chassis',
       engine: 'Engine',
       displacement: 'Displacement',
+      blower: 'Blower',
       power: 'Power',
       transmission: 'Transmission',
       crankshaft: 'Crankshaft',
+      rear: 'Rear end',
       fuel: 'Fuel',
       weight: 'Weight',
+      safety: 'Safety',
     },
   },
   results: {
-    title: 'Races & results',
-    heroEt: '5.74 s',
-    heroSpeed: '415 km/h',
-    heroCaption: 'Quickest quarter mile — Santa Pod.',
-    heroCta: 'Championship calendar',
-    heroAlt: 'EDH Racing Camaro on track at Santa Pod',
-    standingsTitle: 'EDRS Top Doorslammer',
-    standingsLead: 'Championship finishing place, season by season.',
-    bestTimesTitle: 'Historic times (201 m / 660 ft)',
-    bestTimesLead:
-      'ET is the time over 201 metres. Speed is measured at the finish.',
-    calendarTitle: 'Swedish Championship calendar 2026',
+    title: 'Races and results',
+    lead: 'Next start first. Then the times on the distance he usually races.',
+    calendarTitle: 'The 2026 season',
     nextStart: 'Next start',
-    highlightBest: 'Best ET',
+    seasonDone: 'The 2026 season is done.',
+    bestTimesTitle: 'Times over 201 metres',
+    bestTimesLead:
+      'In the Nordics, EDH usually races 201 metres. ET is the time from a standing start to the finish.',
+    highlightBest: 'Personal best',
     highlightLatest: 'Latest',
-    colYear: 'Year',
-    colEvent: 'Event',
-    colTime: 'ET',
-    colSpeed: 'Speed',
-    colPlace: 'Place',
-    round: 'Round',
-    final: 'Final',
+    landmarkTitle: 'The quarter mile',
+    landmarkBody: 'Santa Pod 2024: 5.74 s and 415 km/h. A different distance, the same car.',
+    standingsTitle: 'EDRS Top Doorslammer',
+    standingsLead: 'Championship finishing place. First in 2019.',
+    final: 'Season finale',
   },
   team: {
     title: 'The Team',
     intro:
-      'Hundredths are decided in the pits. The crew looks after the car. Family and support keep the team rolling across Europe.',
-    crewTitle: 'Key people in the pits',
+      'Drag racing is a team sport. The crew looks after the car. Family and support keep the team rolling across Europe.',
+    crewTitle: 'The crew',
     supportTitle: 'Support & family',
+    memorial:
+      'We also always race in memory of our missed friend and teammate Tomas “Oma” Landin.',
     groupPhotoAlt: 'The EDH Racing team gathered in the pits',
     members: {
       anders: {
         role: 'Driver & team owner',
-        bio: 'Builds, tunes and drives. Started with a Camaro and a garage in Hudiksvall. Prefers to show the result rather than talk himself up.',
+        bio: 'Born 1964 in Hudiksvall. Club: SHRA Sundsvall. Number 3944. The well-known Scandinavian style — holding it flat and not lifting, even when the car slides near the wall. Builds, tunes and drives.',
       },
       martin: {
         role: 'Mechanic',
-        bio: 'In the garage since 2005 (racing since 2007). Keeps an eye on the details so the car works on the start line.',
+        bio: 'With the team since 2007. The backbone — every millimetre and every bolt under race pressure.',
       },
       andreas: {
         role: 'Mechanic',
-        bio: 'Joined ahead of the 2025 season. Extra hands and eyes between passes.',
+        bio: 'Joined in 2025. Quickly became a real asset with how fast he learns.',
       },
       john: {
         role: 'Mechanic',
-        bio: 'Joined in 2024. Broad knowledge and good spirits in the pits.',
+        bio: 'Came in 2024. Mechanical know-how, and he always lifts the mood in the pits.',
       },
       olle: {
         role: 'Technical advisor',
-        bio: 'Anders’ brother. Motorsport nerd who has brought ideas and solutions over the years.',
+        bio: 'Anders’ brother. A motorsport nerd to the fingertips. Knowledge and a sharp eye — including the Santa Pod changes — have saved more than one race weekend.',
       },
       marie: {
-        role: 'Logistics',
-        bio: 'Anders’ partner. Food, logistics and keeping the pits working on race weekends.',
+        role: 'Logistics & support',
+        bio: 'Anders’ partner and the quiet backbone. Food, logistics, and keeping everything around the race weekend in order.',
       },
       amanda: {
         role: 'Media & web',
-        bio: 'Anders’ daughter. Social media, the website and making the team visible.',
+        bio: 'Anders’ daughter. Runs the team’s social media and digital presence so fans can follow the drama.',
       },
       siggi: {
         role: 'Documentary filmmaker',
@@ -504,14 +525,14 @@ export const en: Dictionary = {
   media: {
     title: 'Media',
     intro:
-      'Photos and clips from the strip and the pits. Santa Pod 5.74s @ 415 km/h, then burnout, launch, pits and archive.',
+      'Photos and clips from the strip and the pits. Santa Pod 5.74 s @ 415 km/h, then burnout, launch, pits and archive.',
     feedTitle: 'Latest on Facebook',
     feedLead: 'Updates from the strip, the pits and the team — straight from EDH Racing.',
     feedCta: 'Open on Facebook',
     items: {
       miracle: {
         title: 'The Miracle Run',
-        caption: 'Santa Pod: 5.74s @ 415 km/h.',
+        caption: 'Santa Pod: 5.74 s @ 415 km/h.',
       },
       burnout: {
         title: 'Burnout Santa Pod',
@@ -564,27 +585,27 @@ export const en: Dictionary = {
     },
   },
   contact: {
-    title: 'Sponsors & contact',
-    pitchLead: 'A small team. A car from the garage.',
+    title: 'Partners & contact',
+    pitchLead: 'Be part of the journey.',
     pitch:
-      'We do not boast. We show the times and the car. If you want to stand beside a garage build from Hudiksvall that runs 5.74s @ 415 km/h: get in touch.',
-    proof: '5.74s · 415 km/h · Santa Pod',
+      'EDH Racing runs at some of Europe’s biggest motorsport venues — Tierp Arena, Mantorp Park and Santa Pod Raceway. A small team from Hudiksvall, known for precision, craft and a strong family feel. If you want to stand beside a garage-built Camaro that runs 5.74 s @ 415 km/h: get in touch.',
+    proof: '5.74 s · 415 km/h · Santa Pod',
     valuesTitle: 'What working together can mean',
     values: {
       exposure: {
-        title: 'Visibility on the strip',
-        body: 'Crowds and broadcast in Top Doorslammer, without pretending we are bigger than we are.',
+        title: 'Visibility at the track',
+        body: 'Your brand in front of crowds and TV viewers around the Nordics and Europe, in Top Doorslammer.',
       },
       beast: {
         title: 'The car in your story',
-        body: 'The Camaro and the team can appear in your own communication, if it fits.',
+        body: 'The Beast and the team can appear in your own communication, if it fits.',
       },
       precision: {
         title: 'An honest partnership',
-        body: 'You get a team that works the details, not a ready-made ad product.',
+        body: 'You get a team that works the details, with family at the core — not a ready-made ad product.',
       },
     },
-    formTitle: 'Partner enquiry',
+    formTitle: 'Get in touch',
     formHint: 'Opens your email app with a ready message. No account required.',
     name: 'Name',
     company: 'Company',

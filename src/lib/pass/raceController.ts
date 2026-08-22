@@ -26,8 +26,8 @@ const HERO_ET = simulatorRacers.find((racer) => racer.id === 'camaro')?.et ?? 5.
 const HERO_TOP_SPEED = 415
 /** How long we wait for the user to tap after green before auto-launching. */
 const AUTO_LAUNCH_TIMEOUT_MS = 2500
-/** Hold the Camaro in shutdown long enough for chutes, then freeze. */
-const HERO_SETTLE_S = 1.15
+/** Hold the Camaro in shutdown until chutes are out and speed has dumped. */
+const HERO_SETTLE_S = SHUTDOWN_COAST_S
 
 /** Slow-mo window around the hero finish line (in sim seconds). */
 const SLOW_MO_START = HERO_ET - 0.22
@@ -46,8 +46,8 @@ function computeTimeScale(t: number): number {
 }
 
 function chuteDeploy(t: number): number {
-  const start = HERO_ET + 0.08
-  const full = HERO_ET + 0.55
+  const start = HERO_ET + 0.04
+  const full = HERO_ET + 0.85
   if (t <= start) return 0
   if (t >= full) return 1
   return (t - start) / (full - start)
@@ -97,7 +97,7 @@ export function createRaceController(opts: RaceControllerOptions) {
     restoreTimeScale()
   }
 
-  const coastDistance = SHUTDOWN_LENGTH * 0.34
+  const coastDistance = SHUTDOWN_LENGTH * 0.55
 
   const racerWorldX = (elapsedS: number, racerId: (typeof simulatorRacers)[number]['id']): number => {
     const racer = simulatorRacers.find((entry) => entry.id === racerId)
@@ -258,12 +258,18 @@ export function createRaceController(opts: RaceControllerOptions) {
     scene.resetRacers()
     handlers.onClock(0)
     setPhase('staging')
-    scene.setTreeLights('stage')
+    scene.setTreeLights('prestage')
 
     if (reducedMotion) {
       timers.push(window.setTimeout(runRace, REDUCED_MOTION_FLASH_MS))
       return
     }
+
+    timers.push(
+      window.setTimeout(() => {
+        scene.setTreeLights('stage')
+      }, 280),
+    )
 
     timers.push(
       window.setTimeout(() => {

@@ -4,10 +4,8 @@ import { bookendDomId } from './domIds'
 import './JourneyBookend.css'
 
 /**
- * A silent chapter transition: a hairline year label and one line of copy.
- * Nothing is measured, nothing is claimed. The reader gets a beat of rest
- * between chapters, and the running timeslip has a target row for the cursor
- * to hold on.
+ * A quiet winter in the story: year label and one line. Same scale as the
+ * beats around it, so the timeslip does not jump into a monument.
  */
 export function JourneyBookend({ id }: { id: TimelineBookendId }) {
   const t = useT()

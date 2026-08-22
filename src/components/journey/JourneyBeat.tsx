@@ -18,11 +18,8 @@ function mediaSizes(weight: TimelineWeight): string {
 }
 
 /**
- * A single beat. Layout weight is either `regular` or `record` — a record
- * beat spans the reading column with more air. The typographic weight of the
- * year label is driven independently by `outcome` (hairline for
- * quiet/setback/rebuild, solid for record/championship), which is the only
- * cue for narrative temperature on the page.
+ * A single beat in the career story. Layout weight is regular or record.
+ * Year typography follows outcome. Optional quote is Anders in his own words.
  */
 export function JourneyBeat({
   entry,
@@ -33,6 +30,7 @@ export function JourneyBeat({
 }) {
   const t = useT()
   const mark = t.journey.marks[entry.id]
+  const quote = t.journey.quotes[entry.id]
 
   return (
     <Tag
@@ -41,6 +39,7 @@ export function JourneyBeat({
       data-beat=""
       data-weight={entry.weight}
       data-outcome={entry.outcome}
+      data-hold={entry.hold ? 'true' : undefined}
     >
       <span className="journey-beat__rule" aria-hidden="true" />
 
@@ -48,6 +47,11 @@ export function JourneyBeat({
         <h3 className="journey-beat__year">{entry.year}</h3>
         {mark ? <p className="journey-beat__mark">{mark}</p> : null}
         <p className="journey-beat__text">{t.journey.timeline[entry.id]}</p>
+        {quote ? (
+          <blockquote className="journey-beat__quote">
+            <p>“{quote}”</p>
+          </blockquote>
+        ) : null}
       </div>
 
       {entry.media ? (

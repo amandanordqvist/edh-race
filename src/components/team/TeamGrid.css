@@ -1,329 +1,145 @@
 .team-grid__heading {
   font-size: clamp(1.85rem, 4vw, 2.75rem);
   max-width: 16ch;
-  margin-bottom: clamp(2rem, 5vw, 3rem);
+  margin: 0 0 clamp(1.75rem, 4vw, 2.5rem);
 }
 
-/* —— Featured driver —— */
-.team-featured {
-  margin-bottom: 1.15rem;
-}
-
-.team-featured__shell {
+.team-crew__layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: 0;
-  overflow: hidden;
-  border-radius: var(--radius-shell);
-  border: 1px solid var(--color-hairline);
-  background: rgba(255, 255, 255, 0.02);
-  box-shadow: var(--shadow-soft);
-  min-height: clamp(320px, 42vw, 480px);
-}
-
-.team-featured__media {
-  position: relative;
-  overflow: hidden;
-  min-height: 280px;
-  background: var(--color-supporting-navy);
-}
-
-.team-featured__media img,
-.team-featured__media .team-portrait__fallback {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  transition: transform 1.1s var(--ease-out-expo);
-}
-
-.team-featured__wash {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      90deg,
-      transparent 40%,
-      rgba(10, 12, 16, 0.35) 78%,
-      rgba(10, 12, 16, 0.72) 100%
-    ),
-    linear-gradient(180deg, transparent 55%, rgba(10, 12, 16, 0.45));
-  pointer-events: none;
-}
-
-.team-featured__copy {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: clamp(1.75rem, 4vw, 3rem);
-  background:
-    radial-gradient(
-      ellipse 90% 70% at 100% 0%,
-      rgba(42, 79, 154, 0.22),
-      transparent 55%
-    ),
-    linear-gradient(
-      165deg,
-      var(--color-surface-raised),
-      var(--color-supporting-navy)
-    );
-  box-shadow: var(--shadow-inset-highlight);
-}
-
-.team-featured__role {
-  font-family: var(--font-ui);
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-primary-blue);
-  margin-bottom: 0.85rem;
-}
-
-.team-featured__name {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(2.4rem, 5vw, 3.75rem);
-  letter-spacing: 0.02em;
-  line-height: 0.95;
-  text-transform: uppercase;
-  margin-bottom: 1.15rem;
-}
-
-.team-featured__bio {
-  font-size: 1.05rem;
-  line-height: 1.65;
-  color: rgba(243, 245, 248, 0.8);
-  max-width: 34ch;
-}
-
-/* —— Crew mechanics —— */
-.team-crew__grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-  grid-auto-flow: dense;
-}
-
-.team-crew__item {
+  gap: clamp(1.75rem, 4vw, 2.5rem) 1.5rem;
   list-style: none;
-  min-width: 0;
+  margin: 0;
+  padding: 0;
 }
 
-.team-crew__card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+.team-mechanic {
+  list-style: none;
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+}
+
+.team-mechanic__media {
+  margin: 0;
   overflow: hidden;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-hairline);
-  background: linear-gradient(
-    165deg,
-    var(--color-surface-raised),
-    var(--color-supporting-navy)
-  );
-  box-shadow: var(--shadow-inset-highlight), var(--shadow-soft);
-  transition:
-    transform var(--duration-med) var(--ease-spring),
-    border-color var(--duration-med) var(--ease-spring);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .team-crew__card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(42, 79, 154, 0.45);
-  }
-
-  .team-crew__card:hover .team-crew__media img {
-    transform: scale(1.05);
-  }
-
-  .team-featured:hover .team-featured__media img {
-    transform: scale(1.04);
-  }
-}
-
-.team-crew__media {
-  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-supporting-navy);
   aspect-ratio: 4 / 5;
-  background: rgba(10, 12, 16, 0.45);
 }
 
-.team-crew__media img,
-.team-crew__media .team-portrait__fallback {
+.team-mechanic__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
-  transition: transform 1s var(--ease-out-expo);
+  object-position: center 18%;
+  display: block;
 }
 
-.team-crew__body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  padding: 1.25rem 1.2rem 1.4rem;
-}
-
-.team-crew__body h3 {
+.team-mechanic__copy h3 {
+  margin: 0 0 0.3rem;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.35rem;
+  font-size: clamp(1.25rem, 2vw, 1.45rem);
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  margin-bottom: 0.4rem;
 }
 
-.team-crew__role {
+.team-mechanic__role {
+  margin: 0 0 0.55rem;
   font-family: var(--font-ui);
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-primary-blue);
-  margin-bottom: 0.75rem;
 }
 
-.team-crew__bio {
-  font-size: 0.92rem;
+.team-mechanic__bio {
+  margin: 0;
+  font-size: 0.95rem;
   line-height: 1.55;
-  color: rgba(243, 245, 248, 0.76);
+  color: rgba(243, 245, 248, 0.78);
 }
 
-/* —— Support editorial list —— */
 .team-support__list {
-  display: grid;
-  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
   border-top: 1px solid var(--color-hairline);
 }
 
 .team-support__row {
   list-style: none;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: clamp(1.15rem, 3vw, 2rem);
-  align-items: start;
-  padding: clamp(1.5rem, 3vw, 2rem) 0;
+  gap: 0.45rem 2rem;
+  padding: 1.35rem 0;
   border-bottom: 1px solid var(--color-hairline);
-  transition: background var(--duration-med) var(--ease-spring);
-}
-
-.team-support__row:hover {
-  background: linear-gradient(
-    90deg,
-    rgba(42, 79, 154, 0.08),
-    transparent 70%
-  );
-}
-
-.team-support__mark {
-  width: clamp(72px, 10vw, 96px);
-  height: clamp(72px, 10vw, 96px);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: 1px solid var(--color-hairline);
-  background: var(--color-supporting-navy);
-  flex-shrink: 0;
-}
-
-.team-support__mark img,
-.team-support__mark .team-portrait__fallback {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.team-support__text {
-  display: grid;
-  gap: 0.65rem;
-  padding-top: 0.15rem;
 }
 
 .team-support__head {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.45rem 1.15rem;
+  gap: 0.4rem 1rem;
 }
 
 .team-support__head h3 {
+  margin: 0;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
 
 .team-support__role {
+  margin: 0;
   font-family: var(--font-ui);
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-primary-blue);
 }
 
 .team-support__bio {
+  margin: 0;
   font-size: 0.98rem;
   line-height: 1.6;
   color: rgba(243, 245, 248, 0.76);
   max-width: 58ch;
 }
 
-/* —— Shared portrait fallback —— */
-.team-portrait__fallback {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  font-family: var(--font-ui);
-  font-size: clamp(1.25rem, 3vw, 2rem);
-  letter-spacing: 0.12em;
-  color: var(--color-silver-gray);
-  background:
-    radial-gradient(
-      ellipse 70% 70% at 50% 40%,
-      rgba(42, 79, 154, 0.28),
-      transparent 65%
-    ),
-    rgba(10, 12, 16, 0.6);
+.team-grid__memorial {
+  margin: 2rem 0 0;
+  max-width: 48ch;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(243, 245, 248, 0.72);
 }
 
-@media (max-width: 900px) {
-  .team-featured__shell {
-    grid-template-columns: 1fr;
-    min-height: 0;
+@media (hover: hover) and (pointer: fine) {
+  .team-mechanic__media img {
+    transition: transform var(--duration-slow) var(--ease-out-expo);
   }
 
-  .team-featured__media {
-    aspect-ratio: 4 / 5;
-    max-height: 420px;
-  }
-
-  .team-featured__wash {
-    background: linear-gradient(
-      180deg,
-      transparent 40%,
-      rgba(10, 12, 16, 0.55)
-    );
-  }
-
-  .team-crew__grid {
-    grid-template-columns: 1fr;
+  .team-mechanic:hover .team-mechanic__media img {
+    transform: scale(1.03);
   }
 }
 
-@media (min-width: 901px) and (max-width: 1100px) {
-  .team-crew__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+@media (min-width: 640px) {
+  .team-crew__layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 560px) {
-  .team-support__row {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+@media (min-width: 1100px) {
+  .team-crew__layout {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
+}
 
-  .team-support__mark {
-    width: 72px;
-    height: 72px;
+@media (prefers-reduced-motion: reduce) {
+  .team-mechanic__media img {
+    transition: none;
   }
 }

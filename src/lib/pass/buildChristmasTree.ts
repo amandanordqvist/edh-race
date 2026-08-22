@@ -1,5 +1,6 @@
 import type { Entity } from 'playcanvas'
 
+import { collectModelBounds } from './camaroRig'
 import type { PassQuality } from './types'
 import {
   createMaterial,
@@ -7,7 +8,7 @@ import {
   type PlayCanvasNamespace,
 } from './scenePrimitives'
 
-export type TreeMode = 'off' | 'stage' | 'amber' | 'green'
+export type TreeMode = 'off' | 'prestage' | 'stage' | 'amber' | 'green'
 
 type TreeBulb = {
   entity: Entity
@@ -31,8 +32,17 @@ type ChristmasTreeOptions = {
   pc: PlayCanvasNamespace
   sceneRoot: Entity
   quality: PassQuality
-  /** Fitted Sketchfab tree; when present we skip the primitive pole/boards. */
   mesh?: Entity | null
+}
+
+type BulbLayout = {
+  faceX: number
+  laneSpan: number
+  scale: number
+  preY: number
+  stageY: number
+  amberY: [number, number, number]
+  greenY: number
 }
 
 function createTreeBulb(
@@ -41,33 +51,51 @@ function createTreeBulb(
   position: [number, number, number],
   color: [number, number, number],
   scale: number,
+  cupMaterial: import('playcanvas').StandardMaterial,
 ): TreeBulb {
   const idleDiffuse: [number, number, number] = [
-    color[0] * 0.12,
-    color[1] * 0.12,
-    color[2] * 0.12,
+    color[0] * 0.04,
+    color[1] * 0.04,
+    color[2] * 0.04,
   ]
   const material = createMaterial(pc, {
     diffuse: idleDiffuse,
     emissive: color,
     emissiveIntensity: 0,
-    metalness: 0.15,
-    gloss: 0.55,
+    metalness: 0.08,
+    gloss: 0.7,
   })
 
-  return {
-    entity: createPrimitive(pc, {
-      name,
+  const fixture = new pc.Entity(name)
+  fixture.setLocalPosition(...position)
+  fixture.addChild(
+    createPrimitive(pc, {
+      name: `${name}-cup`,
+      type: 'cylinder',
+      position: [0.02, 0, 0],
+      scale: [scale * 1.55, scale * 0.55, scale * 1.55],
+      material: cupMaterial,
+      castShadows: false,
+      receiveShadows: false,
+    }),
+  )
+  fixture.addChild(
+    createPrimitive(pc, {
+      name: `${name}-lens`,
       type: 'sphere',
-      position,
+      position: [-0.015, 0, 0],
       scale: [scale, scale, scale],
       material,
       castShadows: false,
       receiveShadows: false,
     }),
+  )
+
+  return {
+    entity: fixture,
     material,
-    activeIntensity: 2.4,
-    idleIntensity: 0,
+    activeIntensity: 4.4,
+    idleIntensity: 0.04,
     activeDiffuse: color,
     idleDiffuse,
   }
@@ -80,9 +108,45 @@ function setBulbState(bulb: TreeBulb, enabled: boolean): void {
   bulb.material.update()
 }
 
+function resolveLayout(tree: Entity, mesh: Entity | null): BulbLayout {
+  const fallback: BulbLayout = {
+    faceX: -0.28,
+    laneSpan: 0.95,
+    scale: 0.13,
+    preY: 4.15,
+    stageY: 3.78,
+    amberY: [3.2, 2.72, 2.24],
+    greenY: 1.7,
+  }
+  if (!mesh) return fallback
+
+  const bounds = collectModelBounds(mesh)
+  if (!bounds) return { ...fallback, faceX: -0.22, laneSpan: 0.85, scale: 0.1 }
+
+  const origin = tree.getPosition()
+  const minX = bounds.min[0] - origin.x
+  const minY = bounds.min[1] - origin.y
+  const maxY = bounds.max[1] - origin.y
+  const minZ = bounds.min[2] - origin.z
+  const maxZ = bounds.max[2] - origin.z
+  const height = Math.max(2.4, maxY - minY)
+  const top = maxY - height * 0.08
+  const span = height * 0.52
+
+  return {
+    faceX: minX - 0.05,
+    laneSpan: Math.max(0.38, (maxZ - minZ) * 0.22),
+    scale: 0.09,
+    preY: top,
+    stageY: top - span * 0.12,
+    amberY: [top - span * 0.32, top - span * 0.48, top - span * 0.64],
+    greenY: top - span * 0.82,
+  }
+}
+
 /**
- * Dual-column Pro tree between the lanes — slim, dark housing, lenses that
- * only glow when armed. Keeps visual priority on the Camaro.
+ * Dual-column Pro tree. Overlay lenses sit in metal cups so idle lamps never
+ * read as floating orbs. A point light sells the glow without neon bloom.
  */
 export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
   const { pc, sceneRoot, quality, mesh } = opts
@@ -106,7 +170,6 @@ export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
   })
 
   const tree = new pc.Entity('christmas-tree')
-  // Ahead of the stage beams, dead-center between lanes.
   tree.setLocalPosition(5.4, 0, 0)
 
   if (mesh) {
@@ -144,17 +207,16 @@ export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
     )
   }
 
+  sceneRoot.addChild(tree)
+  tree.syncHierarchy()
+
+  const layout = resolveLayout(tree, mesh ?? null)
+  const preStageBulbs: TreeBulb[] = []
   const stageBulbs: TreeBulb[] = []
   const amberBulbs: TreeBulb[] = []
   const greenBulbs: TreeBulb[] = []
 
-  // Compact lens columns — face the drivers (−X). Smaller when mesh is present
-  // so they sit as accents on the asset instead of floating orbs.
-  const laneSpan = useMesh ? 0.85 : 0.95
-  const faceX = useMesh ? -0.22 : -0.28
-  const bulbScale = useMesh ? 0.1 : 0.14
-
-  ;([-laneSpan, laneSpan] as number[]).forEach((laneZ, column) => {
+  ;([-layout.laneSpan, layout.laneSpan] as number[]).forEach((laneZ, column) => {
     if (!useMesh) {
       tree.addChild(
         createPrimitive(pc, {
@@ -168,49 +230,80 @@ export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
       )
     }
 
+    preStageBulbs.push(
+      createTreeBulb(pc, `pre-stage-${column}`, [layout.faceX, layout.preY, laneZ], [0.95, 0.9, 0.35], layout.scale, housing),
+    )
     stageBulbs.push(
-      createTreeBulb(pc, `pre-stage-${column}`, [faceX, 4.15, laneZ], [0.95, 0.9, 0.35], bulbScale),
-      createTreeBulb(pc, `stage-${column}`, [faceX, 3.78, laneZ], [0.95, 0.9, 0.35], bulbScale * 1.1),
+      createTreeBulb(pc, `stage-${column}`, [layout.faceX, layout.stageY, laneZ], [0.95, 0.9, 0.35], layout.scale * 1.08, housing),
     )
     amberBulbs.push(
-      createTreeBulb(pc, `amber-1-${column}`, [faceX, 3.2, laneZ], [0.95, 0.5, 0.08], bulbScale * 1.15),
-      createTreeBulb(pc, `amber-2-${column}`, [faceX, 2.72, laneZ], [0.95, 0.5, 0.08], bulbScale * 1.15),
-      createTreeBulb(pc, `amber-3-${column}`, [faceX, 2.24, laneZ], [0.95, 0.5, 0.08], bulbScale * 1.15),
+      createTreeBulb(pc, `amber-1-${column}`, [layout.faceX, layout.amberY[0], laneZ], [0.95, 0.5, 0.08], layout.scale * 1.12, housing),
+      createTreeBulb(pc, `amber-2-${column}`, [layout.faceX, layout.amberY[1], laneZ], [0.95, 0.5, 0.08], layout.scale * 1.12, housing),
+      createTreeBulb(pc, `amber-3-${column}`, [layout.faceX, layout.amberY[2], laneZ], [0.95, 0.5, 0.08], layout.scale * 1.12, housing),
     )
     greenBulbs.push(
-      createTreeBulb(pc, `green-${column}`, [faceX, 1.7, laneZ], [0.2, 0.85, 0.32], bulbScale * 1.25),
+      createTreeBulb(pc, `green-${column}`, [layout.faceX, layout.greenY, laneZ], [0.2, 0.85, 0.32], layout.scale * 1.2, housing),
     )
-
-    const red = createTreeBulb(pc, `red-${column}`, [faceX, 1.2, laneZ], [0.85, 0.14, 0.12], bulbScale * 1.1)
-    tree.addChild(red.entity)
   })
 
-  ;[...stageBulbs, ...amberBulbs, ...greenBulbs].forEach((bulb) => {
+  ;[...preStageBulbs, ...stageBulbs, ...amberBulbs, ...greenBulbs].forEach((bulb) => {
     tree.addChild(bulb.entity)
   })
-  sceneRoot.addChild(tree)
+
+  const glow = new pc.Entity('tree-glow')
+  glow.setLocalPosition(0, 2.6, 0)
+  glow.addComponent('light', {
+    type: 'point',
+    color: new pc.Color(0.95, 0.82, 0.35),
+    intensity: 0,
+    range: 9,
+    castShadows: false,
+  })
+  tree.addChild(glow)
+
+  const setGlow = (color: [number, number, number], intensity: number) => {
+    const light = glow.light
+    if (!light) return
+    light.color.set(...color)
+    light.intensity = intensity
+  }
 
   const setTreeLights = (mode: TreeMode) => {
     switch (mode) {
       case 'off':
+        preStageBulbs.forEach((bulb) => setBulbState(bulb, false))
         stageBulbs.forEach((bulb) => setBulbState(bulb, false))
         amberBulbs.forEach((bulb) => setBulbState(bulb, false))
         greenBulbs.forEach((bulb) => setBulbState(bulb, false))
+        setGlow([0.95, 0.82, 0.35], 0)
+        return
+      case 'prestage':
+        preStageBulbs.forEach((bulb) => setBulbState(bulb, true))
+        stageBulbs.forEach((bulb) => setBulbState(bulb, false))
+        amberBulbs.forEach((bulb) => setBulbState(bulb, false))
+        greenBulbs.forEach((bulb) => setBulbState(bulb, false))
+        setGlow([0.95, 0.88, 0.4], 1.1)
         return
       case 'stage':
+        preStageBulbs.forEach((bulb) => setBulbState(bulb, true))
         stageBulbs.forEach((bulb) => setBulbState(bulb, true))
         amberBulbs.forEach((bulb) => setBulbState(bulb, false))
         greenBulbs.forEach((bulb) => setBulbState(bulb, false))
+        setGlow([0.95, 0.88, 0.4], 1.6)
         return
       case 'amber':
+        preStageBulbs.forEach((bulb) => setBulbState(bulb, true))
         stageBulbs.forEach((bulb) => setBulbState(bulb, true))
         amberBulbs.forEach((bulb) => setBulbState(bulb, true))
         greenBulbs.forEach((bulb) => setBulbState(bulb, false))
+        setGlow([0.95, 0.55, 0.12], 2.2)
         return
       case 'green':
+        preStageBulbs.forEach((bulb) => setBulbState(bulb, true))
         stageBulbs.forEach((bulb) => setBulbState(bulb, true))
         amberBulbs.forEach((bulb) => setBulbState(bulb, false))
         greenBulbs.forEach((bulb) => setBulbState(bulb, true))
+        setGlow([0.25, 0.9, 0.4], 2.6)
         return
       default: {
         const exhaustive: never = mode
@@ -223,7 +316,7 @@ export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
 
   return {
     treeBulbs: {
-      stage: stageBulbs.map((bulb) => bulb.entity),
+      stage: [...preStageBulbs, ...stageBulbs].map((bulb) => bulb.entity),
       amber: amberBulbs.map((bulb) => bulb.entity),
       green: greenBulbs.map((bulb) => bulb.entity),
     },

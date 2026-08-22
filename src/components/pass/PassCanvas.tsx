@@ -33,6 +33,7 @@ type PassCanvasProps = {
   onFinished: () => void
   onWebglUnavailable: () => void
   onReady: (commands: PassCommands, meta: PassSceneMeta) => void
+  onInspectInteract?: () => void
 }
 
 type LiveHandlers = Pick<
@@ -51,6 +52,7 @@ type LiveHandlers = Pick<
   | 'onFinished'
   | 'onWebglUnavailable'
   | 'onReady'
+  | 'onInspectInteract'
 >
 
 export function PassCanvas(props: PassCanvasProps) {
@@ -74,6 +76,7 @@ export function PassCanvas(props: PassCanvasProps) {
     onFinished: props.onFinished,
     onWebglUnavailable: props.onWebglUnavailable,
     onReady: props.onReady,
+    onInspectInteract: props.onInspectInteract,
   })
 
   useEffect(() => {
@@ -92,6 +95,7 @@ export function PassCanvas(props: PassCanvasProps) {
       onFinished: props.onFinished,
       onWebglUnavailable: props.onWebglUnavailable,
       onReady: props.onReady,
+      onInspectInteract: props.onInspectInteract,
     }
   })
 
@@ -161,6 +165,7 @@ export function PassCanvas(props: PassCanvasProps) {
           camaroHasTextures: scene.camaroHasTextures,
           reducedMotion,
           isWideView: () => cameraDirector?.getView() === 'wide',
+          setSpeedFeel: scene.setSpeedFeel,
         })
 
         frameHandler = (dt: number) => {
@@ -287,6 +292,7 @@ export function PassCanvas(props: PassCanvasProps) {
   const handlePointerDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     if (liveRef.current.reducedMotion) return
     draggingRef.current = true
+    liveRef.current.onInspectInteract?.()
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
@@ -314,6 +320,7 @@ export function PassCanvas(props: PassCanvasProps) {
   const handleWheel = (event: ReactWheelEvent<HTMLCanvasElement>) => {
     if (liveRef.current.reducedMotion) return
     event.preventDefault()
+    liveRef.current.onInspectInteract?.()
     cameraDirectorRef.current?.onZoomDelta(event.deltaY)
   }
 

@@ -10,7 +10,7 @@ const PAGE_DESCRIPTION: Record<PageId, (t: ReturnType<typeof useT>) => string> =
   journey: (t) => t.journey.intro,
   machine: (t) => t.machine.intro,
   pass: (t) => t.pass.lead,
-  results: (t) => t.results.heroCaption,
+  results: (t) => t.results.lead,
   team: (t) => t.team.intro,
   media: (t) => t.media.intro,
   contact: (t) => t.contact.pitch,

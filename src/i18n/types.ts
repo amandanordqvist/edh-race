@@ -31,6 +31,7 @@ export type Dictionary = {
     contact: string
     social: string
     rights: string
+    madeBy: string
     ctaTitle: string
     ctaBody: string
   }
@@ -51,13 +52,15 @@ export type Dictionary = {
     heroKicker: string
     lead: string
     ctaPass: string
+    ctaJourney: string
     ctaTeam: string
+    ctaMachine: string
     statsTitle: string
     stats: {
       quarter: { value: string; unit: string; label: string }
       topSpeed: { value: string; unit: string; label: string }
       eighth: { value: string; unit: string; label: string }
-      eighthSpeed: { value: string; unit: string; label: string }
+      championship: { value: string; unit: string; label: string }
     }
     driverLabel: string
     driverTitle: string
@@ -88,10 +91,14 @@ export type Dictionary = {
     nextRaceStatusLabel: string
     nextRaceEmpty: string
     nextRaceCta: string
+    nextRaceEventLabel: string
     nextRaceDateLabel: string
     nextRaceTrackLabel: string
     nextRacePlaceLabel: string
-    nextRaceCountry: string
+    countries: {
+      sweden: string
+      england: string
+    }
     sponsorsLabel: string
     sponsorsTitle: string
     sponsorsBody: string
@@ -238,6 +245,7 @@ export type Dictionary = {
   journey: {
     title: string
     intro: string
+    heroAlt: string
     beatChildhood: string
     beatPhilosophy: string
     quote1: string
@@ -247,18 +255,11 @@ export type Dictionary = {
     quote2Attr: string
     /** aria-label for the running timeslip spine. */
     spineLabel: string
-    crossroadsLabel: string
-    crossroadsBody: string
-    crossroadsCaption: string
     finalRowCaption: string
-    chapters: {
-      roots: string
-      build: string
-      elite: string
-      record: string
-    }
     /** Keyed by timeline id, so a missing translation is a compile error. */
     timeline: Record<TimelineId, string>
+    /** Anders in his own words; only set on the beats that need his voice. */
+    quotes: Partial<Record<TimelineId, string>>
     /** Pulled-out headline figure; localised because decimal separators differ. */
     marks: Partial<Record<TimelineId, string>>
     timeslip: {
@@ -314,25 +315,18 @@ export type Dictionary = {
   }
   results: {
     title: string
-    heroEt: string
-    heroSpeed: string
-    heroCaption: string
-    heroCta: string
-    heroAlt: string
-    standingsTitle: string
-    standingsLead: string
-    bestTimesTitle: string
-    bestTimesLead: string
+    lead: string
     calendarTitle: string
     nextStart: string
+    seasonDone: string
+    bestTimesTitle: string
+    bestTimesLead: string
     highlightBest: string
     highlightLatest: string
-    colYear: string
-    colEvent: string
-    colTime: string
-    colSpeed: string
-    colPlace: string
-    round: string
+    landmarkTitle: string
+    landmarkBody: string
+    standingsTitle: string
+    standingsLead: string
     final: string
   }
   team: {
@@ -340,6 +334,7 @@ export type Dictionary = {
     intro: string
     crewTitle: string
     supportTitle: string
+    memorial: string
     groupPhotoAlt: string
     members: Record<string, { role: string; bio: string }>
   }

@@ -7,9 +7,9 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 /**
  * One scroll-linked motion: the timeslip cursor. Each `[data-beat]` owns one
- * index unit via its own scrubbed tween, so a tall set piece (the 2016
- * crossroads) holds the cursor instead of rushing it. Beat reveals share this
- * hook so there is only one ScrollTrigger context on the page.
+ * index unit via its own scrubbed tween, so a marked hold (2016) keeps the
+ * cursor on the row instead of rushing it. Beat reveals share this hook so
+ * there is only one ScrollTrigger context on the page.
  */
 export function useJourneyScroll(root: RefObject<HTMLElement | null>): void {
   useGSAP(
@@ -58,7 +58,7 @@ export function useJourneyScroll(root: RefObject<HTMLElement | null>): void {
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         anchors.forEach((anchor, index) => {
-          const hold = anchor.dataset.outcome === 'setback'
+          const hold = anchor.dataset.hold !== undefined
 
           gsap.fromTo(
             cursor,

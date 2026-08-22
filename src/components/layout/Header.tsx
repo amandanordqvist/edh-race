@@ -39,8 +39,8 @@ export function Header() {
           <img
             src="/logo/logo-grey-png.png"
             alt={t.meta.siteName}
-            width={64}
-            height={64}
+            width={56}
+            height={56}
           />
         </Link>
 

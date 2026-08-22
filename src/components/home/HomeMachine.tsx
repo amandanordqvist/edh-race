@@ -22,10 +22,10 @@ export function HomeMachine() {
           ) : (
             <img
               className="home-machine__img"
-              src="/images/machine-camaro.webp"
+              src="/images/behind.JPG"
               alt={t.home.machineAlt}
-              width={1600}
-              height={1067}
+              width={1500}
+              height={701}
               decoding="async"
               loading="lazy"
               onError={() => setFailed(true)}

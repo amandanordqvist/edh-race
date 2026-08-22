@@ -54,7 +54,7 @@
   aspect-ratio: 3 / 2;
   display: block;
   object-fit: cover;
-  object-position: center 48%;
+  object-position: center 34%;
   border-radius: var(--radius-md);
 }
 

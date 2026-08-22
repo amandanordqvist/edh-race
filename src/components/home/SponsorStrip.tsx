@@ -29,7 +29,10 @@ export function SponsorStrip() {
       <div id="partner-logos">
         <Reveal className="sponsor-strip__grid" pace="settle" delay={0.08} stagger={0.08}>
           {sponsors.map((sponsor) => (
-            <div className="sponsor-strip__logo" key={sponsor.id}>
+            <div
+              className={`sponsor-strip__logo${sponsor.id === 'aine' ? ' sponsor-strip__logo--lead' : ''}`}
+              key={sponsor.id}
+            >
               <img
                 src={sponsor.logo}
                 alt={sponsor.name}
