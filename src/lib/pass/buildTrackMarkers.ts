@@ -1,6 +1,6 @@
 import type { Entity } from 'playcanvas'
 
-import { QUARTER_METERS } from '../../data/simulator'
+import { STRIP_SPLITS, stripWorldX } from './passLayout'
 import type { PassQuality } from './types'
 import { createMaterial, createPrimitive, type PlayCanvasNamespace } from './scenePrimitives'
 
@@ -21,10 +21,7 @@ export function buildTrackMarkers(opts: TrackMarkersOptions): void {
   const { pc, sceneRoot, trackLength, trackWidth, quality } = opts
   const high = quality === 'high'
   const halfWidth = trackWidth / 2
-  // Scene track is compressed (~132m) vs. real quarter mile (~402m); scale
-  // every real-world distance so pylons line up with the actual visible strip.
-  const scale = trackLength / QUARTER_METERS
-  const worldAt = (meters: number): number => meters * scale
+  const worldAt = stripWorldX
 
   const postMat = createMaterial(pc, {
     diffuse: [0.62, 0.64, 0.68],
@@ -59,15 +56,7 @@ export function buildTrackMarkers(opts: TrackMarkersOptions): void {
     gloss: 0.4,
   })
 
-  const splits: Array<{ id: string; meters: number }> = [
-    { id: '60ft', meters: 18.29 },
-    { id: '330ft', meters: 100.58 },
-    { id: '660ft', meters: 201.17 },
-    { id: '1000ft', meters: 304.8 },
-    { id: '1320ft', meters: 402.34 },
-  ]
-
-  splits.forEach((split) => {
+  STRIP_SPLITS.forEach((split) => {
     ;([-halfWidth - 1.35, halfWidth + 1.35] as number[]).forEach((z, side) => {
       const cluster = new pc.Entity(`timing-${split.id}-${side}`)
       cluster.setLocalPosition(worldAt(split.meters), 0, z)
@@ -134,7 +123,7 @@ export function buildTrackMarkers(opts: TrackMarkersOptions): void {
 
   // Finish gantry — arches over the strip at the 1320' line so the far end
   // reads as a proper drag strip, not just an open runway.
-  const finishX = worldAt(QUARTER_METERS)
+  const finishX = trackLength
   const gantry = new pc.Entity('finish-gantry')
   gantry.setLocalPosition(finishX, 0, 0)
 

@@ -91,9 +91,9 @@ function followPose(
     position: [
       heroX - distance,
       0.38 + speed01 * 0.03 + chute01 * 0.12,
-      heroZ + 0.55 + speed01 * 0.12,
+      heroZ + 0.78 + speed01 * 0.16,
     ],
-    look: [heroX + 5.2 + speed01 * 3.2, 0.52 + chute01 * 0.12, heroZ + 0.1],
+    look: [heroX + 5.2 + speed01 * 3.2, 0.52 + chute01 * 0.12, heroZ + 0.28],
     fov: 38 + speed01 * 12 + accel01 * 5 - chute01 * 3,
   }
 }

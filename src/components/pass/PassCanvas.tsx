@@ -212,6 +212,7 @@ export function PassCanvas(props: PassCanvasProps) {
             liveRef.current.onOpponentClock?.(frame.opponentClock)
             liveRef.current.onChuteDeploy?.(frame.chuteDeploy01)
             if (frame.splitHit) {
+              audio.whoosh()
               liveRef.current.onSplitCallout?.(frame.splitHit)
             }
           },

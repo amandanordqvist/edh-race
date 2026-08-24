@@ -1,6 +1,7 @@
 import type { Entity } from 'playcanvas'
 
 import { collectModelBounds } from './camaroRig'
+import { CHRISTMAS_TREE_X } from './passLayout'
 import type { PassQuality } from './types'
 import {
   createMaterial,
@@ -170,7 +171,7 @@ export function buildChristmasTree(opts: ChristmasTreeOptions): ChristmasTree {
   })
 
   const tree = new pc.Entity('christmas-tree')
-  tree.setLocalPosition(5.4, 0, 0)
+  tree.setLocalPosition(CHRISTMAS_TREE_X, 0, 0)
 
   if (mesh) {
     tree.addChild(mesh)

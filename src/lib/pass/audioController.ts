@@ -1,3 +1,4 @@
+import { createPassWind } from './passWind'
 import type { PassPhase } from './types'
 
 const AUDIO_PATHS = {
@@ -70,6 +71,7 @@ type PassAudioOptions = {
 export function createPassAudio(options: PassAudioOptions = {}) {
   const { reducedMotion = false } = options
   const context = createAudioContext()
+  const wind = createPassWind(context, reducedMotion)
   const cues: CueMap = {
     treeTick: createCue(AUDIO_PATHS.treeTick, AUDIO_VOLUMES.treeTick),
     green: createCue(AUDIO_PATHS.green, AUDIO_VOLUMES.green),
@@ -159,6 +161,7 @@ export function createPassAudio(options: PassAudioOptions = {}) {
       }
 
       await Promise.all(Object.values(cues).map((cue) => primeCue(cue)))
+      wind.start()
     })().finally(() => {
       unlockPromise = null
     })
@@ -169,6 +172,7 @@ export function createPassAudio(options: PassAudioOptions = {}) {
   const setMuted = (nextMuted: boolean) => {
     muted = nextMuted
     syncMuted()
+    wind.setMuted(nextMuted)
 
     if (muted) {
       stopLoop()
@@ -184,6 +188,7 @@ export function createPassAudio(options: PassAudioOptions = {}) {
 
   const onPhase = (nextPhase: PassPhase) => {
     phase = nextPhase
+    wind.setPhase(nextPhase)
 
     if (reducedMotion) {
       stopLoop()
@@ -235,12 +240,19 @@ export function createPassAudio(options: PassAudioOptions = {}) {
 
     loopRate = 0.88 + speed01 * 0.82
     cues.passLoop.playbackRate = loopRate
+    wind.setSpeed01(speed01)
+  }
+
+  const whoosh = () => {
+    if (destroyed || muted || reducedMotion) return
+    wind.whoosh()
   }
 
   const destroy = () => {
     if (destroyed) return
     destroyed = true
     stopLoop()
+    wind.destroy()
     Object.values(cues).forEach((cue) => {
       safePause(cue)
       cue.removeAttribute('src')
@@ -251,5 +263,5 @@ export function createPassAudio(options: PassAudioOptions = {}) {
     })
   }
 
-  return { setMuted, unlock, onPhase, onRaceSpeed, destroy }
+  return { setMuted, unlock, onPhase, onRaceSpeed, whoosh, destroy }
 }

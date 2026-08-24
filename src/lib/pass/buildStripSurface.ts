@@ -44,11 +44,11 @@ export function buildStripSurface(opts: StripSurfaceOptions): void {
     asphaltRough.addressU = pc.ADDRESS_REPEAT
     asphaltRough.addressV = pc.ADDRESS_REPEAT
     asphalt.diffuseMap = asphaltRough
-    asphalt.diffuseMapTiling.set(22, 3.2)
-    asphalt.diffuse.set(0.22, 0.22, 0.24)
+    asphalt.diffuseMapTiling.set(48, 4.4)
+    asphalt.diffuse.set(0.42, 0.41, 0.39)
     asphalt.glossMap = asphaltRough
     asphalt.glossInvert = true
-    asphalt.glossMapTiling.set(22, 3.2)
+    asphalt.glossMapTiling.set(48, 4.4)
     asphalt.update()
   }
   const rubber = createMaterial(pc, {
@@ -206,26 +206,25 @@ export function buildStripSurface(opts: StripSurfaceOptions): void {
     )
   })
 
-  // Dual slick tracks per lane — narrow, broken rubber instead of long polygons.
+  // Dual slick tracks — long broken streaks so the grain smears at speed.
   ;([LANE_NEAR_Z, LANE_FAR_Z] as number[]).forEach((laneZ, lane) => {
     ;([-0.34, 0.34] as number[]).forEach((offset, slick) => {
-      const segments = high ? 18 : 11
+      const segments = high ? 8 : 5
+      const span = stripLen - 8
+      const step = span / segments
       for (let s = 0; s < segments; s += 1) {
-        const len = 4.2 + (s % 4) * 1.1 + (s % 3) * 0.4
-        const gap = 0.35 + (s % 5) * 0.12
-        const x =
-          stripStart + 4 + s * ((stripLen * 0.78) / segments) + (s % 2) * 0.4
+        const len = step * (0.78 + (s % 3) * 0.05)
+        const x = stripStart + 4 + s * step + len / 2 + (s % 2) * 0.25
         sceneRoot.addChild(
           createPrimitive(pc, {
             name: `lane-rubber-${lane}-${slick}-${s}`,
             type: 'box',
-            position: [x, -0.108, laneZ + offset + ((s % 3) - 1) * 0.04],
-            scale: [len, 0.011, 0.22 + (s % 3) * 0.06],
+            position: [x, -0.108, laneZ + offset + ((s % 3) - 1) * 0.03],
+            scale: [len, 0.011, 0.24 + (s % 3) * 0.05],
             material: rubber,
             castShadows: false,
           }),
         )
-        void gap
       }
     })
 
@@ -273,19 +272,18 @@ export function buildStripSurface(opts: StripSurfaceOptions): void {
       )
     }
 
-    if (high) {
-      for (let c = 0; c < 4; c += 1) {
-        sceneRoot.addChild(
-          createPrimitive(pc, {
-            name: `asphalt-seam-${lane}-${c}`,
-            type: 'box',
-            position: [12 + c * 28, -0.107, laneZ * 0.15],
-            scale: [0.08, 0.01, TRACK_WIDTH * 0.55],
-            material: dirt,
-            castShadows: false,
-          }),
-        )
-      }
+    const seamCount = high ? 10 : 5
+    for (let c = 0; c < seamCount; c += 1) {
+      sceneRoot.addChild(
+        createPrimitive(pc, {
+          name: `asphalt-seam-${lane}-${c}`,
+          type: 'box',
+          position: [stripStart + 10 + c * (stripLen / (seamCount + 1)), -0.107, laneZ * 0.12],
+          scale: [0.07, 0.01, TRACK_WIDTH * 0.52],
+          material: dirt,
+          castShadows: false,
+        }),
+      )
     }
   })
 

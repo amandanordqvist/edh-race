@@ -17,7 +17,7 @@ export type MaterialTone = {
 
 export type PrimitiveOptions = {
   name: string
-  type: 'box' | 'plane' | 'sphere' | 'cylinder'
+  type: 'box' | 'plane' | 'sphere' | 'cylinder' | 'cone'
   position: [number, number, number]
   scale: [number, number, number]
   material: StandardMaterial

@@ -2,8 +2,10 @@ import type { Application, Entity, Texture } from 'playcanvas'
 
 import { buildBarrierBoards, type SponsorTextureEntry } from './buildBarrierBoards'
 import { buildChristmasTree, type TreeMode } from './buildChristmasTree'
+import { buildEdgeRail } from './buildEdgeRail'
 import { buildGrandstandsAndSky } from './buildGrandstands'
 import { buildShutdown } from './buildShutdown'
+import { buildStripMarkings } from './buildStripMarkings'
 import { buildStripSurface } from './buildStripSurface'
 import { buildTrackMarkers } from './buildTrackMarkers'
 import { BARRIER_Z, SHUTDOWN_LENGTH, STAGING_LENGTH, TRACK_LENGTH, TRACK_WIDTH } from './passLayout'
@@ -157,11 +159,24 @@ export function buildPassEnvironment(
     sponsorTextures,
   })
 
+  if (extras.app) {
+    buildEdgeRail({ pc, app: extras.app, sceneRoot, quality })
+  } else {
+    console.warn('[pass] Edge rail skipped — no PlayCanvas application')
+  }
+
   buildTrackMarkers({
     pc,
     sceneRoot,
     trackLength: TRACK_LENGTH,
     trackWidth: TRACK_WIDTH,
+    quality,
+  })
+
+  buildStripMarkings({
+    pc,
+    app: extras.app,
+    sceneRoot,
     quality,
   })
 
@@ -172,7 +187,7 @@ export function buildPassEnvironment(
     mesh: extras.christmasTreeMesh,
   })
 
-  const lightSpacing = high ? 24 : 36
+  const lightSpacing = high ? 12 : 20
   const lightCount = Math.floor((TRACK_LENGTH + STAGING_LENGTH) / lightSpacing)
   for (let i = 0; i <= lightCount; i += 1) {
     const x = i * lightSpacing - 8

@@ -16,7 +16,7 @@ import {
   SHUTDOWN_COAST_S,
   shutdownCoast01,
 } from './ease'
-import { SHUTDOWN_LENGTH } from './passLayout'
+import { SHUTDOWN_LENGTH, STREET_CAR_ET, STREET_CAR_START_X } from './passLayout'
 import type { PassBridgeHandlers, PassPhase, PassRaceFrame } from './types'
 
 const GREEN_HOLD_MS = 180
@@ -152,6 +152,17 @@ export function createRaceController(opts: RaceControllerOptions) {
       const pos = entity.getLocalPosition()
       entity.setLocalPosition(racerWorldX(elapsedS, racer.id), pos.y, pos.z)
     })
+
+    if (scene.streetCar.enabled) {
+      const wagon = scene.streetCar
+      const pos = wagon.getLocalPosition()
+      const u = comparisonStripProgress(Math.min(1, elapsedS / STREET_CAR_ET))
+      wagon.setLocalPosition(
+        STREET_CAR_START_X + u * (scene.trackLength - STREET_CAR_START_X),
+        pos.y,
+        pos.z,
+      )
+    }
 
     pushScoreboard(elapsedS)
   }

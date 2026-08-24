@@ -4,12 +4,20 @@ import { buildPassEnvironment, type TreeMode } from './buildEnvironment'
 import { attachCamaroDecals } from './attachCamaroDecals'
 import { attachPassBloom, attachPassSunLights } from './buildLighting'
 import { buildPassVehicles, type VehicleId } from './buildVehicles'
+import { buildStreetCar } from './buildStreetCar'
 import { applyPassEnvLighting } from './loadEnvLighting'
 import { loadCamaroGlb } from './loadCamaroGlb'
 import { loadFittedGlb } from './loadFittedGlb'
 import { createScoreboard, type PassScoreboard } from './createScoreboard'
 import { loadTextureAsset } from './loadTextureAsset'
-import { LANE_FAR_Z, LANE_NEAR_Z } from './passLayout'
+import {
+  JET_ALTITUDE,
+  JET_Z,
+  LANE_FAR_Z,
+  LANE_NEAR_Z,
+  STREET_CAR_START_X,
+  STREET_CAR_Z,
+} from './passLayout'
 import { attachContactShadow } from './scenePrimitives'
 import type { PassOpponentId, PassQuality } from './types'
 
@@ -24,6 +32,7 @@ export type PassScene = {
     green: Entity[]
   }
   racers: Record<VehicleId, Entity>
+  streetCar: Entity
   trackLength: number
   stripLightMaterials: import('playcanvas').StandardMaterial[]
   camaroBodyMaterial: import('playcanvas').StandardMaterial
@@ -177,7 +186,12 @@ export async function buildPassScene(
   placeOnLane(racers.camaro, racers.camaro.getLocalPosition().x || 0.4, LANE_NEAR_Z)
   // Opponent slightly ahead and further left — full silhouette, lower visual priority.
   placeOnLane(racers.f1, 1.85, LANE_FAR_Z - 0.55)
-  placeOnLane(racers.jet, 1.6, LANE_FAR_Z - 0.55)
+  racers.jet.setLocalPosition(1.6, JET_ALTITUDE, JET_Z)
+
+  const streetCar = buildStreetCar(pc, quality)
+  streetCar.setLocalPosition(STREET_CAR_START_X, 0, STREET_CAR_Z)
+  const streetStart = streetCar.getLocalPosition().clone()
+  const streetStartRot = streetCar.getLocalEulerAngles().clone()
 
   let opponent: PassOpponentId = 'f1'
   racers.f1.enabled = true
@@ -197,8 +211,8 @@ export async function buildPassScene(
   Object.values(racers).forEach((racer) => {
     sceneRoot.addChild(racer)
   })
+  sceneRoot.addChild(streetCar)
   attachContactShadow(pc, racers.f1, [1.85, 0.012, 0.88])
-  attachContactShadow(pc, racers.jet, [3.8, 0.014, 1.7])
 
   const skyClear = new pc.Color(0.42, 0.64, 0.92)
   const camera = new pc.Entity('pass-camera')
@@ -254,6 +268,8 @@ export async function buildPassScene(
       racers[id].setLocalPosition(startPositions[id])
       racers[id].setLocalEulerAngles(startRotations[id])
     })
+    streetCar.setLocalPosition(streetStart)
+    streetCar.setLocalEulerAngles(streetStartRot)
     applyOpponentVisibility()
     scoreboard.reset()
   }
@@ -265,6 +281,7 @@ export async function buildPassScene(
     camera,
     treeBulbs: environment.treeBulbs,
     racers,
+    streetCar,
     trackLength: environment.trackLength,
     stripLightMaterials: environment.stripLightMaterials,
     camaroBodyMaterial,
