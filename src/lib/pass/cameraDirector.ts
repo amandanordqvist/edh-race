@@ -9,18 +9,22 @@ const ZOOM_LERP = 5.5
 const SLOW_MO_MIN_SCALE = 0.32
 
 /** Idle inspect orbit — default is a low rear 3/4; orbit is voluntary. */
-const INSPECT_RADIUS_DEFAULT = 8.4
-const INSPECT_RADIUS_MIN = 5.2
+export const PASS_INSPECT_YAW_DEG = -78
+export const PASS_INSPECT_PITCH_DEG = 11
+export const PASS_INSPECT_RADIUS = 7.2
+export const PASS_INSPECT_LOOK_Y = 0.7
+
+const INSPECT_RADIUS_DEFAULT = PASS_INSPECT_RADIUS
+const INSPECT_RADIUS_MIN = 4.6
 const INSPECT_RADIUS_MAX = 12.5
-const INSPECT_PITCH_MIN = 6
+const INSPECT_PITCH_MIN = 5
 const INSPECT_PITCH_MAX = 28
 const INSPECT_YAW_SENS = 95
 const INSPECT_PITCH_SENS = 55
 const INSPECT_AUTO_YAW_DEG = 8
 const INSPECT_IDLE_RESUME_S = 2.6
-/** Slight yaw so the Christmas tree sits to the side, not dead-center. */
-const INSPECT_START_YAW = 18
-const INSPECT_START_PITCH = 12
+const INSPECT_START_YAW = PASS_INSPECT_YAW_DEG
+const INSPECT_START_PITCH = PASS_INSPECT_PITCH_DEG
 
 type Pose = {
   position: [number, number, number]
@@ -48,7 +52,7 @@ function inspectPose(
   pitchDeg: number,
   radius: number,
 ): Pose {
-  const lookY = 0.72
+  const lookY = PASS_INSPECT_LOOK_Y
   const yaw = (yawDeg * Math.PI) / 180
   const pitch = (pitchDeg * Math.PI) / 180
   const cosPitch = Math.cos(pitch)
@@ -59,17 +63,17 @@ function inspectPose(
       lookY + Math.sin(pitch) * radius,
       heroZ + Math.cos(yaw) * cosPitch * radius,
     ],
-    look: [heroX + 1.2, lookY, heroZ],
-    fov: 38,
+    look: [heroX + 1.8, lookY + 0.08, heroZ],
+    fov: 36,
   }
 }
 
 /** Tree insert — low, almost dead-behind; holds distance before the chase closes in. */
 function treeInsertPose(heroX: number, heroZ: number): Pose {
   return {
-    position: [heroX - 7.4, 0.88, heroZ + 0.95],
-    look: [heroX + 8, 0.62, heroZ * 0.2],
-    fov: 34,
+    position: [heroX - 5.8, 0.58, heroZ + 0.62],
+    look: [heroX + 4.2, 0.58, heroZ + 0.06],
+    fov: 32,
   }
 }
 

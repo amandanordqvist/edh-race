@@ -4,8 +4,8 @@ import { loadTextureAsset } from './loadTextureAsset'
 import type { PlayCanvasNamespace } from './scenePrimitives'
 import type { PassQuality } from './types'
 
-/** Poly Haven PureSky — blue sky + sun. Not a landscape photo. */
-const ENV_HDR_URL = '/models/sunflowers_puresky_2k.hdr'
+/** Poly Haven PureSky — sky + sun, no ground photo. */
+const ENV_HDR_URL = '/models/kloofendal_48d_partly_cloudy_puresky_2k.hdr'
 
 /**
  * Apply a daytime sky HDRI as skybox + IBL. Returns false on mobile/low
@@ -19,14 +19,17 @@ export async function applyPassEnvLighting(
   if (quality !== 'high') return false
 
   try {
-    const asset = await loadTextureAsset(app, pc, ENV_HDR_URL, 'pass-puresky')
+    const asset = await loadTextureAsset(app, pc, ENV_HDR_URL, 'pass-puresky', {
+      mipmaps: false,
+      srgb: false,
+    })
     const source = asset.resource as Texture | undefined
     if (!source) return false
 
     source.addressU = pc.ADDRESS_CLAMP_TO_EDGE
     source.addressV = pc.ADDRESS_CLAMP_TO_EDGE
 
-    const skybox = pc.EnvLighting.generateSkyboxCubemap(source, 256)
+    const skybox = pc.EnvLighting.generateSkyboxCubemap(source, 512)
     const lighting = pc.EnvLighting.generateLightingSource(source, { size: 128 })
     const envAtlas = pc.EnvLighting.generateAtlas(lighting, {
       size: 256,
@@ -37,14 +40,14 @@ export async function applyPassEnvLighting(
 
     app.scene.skybox = skybox
     app.scene.envAtlas = envAtlas
-    // Mip 1+ filters the cubemap so car paint isn't pixel-speckle.
-    app.scene.skyboxMip = 1
-    app.scene.skyboxIntensity = 0.95
-    app.scene.ambientLight = new pc.Color(0.1, 0.12, 0.16)
+    app.scene.skyboxMip = 0
+    app.scene.skyboxIntensity = 1.42
+    app.scene.skyboxRotation = new pc.Quat().setFromEulerAngles(0, -42, 0)
+    app.scene.ambientLight = new pc.Color(0.32, 0.4, 0.52)
 
     return true
   } catch (error) {
-    console.warn('[pass] PureSky HDRI unavailable — keeping procedural sky', error)
+    console.warn('[pass] Kloofendal PureSky unavailable — keeping procedural sky', error)
     return false
   }
 }

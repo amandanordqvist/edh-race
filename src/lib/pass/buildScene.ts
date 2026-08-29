@@ -5,6 +5,12 @@ import { attachCamaroDecals } from './attachCamaroDecals'
 import { attachPassBloom, attachPassSunLights } from './buildLighting'
 import { buildPassVehicles, type VehicleId } from './buildVehicles'
 import { buildStreetCar } from './buildStreetCar'
+import {
+  PASS_INSPECT_LOOK_Y,
+  PASS_INSPECT_PITCH_DEG,
+  PASS_INSPECT_RADIUS,
+  PASS_INSPECT_YAW_DEG,
+} from './cameraDirector'
 import { applyPassEnvLighting } from './loadEnvLighting'
 import { loadCamaroGlb } from './loadCamaroGlb'
 import { loadFittedGlb } from './loadFittedGlb'
@@ -63,14 +69,16 @@ export async function buildPassScene(
 
   const ibl = await applyPassEnvLighting(app, pc, quality)
   if (ibl) {
-    app.scene.fog.start = quality === 'high' ? 160 : 100
-    app.scene.fog.end = quality === 'high' ? 380 : 240
+    app.scene.fog.start = quality === 'high' ? 220 : 120
+    app.scene.fog.end = quality === 'high' ? 520 : 280
+    app.scene.fog.color = new pc.Color(0.58, 0.74, 0.94)
   }
 
   // Barrier boards stay tone-only — skip logo fetches until body-mapped decals exist.
   const sponsorTextures: import('./buildBarrierBoards').SponsorTextureEntry[] = []
 
   let asphaltRough: Texture | null = null
+  let asphaltDiffuse: Texture | null = null
   try {
     const roughAsset = await loadTextureAsset(
       app,
@@ -81,6 +89,17 @@ export async function buildPassScene(
     asphaltRough = (roughAsset.resource as Texture | undefined) ?? null
   } catch (error) {
     console.warn('[pass] Asphalt roughness unavailable', error)
+  }
+  try {
+    const diffAsset = await loadTextureAsset(
+      app,
+      pc,
+      '/models/pass/asphalt_track_diff_1k.jpg',
+      'asphalt-diff',
+    )
+    asphaltDiffuse = (diffAsset.resource as Texture | undefined) ?? null
+  } catch (error) {
+    console.warn('[pass] Asphalt diffuse unavailable', error)
   }
 
   let christmasTreeMesh: Entity | null = null
@@ -104,8 +123,9 @@ export async function buildPassScene(
 
   const environment = buildPassEnvironment(pc, sceneRoot, quality, sponsorTextures, {
     asphaltRough,
+    asphaltDiffuse,
     christmasTreeMesh,
-    hideSkyPlanes: false,
+    hideSkyPlanes: ibl,
     app,
   })
   const vehicles = buildPassVehicles(pc, quality)
@@ -212,6 +232,7 @@ export async function buildPassScene(
     sceneRoot.addChild(racer)
   })
   sceneRoot.addChild(streetCar)
+  streetCar.enabled = false
   attachContactShadow(pc, racers.f1, [1.85, 0.012, 0.88])
 
   const skyClear = new pc.Color(0.42, 0.64, 0.92)
@@ -220,20 +241,20 @@ export async function buildPassScene(
     clearColor: skyClear,
     fov: quality === 'high' ? 44 : 50,
     nearClip: 0.2,
-    farClip: environment.trackLength * 3,
+    farClip: environment.trackLength * 4,
   })
-  const inspectYaw = (18 * Math.PI) / 180
-  const inspectPitch = (12 * Math.PI) / 180
-  const inspectRadius = 8.4
+  const inspectYaw = (PASS_INSPECT_YAW_DEG * Math.PI) / 180
+  const inspectPitch = (PASS_INSPECT_PITCH_DEG * Math.PI) / 180
+  const inspectRadius = PASS_INSPECT_RADIUS
   const heroX = startPositions.camaro.x
   const heroZ = startPositions.camaro.z
   const cosPitch = Math.cos(inspectPitch)
   camera.setLocalPosition(
     heroX + Math.sin(inspectYaw) * cosPitch * inspectRadius,
-    0.72 + Math.sin(inspectPitch) * inspectRadius,
+    PASS_INSPECT_LOOK_Y + Math.sin(inspectPitch) * inspectRadius,
     heroZ + Math.cos(inspectYaw) * cosPitch * inspectRadius,
   )
-  camera.lookAt(heroX + 1.2, 0.72, heroZ)
+  camera.lookAt(heroX + 1.8, PASS_INSPECT_LOOK_Y + 0.08, heroZ)
   sceneRoot.addChild(camera)
 
   attachPassSunLights({
@@ -270,6 +291,7 @@ export async function buildPassScene(
     })
     streetCar.setLocalPosition(streetStart)
     streetCar.setLocalEulerAngles(streetStartRot)
+    streetCar.enabled = false
     applyOpponentVisibility()
     scoreboard.reset()
   }

@@ -20,7 +20,8 @@ export function Footer() {
   const locale = useLocale()
   const { pathname } = useLocation()
   const slug = pathname.split('/').filter(Boolean)[1]
-  const hideCta = pageFromSlug(slug) === 'pass'
+  const page = pageFromSlug(slug)
+  const hideCta = page === 'pass' || page === 'home'
   const primary = usePrimaryNavItems()
   const secondary = useSecondaryNavItems()
 

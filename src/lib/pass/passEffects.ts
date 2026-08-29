@@ -1,6 +1,7 @@
 import type { Application, Entity, StandardMaterial } from 'playcanvas'
 
 import { collectCamaroWheels, collectExhaustMaterials } from './camaroRig'
+import { createBurnoutSmoke } from './burnoutSmoke'
 import { createCamaroWheelSpin } from './camaroWheelSpin'
 import { createChuteVfx } from './chuteVfx'
 import { createSpeedStreaks } from './speedStreaks'
@@ -48,12 +49,18 @@ export function createPassEffects(opts: PassEffectsOptions) {
   const exhaustMaterials = collectExhaustMaterials(camaro)
   const baseExhaustIntensity = exhaustMaterials.map((material) => material.emissiveIntensity)
 
-  // Smoke / heat-haze / rubber particles temporarily disabled — they read as
-  // large brown spheres and muddy the start-line composition.
   const chuteVfx = createChuteVfx({
     pc,
     parent: sceneRoot,
     camaro,
+  })
+  const burnoutSmoke = createBurnoutSmoke({
+    app,
+    pc,
+    parent: sceneRoot,
+    camaro,
+    quality,
+    reducedMotion,
   })
   const speedStreaks = createSpeedStreaks({
     pc,
@@ -76,6 +83,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
   const onPhase = (next: PassPhase) => {
     phase = next
     wheelSpin.onPhase(next)
+    burnoutSmoke.onPhase(next)
     if (next === 'green') {
       launchPulse = 1
     }
@@ -116,6 +124,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
     raceSpeed = speed01
     chuteDeploy01 = nextChuteDeploy01
     wheelSpin.onRaceFrame(progress01, speed01)
+    burnoutSmoke.onRaceFrame(progress01, speed01)
     if (!reducedMotion) setSpeedFeel?.(speed01)
   }
 
@@ -229,6 +238,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
     launchPulse = 0
     chuteDeploy01 = 0
     wheelSpin.reset()
+    burnoutSmoke.reset()
     chuteVfx.reset()
     speedStreaks.reset()
     setSpeedFeel?.(0)
@@ -248,6 +258,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
       updateHandler = null
     }
     wheelSpin.destroy()
+    burnoutSmoke.destroy()
     chuteVfx.destroy()
     speedStreaks.destroy()
   }

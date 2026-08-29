@@ -20,6 +20,7 @@ type StripSurfaceOptions = {
   sceneRoot: Entity
   quality: PassQuality
   asphaltRough?: Texture | null
+  asphaltDiffuse?: Texture | null
 }
 
 /**
@@ -28,7 +29,7 @@ type StripSurfaceOptions = {
  * reference (Pomona / Auto Club Raceway setup).
  */
 export function buildStripSurface(opts: StripSurfaceOptions): void {
-  const { pc, sceneRoot, quality, asphaltRough } = opts
+  const { pc, sceneRoot, quality, asphaltRough, asphaltDiffuse } = opts
   const high = quality === 'high'
   const stripStart = -STAGING_LENGTH
   const stripLen = TRACK_LENGTH + STAGING_LENGTH
@@ -40,17 +41,28 @@ export function buildStripSurface(opts: StripSurfaceOptions): void {
     metalness: 0.14,
     gloss: 0.28,
   })
+  const tileU = 48
+  const tileV = 4.4
+  if (asphaltDiffuse) {
+    asphaltDiffuse.addressU = pc.ADDRESS_REPEAT
+    asphaltDiffuse.addressV = pc.ADDRESS_REPEAT
+    asphalt.diffuseMap = asphaltDiffuse
+    asphalt.diffuseMapTiling.set(tileU, tileV)
+    asphalt.diffuse.set(0.72, 0.7, 0.68)
+  }
   if (asphaltRough) {
     asphaltRough.addressU = pc.ADDRESS_REPEAT
     asphaltRough.addressV = pc.ADDRESS_REPEAT
-    asphalt.diffuseMap = asphaltRough
-    asphalt.diffuseMapTiling.set(48, 4.4)
-    asphalt.diffuse.set(0.42, 0.41, 0.39)
+    if (!asphaltDiffuse) {
+      asphalt.diffuseMap = asphaltRough
+      asphalt.diffuseMapTiling.set(tileU, tileV)
+      asphalt.diffuse.set(0.42, 0.41, 0.39)
+    }
     asphalt.glossMap = asphaltRough
     asphalt.glossInvert = true
-    asphalt.glossMapTiling.set(48, 4.4)
-    asphalt.update()
+    asphalt.glossMapTiling.set(tileU, tileV)
   }
+  asphalt.update()
   const rubber = createMaterial(pc, {
     diffuse: [0.022, 0.022, 0.024],
     metalness: 0.03,

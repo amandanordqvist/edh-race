@@ -130,6 +130,11 @@ export const sv: Dictionary = {
       'EDH Racing syns på Tierp Arena, Mantorp Park och Santa Pod Raceway. Ett litet team med precision, teknik och familjekänsla — och en bil som klockar 5,74 sekunder.',
     sponsorsCta: 'Bli partner',
     sponsorsCtaSecondary: 'Se våra partners',
+    facebookLabel: 'Facebook',
+    facebookTitle: 'Följ EDH Racing',
+    facebookBody:
+      'Racehelger, garagekvällar och det som inte ryms på en timeslip. Följ oss på Facebook så missar du inget från teamet.',
+    facebookCta: 'Följ på Facebook',
     passTeaserLabel: 'Simulatorn',
     passTeaserTitle: 'Simulera rekordpasset',
     passTeaserBody:

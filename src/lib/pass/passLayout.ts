@@ -25,9 +25,9 @@ export const RAIL_Z = TRACK_WIDTH / 2 + 0.3
 
 export const CHRISTMAS_TREE_X = 5.4
 
-/** Family wagon on the near-side shoulder — scale reference, not a racer. */
-export const STREET_CAR_Z = 4.35
-export const STREET_CAR_START_X = 0.45
+/** Family wagon in the near channel, well down-strip so inspect stays clear. */
+export const STREET_CAR_Z = 6.5
+export const STREET_CAR_START_X = 52
 /** Standing-start quarter for a stock wagon. Ease-in keeps it nearly still at 60′. */
 export const STREET_CAR_ET = 16.4
 

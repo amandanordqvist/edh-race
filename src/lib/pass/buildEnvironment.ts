@@ -4,6 +4,7 @@ import { buildBarrierBoards, type SponsorTextureEntry } from './buildBarrierBoar
 import { buildChristmasTree, type TreeMode } from './buildChristmasTree'
 import { buildEdgeRail } from './buildEdgeRail'
 import { buildGrandstandsAndSky } from './buildGrandstands'
+import { buildHorizon } from './buildHorizon'
 import { buildShutdown } from './buildShutdown'
 import { buildStripMarkings } from './buildStripMarkings'
 import { buildStripSurface } from './buildStripSurface'
@@ -37,6 +38,7 @@ export function buildPassEnvironment(
   sponsorTextures: SponsorTextureEntry[] = [],
   extras: {
     asphaltRough?: Texture | null
+    asphaltDiffuse?: Texture | null
     christmasTreeMesh?: Entity | null
     hideSkyPlanes?: boolean
     app?: Application
@@ -53,10 +55,10 @@ export function buildPassEnvironment(
     metalness: 0.06,
     gloss: 0.18,
   })
-  const wallShadow = createMaterial(pc, {
-    diffuse: [0.42, 0.42, 0.4],
+  const wallBlue = createMaterial(pc, {
+    diffuse: [0.08, 0.22, 0.48],
     metalness: 0.06,
-    gloss: 0.14,
+    gloss: 0.16,
   })
   const metal = createMaterial(pc, {
     diffuse: [0.16, 0.17, 0.2],
@@ -72,7 +74,13 @@ export function buildPassEnvironment(
   })
   const stripLightMaterials: import('playcanvas').StandardMaterial[] = [stripLight]
 
-  buildStripSurface({ pc, sceneRoot, quality, asphaltRough: extras.asphaltRough })
+  buildStripSurface({
+    pc,
+    sceneRoot,
+    quality,
+    asphaltRough: extras.asphaltRough,
+    asphaltDiffuse: extras.asphaltDiffuse,
+  })
   buildShutdown({ pc, sceneRoot, quality })
 
   ;([-BARRIER_Z, BARRIER_Z] as number[]).forEach((z, index) => {
@@ -93,7 +101,7 @@ export function buildPassEnvironment(
         type: 'box',
         position: [wallMid, 0.72, z + facing * -0.04],
         scale: [barrierLen, 0.58, 0.42],
-        material: wallShadow,
+        material: wallBlue,
         castShadows: high,
       }),
     )
@@ -149,6 +157,13 @@ export function buildPassEnvironment(
     quality,
     hideSkyPlanes: extras.hideSkyPlanes,
     app: extras.app,
+  })
+
+  buildHorizon({
+    pc,
+    app: extras.app,
+    sceneRoot,
+    quality,
   })
 
   buildBarrierBoards({

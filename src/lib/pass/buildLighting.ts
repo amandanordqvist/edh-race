@@ -32,7 +32,7 @@ export function attachPassSunLights(opts: SunLightsOptions): void {
   keyLight.addComponent('light', {
     type: 'directional',
     color: new pc.Color(1.0, 0.94, 0.82),
-    intensity: ibl ? (high ? 1.35 : 1.15) : high ? 2.45 : 2.05,
+    intensity: ibl ? (high ? 1.55 : 1.25) : high ? 2.45 : 2.05,
     castShadows: true,
     shadowDistance: high ? 90 : 70,
     shadowResolution: high ? 2048 : 1024,
@@ -48,7 +48,7 @@ export function attachPassSunLights(opts: SunLightsOptions): void {
     fillLight.addComponent('light', {
       type: 'directional',
       color: new pc.Color(0.55, 0.68, 0.9),
-      intensity: high ? 0.22 : 0.16,
+      intensity: high ? 0.38 : 0.24,
       castShadows: false,
     })
     fillLight.setEulerAngles(28, -150, 0)
@@ -80,6 +80,13 @@ export function attachPassSunLights(opts: SunLightsOptions): void {
 type BloomFrame = {
   bloom: { intensity: number; blurLevel: number; enabled?: boolean }
   motionBlur?: { intensity?: number; enabled?: boolean }
+  grading?: {
+    enabled: boolean
+    brightness: number
+    contrast: number
+    saturation: number
+  }
+  colorEnhance?: { enabled: boolean; vibrance: number }
   rendering: { samples: number; toneMapping?: number }
   update: () => void
 }
@@ -109,14 +116,25 @@ export function attachPassBloom(opts: BloomOptions): PassSpeedFeel {
   try {
     const frame = new CameraFrame(app, cameraComponent)
     frame.rendering.samples = 4
-    frame.bloom.intensity = 0.055
+    frame.bloom.intensity = 0.028
     frame.bloom.blurLevel = 4
     if (frame.motionBlur) {
       frame.motionBlur.enabled = false
       frame.motionBlur.intensity = 0
     }
-    if ('TONEMAP_ACES2' in pc) {
-      frame.rendering.toneMapping = (pc as unknown as { TONEMAP_ACES2: number }).TONEMAP_ACES2
+    // Neutral keeps the PureSky HDRI blue; ACES2 crushed it to overcast grey.
+    if ('TONEMAP_NEUTRAL' in pc) {
+      frame.rendering.toneMapping = (pc as unknown as { TONEMAP_NEUTRAL: number }).TONEMAP_NEUTRAL
+    }
+    if (frame.grading) {
+      frame.grading.enabled = true
+      frame.grading.brightness = 1.16
+      frame.grading.contrast = 1.04
+      frame.grading.saturation = 1.08
+    }
+    if (frame.colorEnhance) {
+      frame.colorEnhance.enabled = true
+      frame.colorEnhance.vibrance = 0.12
     }
     frame.update()
 

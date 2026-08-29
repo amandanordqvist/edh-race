@@ -104,6 +104,10 @@ export type Dictionary = {
     sponsorsBody: string
     sponsorsCta: string
     sponsorsCtaSecondary: string
+    facebookLabel: string
+    facebookTitle: string
+    facebookBody: string
+    facebookCta: string
     passTeaserLabel: string
     passTeaserTitle: string
     passTeaserBody: string

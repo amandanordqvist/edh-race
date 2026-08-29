@@ -8,6 +8,8 @@
 | `2004_ferrari_f2004.glb` | F1 opponent (studio cage meshes stripped at load) |
 | `c17_plane_game-ready.glb` | Jet opponent — pick **Passagerarflyg** / **Passenger jet** |
 | `dragster_race_christmas_tree.glb` | Christmas tree between the lanes |
+| `kloofendal_48d_partly_cloudy_puresky_2k.hdr` | Daytime skybox + IBL (Poly Haven PureSky, CC0) |
+| `pass/asphalt_track_diff_1k.jpg` | Track albedo (Poly Haven *asphalt_track*, 1k to stay under ~1.5 MB with roughness) |
 | `pass/asphalt-rough.jpg` | Track roughness |
 
 `loadFittedGlb` strips Sketchfab studio cages, then scales/yaws/grounds the mesh.
@@ -24,7 +26,6 @@
 
 | Priority | File | Why |
 | --- | --- | --- |
-| 1 | `asphalt_track_diff_2k.jpg` (Poly Haven *asphalt_track*, **Color / Diffuse**) | Roughness alone does not paint the strip |
-| 2 | `krail.glb` | White concrete wall segment (~4 m) |
+| 1 | `krail.glb` | White concrete wall segment (~4 m) |
 
-Do **not** need a full track GLB. Layout stays in code.
+Layout stays in code. Crowd cards, spectator/tree billboards, and burnout puffs are generated at runtime.

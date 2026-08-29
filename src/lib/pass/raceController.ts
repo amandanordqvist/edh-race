@@ -250,6 +250,7 @@ export function createRaceController(opts: RaceControllerOptions) {
   const fireLaunch = (userReactionS: number | null) => {
     if (phase !== 'green') return
     launchedAtMs = performance.now()
+    scene.streetCar.enabled = true
     handlers.onLaunch(userReactionS)
     // Small green-hold delay so the visual "GRÖNT" tick isn't cut off.
     timers.push(window.setTimeout(runRace, GREEN_HOLD_MS))
