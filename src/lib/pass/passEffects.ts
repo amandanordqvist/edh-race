@@ -4,7 +4,6 @@ import { collectCamaroWheels, collectExhaustMaterials } from './camaroRig'
 import { createBurnoutSmoke } from './burnoutSmoke'
 import { createCamaroWheelSpin } from './camaroWheelSpin'
 import { createChuteVfx } from './chuteVfx'
-import { createSpeedStreaks } from './speedStreaks'
 import type { PassPhase, PassQuality } from './types'
 import type { PlayCanvasNamespace } from './scenePrimitives'
 
@@ -29,7 +28,6 @@ export function createPassEffects(opts: PassEffectsOptions) {
     app,
     pc,
     sceneRoot,
-    trackLength,
     quality,
     stripLightMaterials,
     camaro,
@@ -38,6 +36,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
     reducedMotion,
     setSpeedFeel,
   } = opts
+  void opts.trackLength
 
   const wheels = collectCamaroWheels(camaro)
   const wheelSpin = createCamaroWheelSpin({
@@ -62,13 +61,6 @@ export function createPassEffects(opts: PassEffectsOptions) {
     quality,
     reducedMotion,
   })
-  const speedStreaks = createSpeedStreaks({
-    pc,
-    parent: sceneRoot,
-    trackLength,
-    quality,
-  })
-
   let phase: PassPhase = 'idle'
   let raceProgress = 0
   let raceSpeed = 0
@@ -90,7 +82,6 @@ export function createPassEffects(opts: PassEffectsOptions) {
     if (next === 'idle' || next === 'staging') {
       chuteDeploy01 = 0
       chuteVfx.reset()
-      speedStreaks.reset()
       setSpeedFeel?.(0)
     }
     if (next === 'idle') {
@@ -125,7 +116,9 @@ export function createPassEffects(opts: PassEffectsOptions) {
     chuteDeploy01 = nextChuteDeploy01
     wheelSpin.onRaceFrame(progress01, speed01)
     burnoutSmoke.onRaceFrame(progress01, speed01)
-    if (!reducedMotion) setSpeedFeel?.(speed01)
+    if (!reducedMotion) {
+      setSpeedFeel?.(speed01)
+    }
   }
 
   const setStripIntensity = (intensity: number) => {
@@ -222,7 +215,6 @@ export function createPassEffects(opts: PassEffectsOptions) {
     }
 
     chuteVfx.update(chuteDeploy01)
-    speedStreaks.update(dt, raceSpeed, camaro.getLocalPosition().x)
   }
 
   const start = () => {
@@ -240,7 +232,6 @@ export function createPassEffects(opts: PassEffectsOptions) {
     wheelSpin.reset()
     burnoutSmoke.reset()
     chuteVfx.reset()
-    speedStreaks.reset()
     setSpeedFeel?.(0)
     setStripIntensity(0.04)
     const pos = camaro.getLocalPosition()
@@ -260,7 +251,6 @@ export function createPassEffects(opts: PassEffectsOptions) {
     wheelSpin.destroy()
     burnoutSmoke.destroy()
     chuteVfx.destroy()
-    speedStreaks.destroy()
   }
 
   start()

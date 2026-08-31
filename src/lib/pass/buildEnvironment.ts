@@ -56,9 +56,9 @@ export function buildPassEnvironment(
     gloss: 0.18,
   })
   const wallBlue = createMaterial(pc, {
-    diffuse: [0.08, 0.22, 0.48],
+    diffuse: [0.16, 0.2, 0.28],
     metalness: 0.06,
-    gloss: 0.16,
+    gloss: 0.14,
   })
   const metal = createMaterial(pc, {
     diffuse: [0.16, 0.17, 0.2],
@@ -76,6 +76,7 @@ export function buildPassEnvironment(
 
   buildStripSurface({
     pc,
+    app: extras.app,
     sceneRoot,
     quality,
     asphaltRough: extras.asphaltRough,

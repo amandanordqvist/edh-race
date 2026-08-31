@@ -1,29 +1,38 @@
 import { useState } from 'react'
-import { useLocale, useT } from '../../i18n'
-import { localePath } from '../../lib/paths'
-import { Button } from '../ui/Button'
+import { useT } from '../../i18n'
 import { Reveal } from '../ui/Reveal'
 import { Section } from '../ui/Section'
 import './HomeDriver.css'
 
 export function HomeDriver() {
   const t = useT()
-  const locale = useLocale()
   const [failed, setFailed] = useState(false)
 
   return (
     <Section className="home-driver" wide>
       <div className="home-driver__frame">
-        <Reveal className="home-driver__copy" delay={0.06} y={24}>
-          <p className="home-driver__label">{t.home.driverLabel}</p>
-          <h2 className="home-driver__title">{t.home.driverTitle}</h2>
-          <p className="home-driver__body">{t.home.driverBody}</p>
-          <Button to={localePath(locale, 'team')} icon>
-            {t.home.driverCta}
-          </Button>
-        </Reveal>
+        <div className="home-driver__layers" aria-hidden="true">
+          <img
+            className="home-driver__plate home-driver__plate--a"
+            src="/images/camaros11.webp"
+            alt=""
+            width={1600}
+            height={900}
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            className="home-driver__plate home-driver__plate--b"
+            src="/images/camaros13.webp"
+            alt=""
+            width={1600}
+            height={900}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
 
-        <Reveal className="home-driver__media" delay={0.1} y={20} as="figure" variant="media">
+        <Reveal className="home-driver__media" delay={0.08} y={20} as="figure" variant="media">
           {failed ? (
             <div
               className="home-driver__fallback"
@@ -47,6 +56,15 @@ export function HomeDriver() {
               />
             </picture>
           )}
+        </Reveal>
+
+        <Reveal className="home-driver__copy" delay={0.12} y={24}>
+          <p className="home-driver__label">{t.home.driverLabel}</p>
+          <h2 className="home-driver__title">{t.home.driverTitle}</h2>
+          <blockquote className="home-driver__quote">
+            <p>“{t.journey.quote2}”</p>
+          </blockquote>
+          <p className="home-driver__body">{t.home.driverBody}</p>
         </Reveal>
       </div>
     </Section>

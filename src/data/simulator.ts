@@ -17,7 +17,9 @@ export const simulatorRacers: SimulatorRacer[] = [
   { id: 'jet', et: 16.8, speedLabel: '~290 km/h', trapKmh: 290 },
 ]
 
-export const TREE_STAGE_MS = 700
+/** Pre-stage → stage hold before the amber sequence. */
+export const TREE_STAGE_MS = 1300
+/** Sportsman-tree amber window before green. */
 export const TREE_AMBER_MS = 500
 export const QUARTER_METERS = 402
 export const QUARTER_FEET = 1320
@@ -60,20 +62,15 @@ export type TimeslipSplitId =
   | 'eighth'
   | 'thousand'
   | 'quarter'
-  | 'trapMph'
 
 export type TimeslipSplit = {
   id: TimeslipSplitId
-  /** Label key in i18n */
-  labelKey: TimeslipSplitId
-  /** Value shown on the card */
-  value: string
-  /** Optional secondary value (e.g. km/h next to mph) */
-  valueAlt?: string
-  /** Feet along the strip; null for reaction / speed-only rows */
+  /** Feet along the strip; null for reaction */
   feet: number | null
-  /** Elapsed seconds from green when this mark is hit; null for reaction/mph-only */
+  /** Elapsed seconds from green; null for reaction (R/T is not part of ET) */
   et: number | null
+  mph: number | null
+  kmh: number | null
 }
 
 export const edhTimeslipMeta = {
@@ -104,56 +101,10 @@ export const camaroDistanceSplits: { feet: number; et: number }[] = [
 ]
 
 export const edhTimeslipRows: TimeslipSplit[] = [
-  {
-    id: 'reaction',
-    labelKey: 'reaction',
-    value: '0.2034 s',
-    feet: null,
-    et: null,
-  },
-  {
-    id: 'sixty',
-    labelKey: 'sixty',
-    value: '0.9459 s',
-    feet: 60,
-    et: 0.9459,
-  },
-  {
-    id: 'threeThirty',
-    labelKey: 'threeThirty',
-    value: '2.5803 s',
-    feet: 330,
-    et: 2.5803,
-  },
-  {
-    id: 'eighth',
-    labelKey: 'eighth',
-    value: '3.8268 s · 202 mph',
-    valueAlt: '326 km/h',
-    feet: 660,
-    et: 3.8268,
-  },
-  {
-    id: 'thousand',
-    labelKey: 'thousand',
-    value: '4.8724 s · 235 mph',
-    valueAlt: '379 km/h',
-    feet: 1000,
-    et: 4.8724,
-  },
-  {
-    id: 'quarter',
-    labelKey: 'quarter',
-    value: '5.7451 s',
-    feet: 1320,
-    et: 5.7451,
-  },
-  {
-    id: 'trapMph',
-    labelKey: 'trapMph',
-    value: '258.18 mph',
-    valueAlt: '415 km/h',
-    feet: 1320,
-    et: 5.7451,
-  },
+  { id: 'reaction', feet: null, et: null, mph: null, kmh: null },
+  { id: 'sixty', feet: 60, et: 0.9459, mph: null, kmh: null },
+  { id: 'threeThirty', feet: 330, et: 2.5803, mph: null, kmh: null },
+  { id: 'eighth', feet: 660, et: 3.8268, mph: 202, kmh: 326 },
+  { id: 'thousand', feet: 1000, et: 4.8724, mph: 235, kmh: 379 },
+  { id: 'quarter', feet: 1320, et: 5.7451, mph: 258.18, kmh: 415 },
 ]

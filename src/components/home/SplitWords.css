@@ -1,0 +1,10 @@
+.cinematic-word {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-word {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

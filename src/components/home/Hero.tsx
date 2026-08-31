@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocale, useT } from '../../i18n'
 import { localePath } from '../../lib/paths'
 import { Button } from '../ui/Button'
+import { SplitWords } from './SplitWords'
 import './Hero.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -18,7 +19,7 @@ export function Hero() {
   const posterRef = useRef<HTMLImageElement>(null)
   const veilRef = useRef<HTMLDivElement>(null)
   const logoWrapRef = useRef<HTMLHeadingElement>(null)
-  const ctaRef = useRef<HTMLDivElement>(null)
+  const copyRef = useRef<HTMLDivElement>(null)
   const [reduceMotion, setReduceMotion] = useState(false)
 
   useEffect(() => {
@@ -48,13 +49,15 @@ export function Hero() {
       const frame = videoRef.current ?? posterRef.current
       const veil = veilRef.current
       const logoWrap = logoWrapRef.current
-      const cta = ctaRef.current
-      if (!root || !media || !frame || !veil || !logoWrap || !cta) return
+      const copy = copyRef.current
+      if (!root || !media || !frame || !veil || !logoWrap || !copy) return
 
-      const copy = [logoWrap, cta]
+      const kicker = copy.querySelector('.hero__kicker')
+      const words = copy.querySelectorAll('.cinematic-word')
+      const cta = copy.querySelector('.hero__cta')
 
       if (reduceMotion) {
-        gsap.set([frame, ...copy], {
+        gsap.set([frame, logoWrap, copy, kicker, cta, words], {
           clearProps: 'all',
           opacity: 1,
           y: 0,
@@ -72,7 +75,8 @@ export function Hero() {
         scale: 0.94,
         clipPath: 'inset(108% 0 0 0)',
       })
-      gsap.set(cta, { opacity: 0, y: 18 })
+      gsap.set([kicker, cta], { opacity: 0, y: 18 })
+      gsap.set(words, { opacity: 0, y: 10 })
       gsap.set(veil, { autoAlpha: 1 })
 
       gsap
@@ -91,7 +95,9 @@ export function Hero() {
           },
           '-=0.95',
         )
-        .to(cta, { opacity: 1, y: 0, duration: 0.7 }, '-=0.35')
+        .to(kicker, { opacity: 1, y: 0, duration: 0.5 }, '-=0.4')
+        .to(words, { opacity: 1, y: 0, duration: 0.55, stagger: 0.055 }, '-=0.28')
+        .to(cta, { opacity: 1, y: 0, duration: 0.55 }, '-=0.32')
 
       gsap.to(frame, {
         scale: 1.09,
@@ -114,7 +120,7 @@ export function Hero() {
           },
         })
         .to(media, { yPercent: 22, scale: 1.06, ease: 'none' }, 0)
-        .to(copy, { y: -28, opacity: 0, ease: 'none' }, 0)
+        .to([logoWrap, copy], { y: -28, opacity: 0, ease: 'none' }, 0)
         .fromTo(veil, { autoAlpha: 0 }, { autoAlpha: 0.5, ease: 'none' }, 0.2)
 
       ScrollTrigger.refresh()
@@ -169,13 +175,21 @@ export function Hero() {
             />
           </picture>
         </h1>
-        <div ref={ctaRef} className="hero__cta">
-          <Button to={localePath(locale, 'journey')} icon>
-            {t.home.ctaJourney}
-          </Button>
-          <Button to={localePath(locale, 'machine')} variant="ghost">
-            {t.home.ctaMachine}
-          </Button>
+        <div ref={copyRef} className="hero__copy">
+          <p className="hero__kicker">{t.home.heroKicker}</p>
+          {t.home.lead ? (
+            <p className="hero__lead">
+              <SplitWords text={t.home.lead} />
+            </p>
+          ) : null}
+          <div className="hero__cta">
+            <Button to={localePath(locale, 'pass')} icon>
+              {t.home.ctaPass}
+            </Button>
+            <Button to={localePath(locale, 'journey')} variant="ghost">
+              {t.home.ctaJourney}
+            </Button>
+          </div>
         </div>
       </div>
     </section>

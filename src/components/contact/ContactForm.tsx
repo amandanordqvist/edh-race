@@ -2,8 +2,6 @@ import { useState, type FormEvent } from 'react'
 import { useT } from '../../i18n'
 import { buildMailto, type ContactFormValues } from '../../lib/mailto'
 import { Button } from '../ui/Button'
-import { Reveal } from '../ui/Reveal'
-import { Section } from '../ui/Section'
 import './ContactForm.css'
 
 const initial: ContactFormValues = {
@@ -45,87 +43,82 @@ export function ContactForm() {
   }
 
   return (
-    <Section className="contact-form-section">
-      <Reveal>
-        <div className="contact-form">
-          <h2 className="contact-form__title">{t.contact.formTitle}</h2>
-          <p className="contact-form__hint">{t.contact.formHint}</p>
-          <form onSubmit={onSubmit}>
-            <div className="contact-form__grid">
-              <label>
-                {t.contact.name}
-                <input
-                  required
-                  name="name"
-                  value={values.name}
-                  onChange={(e) => setValues({ ...values, name: e.target.value })}
-                />
-              </label>
-              <label>
-                {t.contact.company}
-                <input
-                  required
-                  name="company"
-                  value={values.company}
-                  onChange={(e) =>
-                    setValues({ ...values, company: e.target.value })
-                  }
-                />
-              </label>
-              <label>
-                {t.contact.email}
-                <input
-                  required
-                  type="email"
-                  name="email"
-                  value={values.email}
-                  onChange={(e) => setValues({ ...values, email: e.target.value })}
-                />
-              </label>
-              <label>
-                {t.contact.phone}
-                <input
-                  name="phone"
-                  value={values.phone}
-                  onChange={(e) => setValues({ ...values, phone: e.target.value })}
-                />
-              </label>
-            </div>
-            <label>
-              {t.contact.interest}
-              <select
-                name="interest"
-                value={values.interest}
-                onChange={(e) => setValues({ ...values, interest: e.target.value })}
-              >
-                {Object.entries(t.contact.interestOptions).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              {t.contact.message}
-              <textarea
-                required
-                name="message"
-                rows={5}
-                value={values.message}
-                onChange={(e) => setValues({ ...values, message: e.target.value })}
-              />
-            </label>
-            <Button type="submit" icon>
-              {t.contact.submit}
-            </Button>
-            {sent ? (
-              <p className="contact-form__after" role="status">
-                {t.contact.afterSend}
-              </p>
-            ) : null}
-          </form>
-        </div>
-      </Reveal>
-    </Section>
+    <form className="contact-form" onSubmit={onSubmit}>
+      <div className="contact-form__grid">
+        <label>
+          {t.contact.name}
+          <input
+            required
+            name="name"
+            autoComplete="name"
+            value={values.name}
+            onChange={(e) => setValues({ ...values, name: e.target.value })}
+          />
+        </label>
+        <label>
+          {t.contact.company}
+          <input
+            required
+            name="company"
+            autoComplete="organization"
+            value={values.company}
+            onChange={(e) => setValues({ ...values, company: e.target.value })}
+          />
+        </label>
+        <label>
+          {t.contact.email}
+          <input
+            required
+            type="email"
+            name="email"
+            autoComplete="email"
+            value={values.email}
+            onChange={(e) => setValues({ ...values, email: e.target.value })}
+          />
+        </label>
+        <label>
+          {t.contact.phone}
+          <input
+            name="phone"
+            type="tel"
+            autoComplete="tel"
+            value={values.phone}
+            onChange={(e) => setValues({ ...values, phone: e.target.value })}
+          />
+        </label>
+      </div>
+      <label>
+        {t.contact.interest}
+        <select
+          name="interest"
+          value={values.interest}
+          onChange={(e) => setValues({ ...values, interest: e.target.value })}
+        >
+          {Object.entries(t.contact.interestOptions).map(([key, label]) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        {t.contact.message}
+        <textarea
+          required
+          name="message"
+          rows={5}
+          value={values.message}
+          onChange={(e) => setValues({ ...values, message: e.target.value })}
+        />
+      </label>
+      <Button type="submit" icon>
+        {t.contact.submit}
+      </Button>
+      {sent ? (
+        <p className="contact-form__after" role="status">
+          {t.contact.afterSend}
+        </p>
+      ) : null}
+    </form>
   )
 }

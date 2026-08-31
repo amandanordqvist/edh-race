@@ -1,22 +1,27 @@
-import type { Entity, Texture } from 'playcanvas'
+import type { Application, Entity, Texture } from 'playcanvas'
 
+import { createCanvasTexture } from './canvasTexture'
 import {
   CHANNEL_WIDTH,
   LANE_FAR_Z,
   LANE_NEAR_Z,
   STAGING_LENGTH,
   TRACK_LENGTH,
+  TRACK_SURFACE_CENTER_Y,
+  TRACK_SURFACE_HEIGHT,
   TRACK_WIDTH,
 } from './passLayout'
 import type { PassQuality } from './types'
 import {
   createMaterial,
   createPrimitive,
+  type MaterialTone,
   type PlayCanvasNamespace,
 } from './scenePrimitives'
 
 type StripSurfaceOptions = {
   pc: PlayCanvasNamespace
+  app?: Application
   sceneRoot: Entity
   quality: PassQuality
   asphaltRough?: Texture | null
@@ -29,17 +34,18 @@ type StripSurfaceOptions = {
  * reference (Pomona / Auto Club Raceway setup).
  */
 export function buildStripSurface(opts: StripSurfaceOptions): void {
-  const { pc, sceneRoot, quality, asphaltRough, asphaltDiffuse } = opts
+  const { pc, app, sceneRoot, quality, asphaltRough, asphaltDiffuse } = opts
   const high = quality === 'high'
   const stripStart = -STAGING_LENGTH
   const stripLen = TRACK_LENGTH + STAGING_LENGTH
   const stripMid = stripStart + stripLen / 2
+  const ground = (tone: MaterialTone) => createMaterial(pc, { ...tone, useSkybox: false })
 
-  // Prepped strip: dark but not pure black — room for the car to read on top.
-  const asphalt = createMaterial(pc, {
+  // Prepped strip: dielectric, no IBL — PureSky would otherwise lie in the asphalt.
+  const asphalt = ground({
     diffuse: [0.028, 0.029, 0.032],
-    metalness: 0.14,
-    gloss: 0.28,
+    metalness: 0,
+    gloss: 0.1,
   })
   const tileU = 48
   const tileV = 4.4
@@ -58,61 +64,81 @@ export function buildStripSurface(opts: StripSurfaceOptions): void {
       asphalt.diffuseMapTiling.set(tileU, tileV)
       asphalt.diffuse.set(0.42, 0.41, 0.39)
     }
-    asphalt.glossMap = asphaltRough
-    asphalt.glossInvert = true
-    asphalt.glossMapTiling.set(tileU, tileV)
   }
+  asphalt.useSkybox = false
   asphalt.update()
-  const rubber = createMaterial(pc, {
-    diffuse: [0.022, 0.022, 0.024],
-    metalness: 0.03,
-    gloss: 0.06,
-  })
-  const rubberWet = createMaterial(pc, {
-    diffuse: [0.04, 0.04, 0.045],
-    metalness: 0.32,
-    gloss: 0.62,
-  })
-  const shoulder = createMaterial(pc, {
-    diffuse: [0.07, 0.07, 0.068],
+  const rubber = ground({
+    diffuse: [0.014, 0.014, 0.016],
     metalness: 0.04,
-    gloss: 0.06,
-  })
-  const concrete = createMaterial(pc, {
-    diffuse: [0.11, 0.11, 0.105],
-    metalness: 0.06,
-    gloss: 0.1,
-  })
-  const concreteStain = createMaterial(pc, {
-    diffuse: [0.08, 0.078, 0.072],
-    metalness: 0.05,
     gloss: 0.08,
   })
-  const paintWhite = createMaterial(pc, {
-    diffuse: [0.82, 0.83, 0.84],
-    metalness: 0.04,
-    gloss: 0.28,
-  })
-  // EDH accent blue — muted, worn safety paint, never self-lit.
-  const paintBlue = createMaterial(pc, {
-    diffuse: [0.06, 0.14, 0.28],
-    metalness: 0.05,
-    gloss: 0.18,
-  })
-  const paintBlueWorn = createMaterial(pc, {
-    diffuse: [0.045, 0.1, 0.2],
-    metalness: 0.04,
-    gloss: 0.12,
-  })
-  const dirt = createMaterial(pc, {
-    diffuse: [0.08, 0.07, 0.06],
+  if (app) {
+    const groove = createCanvasTexture(
+      app,
+      pc,
+      'pass-rubber-groove',
+      256,
+      64,
+      (ctx, w, h) => {
+        ctx.fillStyle = '#0a0a0c'
+        ctx.fillRect(0, 0, w, h)
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)'
+        ctx.fillRect(0, h * 0.18, w, h * 0.16)
+        ctx.fillRect(0, h * 0.66, w, h * 0.16)
+        for (let i = 0; i < 80; i += 1) {
+          const px = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1 * w
+          const py = Math.abs(Math.sin(i * 78.233) * 43758.5453) % 1 * h
+          ctx.fillStyle = `rgba(18, 18, 20, ${0.15 + (i % 5) * 0.04})`
+          ctx.fillRect(px, py, 3 + (i % 4), 1)
+        }
+      },
+      { repeatU: true, repeatV: true, srgb: true },
+    )
+    rubber.diffuseMap = groove
+    rubber.diffuseMapTiling.set(28, 1.2)
+    rubber.diffuse.set(0.55, 0.55, 0.56)
+    rubber.update()
+  }
+  const shoulder = ground({
+    diffuse: [0.07, 0.07, 0.068],
     metalness: 0.02,
     gloss: 0.05,
   })
-  const waterBox = createMaterial(pc, {
-    diffuse: [0.045, 0.05, 0.055],
-    metalness: 0.4,
-    gloss: 0.68,
+  const concrete = ground({
+    diffuse: [0.11, 0.11, 0.105],
+    metalness: 0.03,
+    gloss: 0.08,
+  })
+  const concreteStain = ground({
+    diffuse: [0.08, 0.078, 0.072],
+    metalness: 0.03,
+    gloss: 0.06,
+  })
+  const paintWhite = ground({
+    diffuse: [0.82, 0.83, 0.84],
+    metalness: 0.02,
+    gloss: 0.16,
+  })
+  // EDH accent blue — muted, worn safety paint, never self-lit.
+  const paintBlue = ground({
+    diffuse: [0.1, 0.14, 0.2],
+    metalness: 0.02,
+    gloss: 0.1,
+  })
+  const paintBlueWorn = ground({
+    diffuse: [0.045, 0.1, 0.2],
+    metalness: 0.02,
+    gloss: 0.08,
+  })
+  const dirt = ground({
+    diffuse: [0.08, 0.07, 0.06],
+    metalness: 0.02,
+    gloss: 0.04,
+  })
+  const waterBox = ground({
+    diffuse: [0.032, 0.033, 0.036],
+    metalness: 0.02,
+    gloss: 0.08,
   })
   const beamMat = createMaterial(pc, {
     diffuse: [0.14, 0.15, 0.17],
@@ -149,8 +175,8 @@ export function buildStripSurface(opts: StripSurfaceOptions): void {
     createPrimitive(pc, {
       name: 'track-surface',
       type: 'box',
-      position: [stripMid, -0.22, 0],
-      scale: [stripLen, 0.18, TRACK_WIDTH],
+      position: [stripMid, TRACK_SURFACE_CENTER_Y, 0],
+      scale: [stripLen, TRACK_SURFACE_HEIGHT, TRACK_WIDTH],
       material: asphalt,
     }),
   )
@@ -240,22 +266,6 @@ export function buildStripSurface(opts: StripSurfaceOptions): void {
       }
     })
 
-    // Wet sheen patches along the prep line.
-    if (high) {
-      for (let w = 0; w < 6; w += 1) {
-        sceneRoot.addChild(
-          createPrimitive(pc, {
-            name: `prep-sheen-${lane}-${w}`,
-            type: 'box',
-            position: [8 + w * 18, -0.102, laneZ + ((w % 2) * 0.5 - 0.25)],
-            scale: [5.5, 0.008, 0.85],
-            material: rubberWet,
-            castShadows: false,
-          }),
-        )
-      }
-    }
-
     const burnoutCount = high ? 14 : 8
     for (let i = 0; i < burnoutCount; i += 1) {
       sceneRoot.addChild(
@@ -306,16 +316,6 @@ export function buildStripSurface(opts: StripSurfaceOptions): void {
       position: [-3.4, -0.11, 0],
       scale: [4.6, 0.04, TRACK_WIDTH - 1.6],
       material: waterBox,
-    }),
-  )
-  sceneRoot.addChild(
-    createPrimitive(pc, {
-      name: 'water-sheen',
-      type: 'box',
-      position: [-3.4, -0.09, 0],
-      scale: [4.2, 0.01, TRACK_WIDTH - 2.2],
-      material: rubberWet,
-      castShadows: false,
     }),
   )
 

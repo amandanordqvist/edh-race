@@ -1,4 +1,4 @@
-import { CarTurntable } from '../components/machine/CarTurntable'
+import { CamaroStudio } from '../components/machine/CamaroStudio'
 import { InteractiveChassis } from '../components/machine/InteractiveChassis'
 import { MachineNarrative } from '../components/machine/MachineNarrative'
 import { SpecTable } from '../components/machine/SpecTable'
@@ -20,9 +20,7 @@ export function MachinePage() {
         </Reveal>
       </Section>
 
-      <Reveal y={36}>
-        <CarTurntable />
-      </Reveal>
+      <CamaroStudio />
 
       <SkewDivider />
       <InteractiveChassis />

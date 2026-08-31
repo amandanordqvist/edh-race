@@ -10,7 +10,7 @@ export type PassPhase =
 export type PassCameraView = 'follow' | 'wide' | 'cockpit'
 
 /** Educational rival in the other lane (classic two-car drag). */
-export type PassOpponentId = 'f1' | 'jet'
+export type PassOpponentId = 'none' | 'f1' | 'jet'
 
 export type PassQuality = 'high' | 'low'
 

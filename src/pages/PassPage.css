@@ -1,5 +1,9 @@
+.site-main:has(.pass-page) {
+  padding-top: calc(var(--header-height) + 1.75rem);
+}
+
 .pass-page {
-  padding: clamp(2.5rem, 6vw, 4.5rem) 0.75rem var(--section-pad-bottom);
+  padding: clamp(0.5rem, 2vw, 1.25rem) 0.75rem var(--section-pad-bottom);
   display: grid;
   gap: clamp(2.5rem, 5vw, 4rem);
 }
@@ -32,11 +36,12 @@
 }
 
 .pass-page__title {
-  max-width: none;
+  max-width: 16ch;
   margin: 0 0 0.65rem;
-  font-size: clamp(2.4rem, 6vw, 3.6rem);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: clamp(2.2rem, 5.4vw, 3.35rem);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  overflow-wrap: anywhere;
 }
 
 .pass-page__lead {

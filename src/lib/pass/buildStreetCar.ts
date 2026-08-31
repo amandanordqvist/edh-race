@@ -1,6 +1,7 @@
 import type { Entity } from 'playcanvas'
 
 import type { PassQuality } from './types'
+import { STREET_CAR_Y } from './passLayout'
 import {
   attachContactShadow,
   createMaterial,
@@ -39,6 +40,7 @@ export function buildStreetCar(
   })
 
   const car = new pc.Entity('street-car')
+  car.setLocalPosition(0, STREET_CAR_Y, 0)
   car.addChild(
     createPrimitive(pc, {
       name: 'body',

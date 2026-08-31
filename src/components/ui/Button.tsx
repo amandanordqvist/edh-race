@@ -56,12 +56,12 @@ export function Button({
   }
 
   if (href) {
+    const external = /^https?:\/\//.test(href)
     return (
       <a
         href={href}
         className={classes}
-        target="_blank"
-        rel="noreferrer"
+        {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
         {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}
       >
         <ButtonInner icon={icon}>{children}</ButtonInner>

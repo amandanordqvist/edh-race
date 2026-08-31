@@ -24,8 +24,8 @@ const REDUCED_MOTION_FLASH_MS = 200
 const FINISH_HOLD_MS = 80
 const HERO_ET = simulatorRacers.find((racer) => racer.id === 'camaro')?.et ?? 5.7451
 const HERO_TOP_SPEED = 415
-/** How long we wait for the user to tap after green before auto-launching. */
-const AUTO_LAUNCH_TIMEOUT_MS = 2500
+/** How long we wait after green before reconstructing Anders' 0.2034 s RT. */
+const AUTO_LAUNCH_TIMEOUT_MS = 210
 /** Hold the Camaro in shutdown until chutes are out and speed has dumped. */
 const HERO_SETTLE_S = SHUTDOWN_COAST_S
 
@@ -119,8 +119,12 @@ export function createRaceController(opts: RaceControllerOptions) {
       heroTrap: elapsedS >= HERO_ET - 0.0005 ? HERO_TOP_SPEED : null,
       heroWin: elapsedS >= HERO_ET - 0.0005,
       opponentId,
-      opponentEt: racing ? Math.min(elapsedS, opponentEt) : null,
-      opponentTrap: elapsedS >= opponentEt - 0.0005 ? (opponent?.trapKmh ?? null) : null,
+      opponentEt:
+        opponentId === 'none' || !racing ? null : Math.min(elapsedS, opponentEt),
+      opponentTrap:
+        opponentId === 'none' || elapsedS < opponentEt - 0.0005
+          ? null
+          : (opponent?.trapKmh ?? null),
     })
   }
 
@@ -251,6 +255,7 @@ export function createRaceController(opts: RaceControllerOptions) {
     if (phase !== 'green') return
     launchedAtMs = performance.now()
     scene.streetCar.enabled = true
+    scene.setRivalsLive(true)
     handlers.onLaunch(userReactionS)
     // Small green-hold delay so the visual "GRÖNT" tick isn't cut off.
     timers.push(window.setTimeout(runRace, GREEN_HOLD_MS))
@@ -280,7 +285,7 @@ export function createRaceController(opts: RaceControllerOptions) {
     timers.push(
       window.setTimeout(() => {
         scene.setTreeLights('stage')
-      }, 280),
+      }, 520),
     )
 
     timers.push(

@@ -1,9 +1,10 @@
 import type { PassQuality } from './types'
 
-type NavigatorWithDeviceMemory = Navigator & {
-  deviceMemory?: number
-}
-
+/**
+ * Full 3D on desktop; lower fidelity on phones. Do not key off
+ * `deviceMemory` — Chrome often reports 4 GB on laptops, which killed HDRI,
+ * crowd, smoke, and left a flat “dead” strip.
+ */
 export function detectPassQuality(): PassQuality {
   if (typeof window === 'undefined') {
     return 'high'
@@ -11,10 +12,8 @@ export function detectPassQuality(): PassQuality {
 
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches
   const narrowViewport = window.innerWidth < 768
-  const deviceMemory = (navigator as NavigatorWithDeviceMemory).deviceMemory
-  const lowMemory = typeof deviceMemory === 'number' && deviceMemory <= 4
 
-  if (coarsePointer || narrowViewport || lowMemory) {
+  if (coarsePointer || narrowViewport) {
     return 'low'
   }
 

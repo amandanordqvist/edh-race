@@ -10,11 +10,11 @@ const AUDIO_PATHS = {
 } as const
 
 const AUDIO_VOLUMES = {
-  treeTick: 0.4,
-  green: 0.5,
-  launch: 0.45,
-  passLoop: 0.22,
-  finish: 0.4,
+  treeTick: 0.42,
+  green: 0.55,
+  launch: 0.58,
+  passLoop: 0.28,
+  finish: 0.42,
 } as const
 
 type CueName = keyof typeof AUDIO_PATHS

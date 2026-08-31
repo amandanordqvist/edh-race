@@ -32,6 +32,7 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
     diffuse: [0.28, 0.34, 0.22],
     metalness: 0.02,
     gloss: 0.06,
+    useSkybox: false,
   })
   const structure = createMaterial(pc, {
     diffuse: [0.16, 0.17, 0.19],
@@ -59,9 +60,9 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
     gloss: 0.22,
   })
   const fascia = createMaterial(pc, {
-    diffuse: [0.12, 0.22, 0.42],
+    diffuse: [0.14, 0.16, 0.2],
     metalness: 0.08,
-    gloss: 0.2,
+    gloss: 0.18,
   })
   const crowdPalette = createCrowdPalette(pc, app)
   const bannerNavy = createMaterial(pc, {
@@ -80,7 +81,7 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
     gloss: 0.18,
   })
   const bannerAccent = createMaterial(pc, {
-    diffuse: [0.18, 0.32, 0.58],
+    diffuse: [0.2, 0.24, 0.3],
     metalness: 0.05,
     gloss: 0.22,
   })

@@ -1,5 +1,6 @@
 import type { Entity, StandardMaterial } from 'playcanvas'
 
+import { STRIP_TOP_Y } from './passLayout'
 import type { PassQuality } from './types'
 
 export type PlayCanvasNamespace = typeof import('playcanvas')
@@ -13,6 +14,8 @@ export type MaterialTone = {
   opacity?: number
   clearCoat?: number
   clearCoatGloss?: number
+  /** False on ground so PureSky IBL cannot paint the sky into the strip. */
+  useSkybox?: boolean
 }
 
 export type PrimitiveOptions = {
@@ -49,6 +52,9 @@ export function createMaterial(pc: PlayCanvasNamespace, tone: MaterialTone): Sta
     coat.clearCoat = tone.clearCoat
     coat.clearCoatGloss = tone.clearCoatGloss ?? 0.9
   }
+  if (typeof tone.useSkybox === 'boolean') {
+    material.useSkybox = tone.useSkybox
+  }
   material.update()
 
   return material
@@ -78,27 +84,36 @@ export function shadowsEnabled(_quality: PassQuality): boolean {
   return true
 }
 
-/** Cheap blob under a racer so GLBs without a shadow caster still sit on the strip. */
+/** Grounding blob in world metres — counters parent GLB fit-scale. */
 export function attachContactShadow(
   pc: PlayCanvasNamespace,
   parent: Entity,
-  scale: [number, number, number] = [1.55, 0.012, 0.72],
+  scale: [number, number, number] = [1.55, 0.008, 0.72],
 ): Entity {
   const material = createMaterial(pc, {
     diffuse: [0.02, 0.02, 0.02],
-    opacity: 0.42,
+    opacity: 0.38,
     metalness: 0,
     gloss: 0.02,
+    useSkybox: false,
   })
   const shadow = createPrimitive(pc, {
     name: 'contact-shadow',
     type: 'cylinder',
     position: [0.04, 0.014, 0],
-    scale,
+    scale: [1, 1, 1],
     material,
     castShadows: false,
     receiveShadows: false,
   })
   parent.addChild(shadow)
+  parent.syncHierarchy()
+  const parentScale = parent.getLocalScale()
+  const parentY = parent.getLocalPosition().y
+  const ax = Math.max(Math.abs(parentScale.x), 0.0001)
+  const ay = Math.max(Math.abs(parentScale.y), 0.0001)
+  const az = Math.max(Math.abs(parentScale.z), 0.0001)
+  shadow.setLocalPosition(0.04 / ax, (STRIP_TOP_Y + 0.005 - parentY) / ay, 0)
+  shadow.setLocalScale(scale[0] / ax, scale[1] / ay, scale[2] / az)
   return shadow
 }

@@ -3,6 +3,7 @@ import type { Application, ContainerResource, Entity, StandardMaterial } from 'p
 import type { PassQuality } from './types'
 import { collectModelBounds, forEachEntity, hideSphericalMeshes } from './camaroRig'
 import { loadContainerAsset } from './loadGlbAsset'
+import { VEHICLE_GROUND_Y } from './passLayout'
 import {
   attachContactShadow,
   createMaterial,
@@ -14,7 +15,6 @@ const CAMARO_GLB_URL = '/models/pass/camaro.glb'
 
 /** Target length along the strip (meters). */
 const CAMARO_TARGET_LENGTH = 4.2
-const CAMARO_GROUND_CLEARANCE = 0.04
 
 /**
  * Extra yaw after auto-aligning longest axis to +X.
@@ -78,13 +78,14 @@ function applyEdhBodyPaint(material: StandardMaterial, quality: PassQuality): vo
   material.emissive.set(0, 0, 0)
   material.emissiveIntensity = 0
   material.useMetalness = true
-  material.metalness = 0.06
-  material.gloss = 0.86
+  material.metalness = 0.08
+  material.gloss = 0.9
+  material.useSkybox = true
   material.diffuseMap = null
   material.emissiveMap = null
   const coat = material as StandardMaterial & { clearCoat?: number; clearCoatGloss?: number }
-  coat.clearCoat = quality === 'high' ? 0.72 : 0.45
-  coat.clearCoatGloss = 0.92
+  coat.clearCoat = quality === 'high' ? 0.88 : 0.55
+  coat.clearCoatGloss = 0.94
   material.update()
 }
 
@@ -176,10 +177,10 @@ function prepareCamaroMaterials(
   return {
     bodyMaterial: createMaterial(pc, {
       diffuse: EDH_BLUE,
-      metalness: 0.06,
-      gloss: 0.86,
-      clearCoat: quality === 'high' ? 0.72 : 0.45,
-      clearCoatGloss: 0.92,
+      metalness: 0.08,
+      gloss: 0.9,
+      clearCoat: quality === 'high' ? 0.88 : 0.55,
+      clearCoatGloss: 0.94,
     }),
     hasTextures,
   }
@@ -198,7 +199,7 @@ function fitCamaroToStrip(camaro: Entity, modelRoot: Entity): void {
 
   const bounds = collectModelBounds(modelRoot)
   if (!bounds) {
-    camaro.setLocalPosition(0.4, CAMARO_GROUND_CLEARANCE, 0)
+    camaro.setLocalPosition(0.4, VEHICLE_GROUND_Y, 0)
     return
   }
 
@@ -228,14 +229,15 @@ function fitCamaroToStrip(camaro: Entity, modelRoot: Entity): void {
     camaro.setLocalPosition(0.4 - (pos.x - 0.4), pos.y, -pos.z)
   }
 
+  camaro.syncHierarchy()
   const grounded = collectModelBounds(modelRoot)
   if (grounded) {
     const pos = camaro.getLocalPosition()
-    camaro.setLocalPosition(pos.x, CAMARO_GROUND_CLEARANCE - grounded.min[1], pos.z)
+    camaro.setLocalPosition(pos.x, VEHICLE_GROUND_Y - grounded.min[1], pos.z)
   } else {
     camaro.setLocalPosition(
       camaro.getLocalPosition().x,
-      CAMARO_GROUND_CLEARANCE - bounds.min[1] * scale,
+      VEHICLE_GROUND_Y - bounds.min[1] * scale,
       camaro.getLocalPosition().z,
     )
   }

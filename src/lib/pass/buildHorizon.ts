@@ -1,6 +1,6 @@
 import type { Application, Entity, StandardMaterial } from 'playcanvas'
 
-import { TRACK_LENGTH, TRACK_WIDTH } from './passLayout'
+import { SHUTDOWN_LENGTH, TRACK_LENGTH, TRACK_WIDTH } from './passLayout'
 import { createCanvasTexture } from './canvasTexture'
 import {
   createMaterial,
@@ -90,16 +90,19 @@ export function buildHorizon(opts: HorizonOptions): void {
     diffuse: [0.18, 0.28, 0.14],
     metalness: 0.02,
     gloss: 0.05,
+    useSkybox: false,
   })
   const hillMid = createMaterial(pc, {
     diffuse: [0.22, 0.34, 0.16],
     metalness: 0.02,
     gloss: 0.05,
+    useSkybox: false,
   })
   const hillFar = createMaterial(pc, {
     diffuse: [0.28, 0.4, 0.22],
     metalness: 0.02,
     gloss: 0.04,
+    useSkybox: false,
   })
 
   ;([-hillZ, hillZ] as number[]).forEach((z, side) => {
@@ -123,18 +126,18 @@ export function buildHorizon(opts: HorizonOptions): void {
         castShadows: false,
       }),
     )
+    // Past the chutes, to the sides only — never a wall across the strip.
+    sceneRoot.addChild(
+      createPrimitive(pc, {
+        name: `hill-shutdown-${side}`,
+        type: 'box',
+        position: [TRACK_LENGTH + SHUTDOWN_LENGTH + 18, 2.2, z + (z < 0 ? -10 : 10)],
+        scale: [28, 5.2, 14],
+        material: hillFar,
+        castShadows: false,
+      }),
+    )
   })
-
-  sceneRoot.addChild(
-    createPrimitive(pc, {
-      name: 'hill-finish',
-      type: 'box',
-      position: [TRACK_LENGTH + 48, 4.8, 0],
-      scale: [22, 10, TRACK_WIDTH + 90],
-      material: hillFar,
-      castShadows: false,
-    }),
-  )
 
   if (!app) return
 

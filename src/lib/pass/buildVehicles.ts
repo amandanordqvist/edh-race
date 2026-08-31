@@ -1,6 +1,7 @@
 import type { Entity } from 'playcanvas'
 
 import type { PassQuality } from './types'
+import { VEHICLE_GROUND_Y } from './passLayout'
 import {
   attachContactShadow,
   createMaterial,
@@ -45,10 +46,10 @@ export function buildPassVehicles(
 
   const camaroBlue = createMaterial(pc, {
     diffuse: [42 / 255, 72 / 255, 148 / 255],
-    metalness: 0.06,
-    gloss: 0.86,
-    clearCoat: quality === 'high' ? 0.72 : 0.45,
-    clearCoatGloss: 0.92,
+    metalness: 0.08,
+    gloss: 0.9,
+    clearCoat: quality === 'high' ? 0.88 : 0.55,
+    clearCoatGloss: 0.94,
   })
   const camaroDark = createMaterial(pc, {
     diffuse: [0.07, 0.08, 0.1],
@@ -94,7 +95,7 @@ export function buildPassVehicles(
 
   // Camaro: doorslammer silhouette — long nose, cabin, huge rear slicks, chute pack
   const camaro = new pc.Entity('camaro')
-  camaro.setLocalPosition(0.4, 0.48, 0)
+  camaro.setLocalPosition(0.4, VEHICLE_GROUND_Y, 0)
   camaro.addChild(
     createPrimitive(pc, {
       name: 'camaro-body',
@@ -211,7 +212,7 @@ export function buildPassVehicles(
   attachContactShadow(pc, camaro)
 
   const f1 = new pc.Entity('f1')
-  f1.setLocalPosition(0.2, 0.2, -2.55)
+  f1.setLocalPosition(0.2, VEHICLE_GROUND_Y, -2.55)
   f1.addChild(
     createPrimitive(pc, {
       name: 'f1-body',

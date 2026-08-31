@@ -22,9 +22,11 @@ import {
   LANE_FAR_Z,
   LANE_NEAR_Z,
   STREET_CAR_START_X,
+  STREET_CAR_Y,
   STREET_CAR_Z,
+  VEHICLE_GROUND_Y,
 } from './passLayout'
-import { attachContactShadow } from './scenePrimitives'
+import { applyGhostLook } from './ghostRivals'
 import type { PassOpponentId, PassQuality } from './types'
 
 type PlayCanvasNamespace = typeof import('playcanvas')
@@ -46,6 +48,7 @@ export type PassScene = {
   camaroHasTextures: boolean
   getOpponent: () => PassOpponentId
   setOpponent: (opponent: PassOpponentId) => void
+  setRivalsLive: (live: boolean) => void
   setTreeLights: (mode: TreeMode) => void
   resetRacers: () => void
   scoreboard: PassScoreboard
@@ -60,18 +63,17 @@ export async function buildPassScene(
   const sceneRoot = new pc.Entity('pass-scene')
   app.root.addChild(sceneRoot)
 
-  // Clear daytime strip: blue sky fill, haze that stays sky-coloured.
-  app.scene.ambientLight = new pc.Color(0.38, 0.46, 0.58)
+  app.scene.ambientLight = new pc.Color(0.22, 0.24, 0.26)
   app.scene.fog.type = pc.FOG_LINEAR
-  app.scene.fog.color = new pc.Color(0.62, 0.76, 0.92)
-  app.scene.fog.start = quality === 'high' ? 72 : 48
-  app.scene.fog.end = quality === 'high' ? 210 : 160
+  app.scene.fog.color = new pc.Color(0.42, 0.48, 0.55)
+  app.scene.fog.start = quality === 'high' ? 160 : 110
+  app.scene.fog.end = quality === 'high' ? 420 : 280
 
   const ibl = await applyPassEnvLighting(app, pc, quality)
   if (ibl) {
-    app.scene.fog.start = quality === 'high' ? 220 : 120
-    app.scene.fog.end = quality === 'high' ? 520 : 280
-    app.scene.fog.color = new pc.Color(0.58, 0.74, 0.94)
+    app.scene.fog.start = quality === 'high' ? 180 : 120
+    app.scene.fog.end = quality === 'high' ? 480 : 300
+    app.scene.fog.color = new pc.Color(0.22, 0.24, 0.26)
   }
 
   // Barrier boards stay tone-only — skip logo fetches until body-mapped decals exist.
@@ -111,7 +113,7 @@ export async function buildPassScene(
       url: '/models/dragster_race_christmas_tree.glb',
       name: 'christmas-tree-glb',
       target: { kind: 'height', meters: 4.6 },
-      groundClearance: 0,
+      groundClearance: VEHICLE_GROUND_Y,
       stripLargerThan: 2.8,
       stripYSpread: 2.6,
       stripSpheresLargerThan: 0.22,
@@ -165,10 +167,10 @@ export async function buildPassScene(
       url: '/models/2004_ferrari_f2004.glb',
       name: 'f1-glb',
       target: { kind: 'length', meters: 4.55 },
-      groundClearance: 0.03,
+      groundClearance: VEHICLE_GROUND_Y,
       stripLargerThan: 7,
-      stripYSpread: 3.2,
-      stripSpheresLargerThan: 1.4,
+      stripYSpread: 2.4,
+      stripSpheresLargerThan: 0.95,
       maxFittedHeight: 2.4,
       maxFittedExtent: 6.5,
     })
@@ -204,17 +206,20 @@ export async function buildPassScene(
   }
 
   placeOnLane(racers.camaro, racers.camaro.getLocalPosition().x || 0.4, LANE_NEAR_Z)
-  // Opponent slightly ahead and further left — full silhouette, lower visual priority.
   placeOnLane(racers.f1, 1.85, LANE_FAR_Z - 0.55)
   racers.jet.setLocalPosition(1.6, JET_ALTITUDE, JET_Z)
+  applyGhostLook(pc, racers.f1, [0.58, 0.66, 0.8])
+  applyGhostLook(pc, racers.jet, [0.64, 0.66, 0.72])
 
   const streetCar = buildStreetCar(pc, quality)
-  streetCar.setLocalPosition(STREET_CAR_START_X, 0, STREET_CAR_Z)
+  streetCar.setLocalPosition(STREET_CAR_START_X, STREET_CAR_Y, STREET_CAR_Z)
+  applyGhostLook(pc, streetCar, [0.55, 0.56, 0.58])
   const streetStart = streetCar.getLocalPosition().clone()
   const streetStartRot = streetCar.getLocalEulerAngles().clone()
 
-  let opponent: PassOpponentId = 'f1'
-  racers.f1.enabled = true
+  let opponent: PassOpponentId = 'none'
+  let rivalsLive = false
+  racers.f1.enabled = false
   racers.jet.enabled = false
 
   const startPositions: Record<VehicleId, Vec3> = {
@@ -233,7 +238,6 @@ export async function buildPassScene(
   })
   sceneRoot.addChild(streetCar)
   streetCar.enabled = false
-  attachContactShadow(pc, racers.f1, [1.85, 0.012, 0.88])
 
   const skyClear = new pc.Color(0.42, 0.64, 0.92)
   const camera = new pc.Entity('pass-camera')
@@ -268,8 +272,13 @@ export async function buildPassScene(
   const scoreboard = createScoreboard(app, pc, sceneRoot)
 
   const applyOpponentVisibility = () => {
-    racers.f1.enabled = opponent === 'f1'
-    racers.jet.enabled = opponent === 'jet'
+    racers.f1.enabled = rivalsLive && opponent === 'f1'
+    racers.jet.enabled = rivalsLive && opponent === 'jet'
+  }
+
+  const setRivalsLive = (live: boolean) => {
+    rivalsLive = live
+    applyOpponentVisibility()
   }
 
   const setOpponent = (next: PassOpponentId) => {
@@ -285,6 +294,7 @@ export async function buildPassScene(
   const getOpponent = () => opponent
 
   const resetRacers = () => {
+    rivalsLive = false
     ;(Object.keys(racers) as VehicleId[]).forEach((id) => {
       racers[id].setLocalPosition(startPositions[id])
       racers[id].setLocalEulerAngles(startRotations[id])
@@ -311,6 +321,7 @@ export async function buildPassScene(
     camaroHasTextures,
     getOpponent,
     setOpponent,
+    setRivalsLive,
     setTreeLights: environment.setTreeLights,
     resetRacers,
     scoreboard,

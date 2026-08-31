@@ -1,78 +1,71 @@
-import { useEffect, useRef, useState } from 'react'
-
-import { useT } from '../../i18n'
+import { edhTimeslipMeta, edhTimeslipRows, type HudSplitId } from '../../data/simulator'
+import { useLocale, useT } from '../../i18n'
+import { formatLocaleNumber } from '../../lib/formatLocaleNumber'
 import type { PassPhase } from '../../lib/pass/types'
 
 type PassRacingHudProps = {
   phase: PassPhase
+  clock: number
   speedKmh: number
-  remainingM: number
+  splitId: HudSplitId | null
   chuteDeploy01: number
 }
 
-const SPEED_MILESTONES = [100, 200, 300, 400] as const
+function splitLabel(id: HudSplitId, t: ReturnType<typeof useT>): string {
+  switch (id) {
+    case 'sixty':
+      return t.pass.timeslipSplits.sixty.label
+    case 'threeThirty':
+      return t.pass.timeslipSplits.threeThirty.label
+    case 'eighth':
+      return t.pass.timeslipSplits.eighth.label
+    case 'thousand':
+      return t.pass.timeslipSplits.thousand.label
+    case 'quarter':
+      return t.pass.timeslipSplits.quarter.label
+    default: {
+      const exhaustiveCheck: never = id
+      return exhaustiveCheck
+    }
+  }
+}
 
-/**
- * Live speed + meters remaining. Off-center so the car keeps the middle.
- */
+function officialEt(id: HudSplitId): number | null {
+  const row = edhTimeslipRows.find((entry) => entry.id === id)
+  return row?.et ?? null
+}
+
 export function PassRacingHud({
   phase,
+  clock,
   speedKmh,
-  remainingM,
+  splitId,
   chuteDeploy01,
 }: PassRacingHudProps) {
   const t = useT()
-  const [pulse, setPulse] = useState(false)
-  const hitRef = useRef<Set<number>>(new Set())
-
-  const speedDisplay = phase === 'racing' ? Math.round(speedKmh) : 0
-  const showRemaining = phase === 'racing' && chuteDeploy01 < 0.25 && remainingM > 0
-  const showChutes = phase === 'racing' && chuteDeploy01 > 0.15
-
-  useEffect(() => {
-    if (phase !== 'racing') {
-      hitRef.current.clear()
-      return
-    }
-    SPEED_MILESTONES.forEach((mark) => {
-      if (speedKmh >= mark && !hitRef.current.has(mark)) {
-        hitRef.current.add(mark)
-        setPulse(true)
-        window.setTimeout(() => setPulse(false), 320)
-      }
-    })
-  }, [speedKmh, phase])
+  const locale = useLocale()
+  const racing = phase === 'racing' || phase === 'green'
+  const finished = phase === 'finished'
+  const et = splitId ? (officialEt(splitId) ?? clock) : clock
+  const label = splitId
+    ? splitLabel(splitId, t)
+    : chuteDeploy01 > 0.15
+      ? t.pass.racingHud.chutes
+      : t.pass.racingHud.elapsed
+  const trapKmh = Math.round(edhTimeslipMeta.trapKmh)
+  const speedDisplay = finished ? trapKmh : racing ? Math.round(speedKmh) : 0
 
   return (
-    <div
-      className={`pass-racing-hud${pulse ? ' pass-racing-hud--pulse' : ''}`}
-      aria-hidden="true"
-    >
-      <div className="pass-racing-hud__rail">
-        <div className="pass-racing-hud__chip pass-racing-hud__chip--speed">
-          <span className="pass-racing-hud__chip-value pass-racing-hud__chip-value--speed">
-            {speedDisplay || '0'}
-          </span>
-          <span className="pass-racing-hud__chip-label">{t.pass.racingHud.speedUnit}</span>
-        </div>
-
-        {showRemaining ? (
-          <div className="pass-racing-hud__chip pass-racing-hud__chip--remain">
-            <span className="pass-racing-hud__chip-value pass-racing-hud__chip-value--sm">
-              {Math.round(remainingM)}
-            </span>
-            <span className="pass-racing-hud__chip-label">
-              m {t.pass.metersLeft}
-            </span>
-          </div>
-        ) : null}
-
-        {showChutes ? (
-          <div className="pass-racing-hud__chip pass-racing-hud__chip--chutes">
-            <span className="pass-racing-hud__chip-label">{t.pass.racingHud.chutes}</span>
-          </div>
-        ) : null}
-      </div>
+    <div className="pass-racing-hud" aria-hidden="true">
+      <p className="pass-racing-hud__et">
+        {formatLocaleNumber(et, locale, 3)}
+        <span> s</span>
+      </p>
+      <p className="pass-racing-hud__split">{label}</p>
+      <p className="pass-racing-hud__speed">
+        {speedDisplay}
+        <span> {t.pass.racingHud.speedUnit}</span>
+      </p>
     </div>
   )
 }

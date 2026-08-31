@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
-import { PassTimeslip } from './PassFallback'
 import { useT } from '../../i18n'
+import { PassTimeslip } from './PassTimeslip'
+import './PassTimeslip.css'
 
 type Props = {
   open: boolean
@@ -73,7 +74,7 @@ export function PassTimeslipDialog({ open, onClose }: Props) {
           <span aria-hidden="true">×</span>
         </button>
         <div className="pass-timeslip-dialog__body">
-          <PassTimeslip />
+          <PassTimeslip active={open} />
         </div>
       </div>
     </dialog>,

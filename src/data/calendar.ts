@@ -15,9 +15,9 @@ export type CalendarRound = {
 
 /** Atmosphere plates per venue — honest reuse when no dedicated shoot exists */
 export const venueImages: Record<string, string> = {
-  'Santa Pod Raceway': '/images/santa-pod.JPG',
+  'Santa Pod Raceway': '/images/santa-pod.webp',
   'Tierp Arena': '/images/tierp.jpeg',
-  'Hudik Raceway': '/images/IMG_1860.JPG',
+  'Hudik Raceway': '/images/IMG_1860.webp',
   'Mantorp Park': '/images/IMG_4727.JPG',
   'Sundsvall Raceway': '/images/winner.JPG',
 }

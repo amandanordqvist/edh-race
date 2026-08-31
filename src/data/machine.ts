@@ -23,11 +23,5 @@ export const machineSpecs: SpecRow[] = [
 export const hotspotIds = ['engine', 'compressor', 'chassis', 'fourLink'] as const
 export type HotspotId = (typeof hotspotIds)[number]
 
-/** Curated orbit of normalized WebP angles (raw plates are not a true 360 set). */
-export const carShowcaseOrder = [
-  13, 6, 12, 2, 9, 8, 14, 4, 3, 17, 16, 1, 10, 7, 18, 15, 5,
-] as const
-
-export const carTurntableFrames = carShowcaseOrder.map(
-  (id) => `/images/images-car/showcase/${String(id).padStart(2, '0')}.webp`,
-)
+/** 3/4 still used if WebGL is unavailable. */
+export const studioPosterSrc = '/images/images-car/showcase/13.webp'

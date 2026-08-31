@@ -1,6 +1,7 @@
 .pass-teaser {
   position: relative;
-  overflow: clip;
+  overflow: visible;
+  padding-top: clamp(2.5rem, 6vw, 4.5rem);
 }
 
 .pass-teaser__frame {
@@ -10,13 +11,13 @@
 }
 
 .pass-teaser__copy {
-  max-width: 36rem;
+  max-width: 22rem;
 }
 
 .pass-teaser__label {
-  margin: 0 0 0.85rem;
+  margin: 0 0 0.7rem;
   font-family: var(--font-ui);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -24,16 +25,18 @@
 }
 
 .pass-teaser__title {
-  font-size: clamp(2.2rem, 5.8vw, 3.6rem);
+  font-size: clamp(3.2rem, 10vw, 6.6rem);
   margin: 0 0 1rem;
-  max-width: 14ch;
+  max-width: 8ch;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
 }
 
 .pass-teaser__lead {
   margin: 0;
-  max-width: 42ch;
+  max-width: 34ch;
   font-size: var(--body-size);
-  line-height: 1.65;
+  line-height: 1.55;
   color: rgba(243, 245, 248, 0.88);
 }
 
@@ -51,18 +54,20 @@
 .pass-teaser__image {
   width: 100%;
   height: auto;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3;
+  min-height: 16rem;
   display: block;
   object-fit: cover;
-  object-position: center 34%;
+  object-position: 40% 48%;
   border-radius: var(--radius-md);
+  transform-origin: center center;
 }
 
 .pass-teaser__facts {
   margin: 0.75rem 0 0;
   font-family: var(--font-ui);
-  font-size: 0.88rem;
-  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-silver-gray);
 }
@@ -81,12 +86,26 @@
 
 @media (min-width: 960px) {
   .pass-teaser__frame {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: var(--grid-gap);
+    grid-template-columns: minmax(0, 5.5fr) minmax(0, 6.5fr);
+    gap: clamp(1.5rem, 3vw, 2.5rem);
     align-items: center;
   }
 
   .pass-teaser__copy {
-    padding-block: 1rem;
+    max-width: none;
+    padding-block: 0.5rem;
+  }
+
+  .pass-teaser__title {
+    font-size: clamp(4.4rem, 8vw, 7.4rem);
+  }
+
+  .pass-teaser__media {
+    margin-right: -1.75rem;
+  }
+
+  .pass-teaser__image {
+    min-height: 28rem;
+    aspect-ratio: 5 / 4;
   }
 }

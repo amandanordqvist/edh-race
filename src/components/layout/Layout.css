@@ -22,7 +22,9 @@
 
 #main,
 #partners,
-#partner-logos {
+#partner-logos,
+#roster,
+#invite {
   scroll-margin-top: calc(var(--header-height) + 0.75rem);
 }
 

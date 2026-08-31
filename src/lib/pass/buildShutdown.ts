@@ -7,6 +7,8 @@ import {
   LANE_NEAR_Z,
   SHUTDOWN_LENGTH,
   TRACK_LENGTH,
+  TRACK_SURFACE_CENTER_Y,
+  TRACK_SURFACE_HEIGHT,
   TRACK_WIDTH,
 } from './passLayout'
 import type { PassQuality } from './types'
@@ -36,28 +38,33 @@ export function buildShutdown(opts: ShutdownOptions): void {
 
   const asphalt = createMaterial(pc, {
     diffuse: [0.026, 0.027, 0.03],
-    metalness: 0.14,
-    gloss: 0.22,
+    metalness: 0,
+    gloss: 0.08,
+    useSkybox: false,
   })
   const rubber = createMaterial(pc, {
     diffuse: [0.028, 0.028, 0.03],
-    metalness: 0.04,
-    gloss: 0.1,
+    metalness: 0.02,
+    gloss: 0.06,
+    useSkybox: false,
   })
   const paintBlue = createMaterial(pc, {
     diffuse: [0.08, 0.36, 0.74],
-    metalness: 0.04,
-    gloss: 0.28,
+    metalness: 0.02,
+    gloss: 0.12,
+    useSkybox: false,
   })
   const sand = createMaterial(pc, {
     diffuse: [0.08, 0.07, 0.055],
     metalness: 0.02,
     gloss: 0.05,
+    useSkybox: false,
   })
   const sandDark = createMaterial(pc, {
     diffuse: [0.055, 0.05, 0.042],
     metalness: 0.02,
     gloss: 0.04,
+    useSkybox: false,
   })
   const net = createMaterial(pc, {
     diffuse: [0.18, 0.19, 0.21],
@@ -78,8 +85,8 @@ export function buildShutdown(opts: ShutdownOptions): void {
     createPrimitive(pc, {
       name: 'shutdown-asphalt',
       type: 'box',
-      position: [mid, -0.22, 0],
-      scale: [SHUTDOWN_LENGTH, 0.18, TRACK_WIDTH],
+      position: [mid, TRACK_SURFACE_CENTER_Y, 0],
+      scale: [SHUTDOWN_LENGTH, TRACK_SURFACE_HEIGHT, TRACK_WIDTH],
       material: asphalt,
     }),
   )

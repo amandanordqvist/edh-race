@@ -1,173 +1,52 @@
 import type { Entity } from 'playcanvas'
 
+import {
+  cockpitPose,
+  directedRacePose,
+  finishSettlePose,
+  heroFinishPose,
+  inspectPose,
+  launchPose,
+  lerp,
+  mixPose,
+  overviewPose,
+  treeInsertPose,
+  type CameraPose,
+} from './cameraPoses'
 import type { PassCameraView, PassPhase } from './types'
 
-const CAMERA_LERP = 7.5
+const CAMERA_LERP = 8.5
 const ZOOM_LERP = 5.5
-/** Deepest slow-mo timeScale from raceController — kept in sync so the hero
- * shot commits fully at peak slow-mo. */
 const SLOW_MO_MIN_SCALE = 0.32
 
-/** Idle inspect orbit — default is a low rear 3/4; orbit is voluntary. */
-export const PASS_INSPECT_YAW_DEG = -78
-export const PASS_INSPECT_PITCH_DEG = 11
-export const PASS_INSPECT_RADIUS = 7.2
-export const PASS_INSPECT_LOOK_Y = 0.7
+/** Idle: tight rear 3/4 so the Camaro is the hero, not the poles. */
+export const PASS_INSPECT_YAW_DEG = -22
+export const PASS_INSPECT_PITCH_DEG = 7
+export const PASS_INSPECT_RADIUS = 5.05
+export const PASS_INSPECT_LOOK_Y = 0.5
 
 const INSPECT_RADIUS_DEFAULT = PASS_INSPECT_RADIUS
-const INSPECT_RADIUS_MIN = 4.6
-const INSPECT_RADIUS_MAX = 12.5
-const INSPECT_PITCH_MIN = 5
-const INSPECT_PITCH_MAX = 28
+const INSPECT_RADIUS_MIN = 3.6
+const INSPECT_RADIUS_MAX = 8.5
+const INSPECT_PITCH_MIN = 4
+const INSPECT_PITCH_MAX = 22
 const INSPECT_YAW_SENS = 95
 const INSPECT_PITCH_SENS = 55
-const INSPECT_AUTO_YAW_DEG = 8
-const INSPECT_IDLE_RESUME_S = 2.6
 const INSPECT_START_YAW = PASS_INSPECT_YAW_DEG
 const INSPECT_START_PITCH = PASS_INSPECT_PITCH_DEG
 
-type Pose = {
-  position: [number, number, number]
-  look: [number, number, number]
-  fov: number
-}
-
-/** Closer idle establishing shot — soft jump into tree insert. */
-function overviewPose(trackLength: number): Pose {
-  return {
-    position: [trackLength * 0.1, 14, 18],
-    look: [1.6, 0.7, 0],
-    fov: 46,
-  }
-}
-
-/**
- * Orbit around the Camaro so the whole body reads.
- * Yaw 0 ≈ rear 3/4; increases orbit counterclockwise around the car.
- */
-function inspectPose(
-  heroX: number,
-  heroZ: number,
-  yawDeg: number,
-  pitchDeg: number,
-  radius: number,
-): Pose {
-  const lookY = PASS_INSPECT_LOOK_Y
-  const yaw = (yawDeg * Math.PI) / 180
-  const pitch = (pitchDeg * Math.PI) / 180
-  const cosPitch = Math.cos(pitch)
-
-  return {
-    position: [
-      heroX + Math.sin(yaw) * cosPitch * radius,
-      lookY + Math.sin(pitch) * radius,
-      heroZ + Math.cos(yaw) * cosPitch * radius,
-    ],
-    look: [heroX + 1.8, lookY + 0.08, heroZ],
-    fov: 36,
-  }
-}
-
-/** Tree insert — low, almost dead-behind; holds distance before the chase closes in. */
-function treeInsertPose(heroX: number, heroZ: number): Pose {
-  return {
-    position: [heroX - 5.8, 0.58, heroZ + 0.62],
-    look: [heroX + 4.2, 0.58, heroZ + 0.06],
-    fov: 32,
-  }
-}
-
-/**
- * Chase camera — starts farther, closes in as speed rises so the car grows to
- * ~15% of frame height. Slight Z offset for a cinematic composition.
- */
-function followPose(
-  heroX: number,
-  heroZ: number,
-  speed01: number,
-  accel01 = 0,
-  chute01 = 0,
-): Pose {
-  const closeIn = speed01 * 2.2 + accel01 * 0.5
-  const chuteBack = chute01 * 1.6
-  const distance = 7.4 - closeIn + chuteBack
-  return {
-    position: [
-      heroX - distance,
-      0.38 + speed01 * 0.03 + chute01 * 0.12,
-      heroZ + 0.78 + speed01 * 0.16,
-    ],
-    look: [heroX + 5.2 + speed01 * 3.2, 0.52 + chute01 * 0.12, heroZ + 0.28],
-    fov: 38 + speed01 * 12 + accel01 * 5 - chute01 * 3,
-  }
-}
-
-/** Finish 3/4: beside the car so body and chutes stay in frame. */
-function finishSettlePose(heroX: number, heroZ: number): Pose {
-  return {
-    position: [heroX - 6.4, 0.92, heroZ + 5.4],
-    look: [heroX + 0.2, 0.62, heroZ - 0.08],
-    fov: 34,
-  }
-}
-
-/** Elevated side-rail looking across both lanes. */
-function sideRailPose(heroX: number, trackLength: number): Pose {
-  const x = Math.min(trackLength * 0.72, Math.max(18, heroX + 10))
-  return {
-    position: [x, 11, 22],
-    look: [x - 6, 0.4, 0],
-    fov: 44,
-  }
-}
-
-/**
- * First-person cockpit shot — driver's eyeline just above the windshield,
- * looking straight down the strip. Wide FOV plus continuous chassis shake
- * gives visceral speed even though the geometry itself hasn't changed.
- */
-function cockpitPose(heroX: number, heroZ: number, speed01: number, accel01 = 0): Pose {
-  return {
-    position: [heroX + 1.35, 1.25 + speed01 * 0.05, heroZ],
-    look: [heroX + 32, 0.95 + speed01 * 0.12, heroZ],
-    fov: 68 + speed01 * 10 + accel01 * 6,
-  }
-}
-
-/**
- * Slow-mo finish: still dead-behind, just closer and lower so the car
- * stays parallel to the strip instead of a side-quarter that reads as yaw.
- */
-function heroFinishPose(heroX: number, heroZ: number): Pose {
-  return {
-    position: [heroX - 3.8, 0.62, heroZ + 0.55],
-    look: [heroX + 5, 0.7, heroZ + 0.1],
-    fov: 32,
-  }
-}
-
-function lerp(a: number, b: number, t: number): number {
-  return a + (b - a) * t
-}
-
-function mixPose(a: Pose, b: Pose, t: number): Pose {
-  return {
-    position: [
-      lerp(a.position[0], b.position[0], t),
-      lerp(a.position[1], b.position[1], t),
-      lerp(a.position[2], b.position[2], t),
-    ],
-    look: [
-      lerp(a.look[0], b.look[0], t),
-      lerp(a.look[1], b.look[1], t),
-      lerp(a.look[2], b.look[2], t),
-    ],
-    fov: lerp(a.fov, b.fov, t),
-  }
-}
-
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
+}
+
+function idleInspect(
+  heroX: number,
+  heroZ: number,
+  yaw: number,
+  pitch: number,
+  radius: number,
+): CameraPose {
+  return inspectPose(heroX, heroZ, yaw, pitch, radius, PASS_INSPECT_LOOK_Y)
 }
 
 type CameraDirectorOptions = {
@@ -201,8 +80,8 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   let inspectYaw = INSPECT_START_YAW
   let inspectPitch = INSPECT_START_PITCH
   let inspectRadius = INSPECT_RADIUS_DEFAULT
-  let inspectIdleTimer = 0
   let inspectDragging = false
+  let raceProgress = 0
 
   /** 0 = follow car, 1 = zoomed out to full strip */
   let zoomTarget = 0
@@ -213,7 +92,7 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   /** Cockpit-mode shake follows raceSpeed and never fully fades until race ends. */
   let cockpitShakePhase = 0
 
-  const initialInspect = inspectPose(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius)
+  const initialInspect = idleInspect(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius)
   let currentPos: [number, number, number] = [...initialInspect.position]
   let currentLook: [number, number, number] = [...initialInspect.look]
   let currentFov = initialInspect.fov
@@ -227,7 +106,7 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     onViewChange?.(view)
   }
 
-  const applyPoseImmediate = (pose: Pose) => {
+  const applyPoseImmediate = (pose: CameraPose) => {
     currentPos = [...pose.position]
     currentLook = [...pose.look]
     currentFov = pose.fov
@@ -238,20 +117,17 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
 
   applyPoseImmediate(initialInspect)
 
-  const resolveTargetPose = (): Pose => {
+  const resolveTargetPose = (): CameraPose => {
     switch (currentPhase) {
       case 'idle':
-        return inspectPose(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius)
+        return idleInspect(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius)
 
       case 'staging':
       case 'amber':
         return treeInsertPose(heroX, heroZ)
 
-      case 'green': {
-        const insert = treeInsertPose(heroX, heroZ)
-        const follow = followPose(heroX, heroZ, 0.08, 0.55)
-        return mixPose(insert, follow, 0.4)
-      }
+      case 'green':
+        return mixPose(treeInsertPose(heroX, heroZ), launchPose(heroX, heroZ, 0.7), 0.35)
 
       case 'racing':
       case 'finished': {
@@ -268,13 +144,14 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
           }
           return pov
         }
-        const follow = followPose(heroX, heroZ, raceSpeed, accelAmount, chuteAmount)
-        const sideMix = Math.min(1, chuteAmount * 1.85)
-        const settle = mixPose(follow, finishSettlePose(heroX, heroZ), sideMix)
-        const wide = mixPose(settle, sideRailPose(heroX, trackLength), zoomCurrent)
-        const withSlow =
-          slowMoAmount > 0 ? mixPose(wide, heroFinishPose(heroX, heroZ), slowMoAmount) : wide
-        return withSlow
+        return directedRacePose(
+          heroX,
+          heroZ,
+          raceProgress,
+          raceSpeed,
+          accelAmount,
+          chuteAmount,
+        )
       }
 
       default: {
@@ -299,17 +176,6 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     accelAmount = lerp(accelAmount, accelTarget, 1 - Math.exp(-6 * dt))
     if (currentPhase === 'green') {
       accelAmount = Math.max(accelAmount, 0.7)
-    }
-
-    if (currentPhase === 'idle') {
-      if (inspectDragging) {
-        inspectIdleTimer = 0
-      } else {
-        inspectIdleTimer += dt
-        if (inspectIdleTimer > INSPECT_IDLE_RESUME_S) {
-          inspectYaw += INSPECT_AUTO_YAW_DEG * dt
-        }
-      }
     }
 
     const blend =
@@ -364,7 +230,6 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     if (reducedMotion || currentPhase !== 'idle') return
 
     inspectDragging = true
-    inspectIdleTimer = 0
     inspectYaw -= dx * INSPECT_YAW_SENS
     inspectPitch = clamp(inspectPitch + dy * INSPECT_PITCH_SENS, INSPECT_PITCH_MIN, INSPECT_PITCH_MAX)
   }
@@ -383,7 +248,6 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
         INSPECT_RADIUS_MIN,
         INSPECT_RADIUS_MAX,
       )
-      inspectIdleTimer = 0
       return
     }
 
@@ -413,8 +277,10 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     if (phase === 'staging' || phase === 'amber' || phase === 'green') {
       zoomTarget = 0
       zoomCurrent = 0
-      view = 'follow'
-      onViewChange?.(view)
+      if (view !== 'cockpit') {
+        view = 'follow'
+        onViewChange?.(view)
+      }
     }
 
     if (phase === 'green') {
@@ -429,9 +295,9 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
       inspectYaw = INSPECT_START_YAW
       inspectPitch = INSPECT_START_PITCH
       inspectRadius = INSPECT_RADIUS_DEFAULT
-      inspectIdleTimer = 0
       inspectDragging = false
       raceSpeed = 0
+      raceProgress = 0
       prevRaceSpeed = 0
       accelAmount = 0
       onViewChange?.(view)
@@ -454,7 +320,7 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     if (reducedMotion) {
       if (phase === 'idle') {
         applyPoseImmediate(
-          inspectPose(heroX, heroZ, INSPECT_START_YAW, INSPECT_START_PITCH, INSPECT_RADIUS_DEFAULT),
+          idleInspect(heroX, heroZ, INSPECT_START_YAW, INSPECT_START_PITCH, INSPECT_RADIUS_DEFAULT),
         )
       } else {
         applyPoseImmediate(overviewPose(trackLength))
@@ -469,7 +335,7 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     timeScale = 1,
     chuteDeploy01 = 0,
   ) => {
-    void progress01
+    raceProgress = Math.min(1, Math.max(0, progress01))
     raceSpeed = Math.min(1, Math.max(0, speed01))
     if (typeof nextHeroX === 'number') {
       heroX = nextHeroX
@@ -482,6 +348,7 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   const reset = () => {
     currentPhase = 'idle'
     raceSpeed = 0
+    raceProgress = 0
     prevRaceSpeed = 0
     accelAmount = 0
     heroX = camaro.getLocalPosition().x
@@ -489,7 +356,6 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     inspectYaw = INSPECT_START_YAW
     inspectPitch = INSPECT_START_PITCH
     inspectRadius = INSPECT_RADIUS_DEFAULT
-    inspectIdleTimer = 0
     inspectDragging = false
     zoomTarget = 0
     zoomCurrent = 0
@@ -499,7 +365,7 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     slowMoAmount = 0
     chuteAmount = 0
     onViewChange?.(view)
-    applyPoseImmediate(inspectPose(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius))
+    applyPoseImmediate(idleInspect(heroX, heroZ, inspectYaw, inspectPitch, inspectRadius))
   }
 
   const destroy = () => {

@@ -56,16 +56,9 @@ export type Dictionary = {
     ctaTeam: string
     ctaMachine: string
     statsTitle: string
-    stats: {
-      quarter: { value: string; unit: string; label: string }
-      topSpeed: { value: string; unit: string; label: string }
-      eighth: { value: string; unit: string; label: string }
-      championship: { value: string; unit: string; label: string }
-    }
     driverLabel: string
     driverTitle: string
     driverBody: string
-    driverCta: string
     driverAlt: string
     machineLabel: string
     machineTitle: string
@@ -108,6 +101,7 @@ export type Dictionary = {
     facebookTitle: string
     facebookBody: string
     facebookCta: string
+    facebookAlt: string
     passTeaserLabel: string
     passTeaserTitle: string
     passTeaserBody: string
@@ -119,6 +113,20 @@ export type Dictionary = {
   pass: {
     title: string
     lead: string
+    promptHeadline: string
+    promptSub: string
+    viewDriver: string
+    viewTrack: string
+    startPass: string
+    treeCue: {
+      preStage: string
+      stage: string
+      amber: string
+      green: string
+    }
+    compareWith: string
+    thatWasThePass: string
+    finishVenue: string
     stage: string
     again: string
     mute: string
@@ -170,6 +178,7 @@ export type Dictionary = {
       finished: string
     }
     compare: {
+      none: string
       camaro: string
       f1: string
       jet: string
@@ -184,6 +193,16 @@ export type Dictionary = {
     timeslipPlace: string
     timeslipEvent: string
     timeslipGuide: string
+    timeslipVenue: string
+    timeslipDate: string
+    timeslipClass: string
+    timeslipTeam: string
+    timeslipMeters: string
+    timeslipCloser: string
+    timeslipTrackStart: string
+    timeslipTrackFinish: string
+    timeslipColTime: string
+    timeslipColSpeed: string
     timeslipCompareTitle: string
     timeslipCompareLead: string
     pickOpponent: string
@@ -237,13 +256,12 @@ export type Dictionary = {
       win: string
     }
     timeslipSplits: {
-      reaction: { label: string; meaning: string }
-      sixty: { label: string; meaning: string }
-      threeThirty: { label: string; meaning: string }
-      eighth: { label: string; meaning: string }
-      thousand: { label: string; meaning: string }
-      quarter: { label: string; meaning: string }
-      trapMph: { label: string; meaning: string }
+      reaction: { label: string; meaning: string; meters: string; note: string }
+      sixty: { label: string; meaning: string; meters: string; note: string }
+      threeThirty: { label: string; meaning: string; meters: string; note: string }
+      eighth: { label: string; meaning: string; meters: string; note: string }
+      thousand: { label: string; meaning: string; meters: string; note: string }
+      quarter: { label: string; meaning: string; meters: string; note: string }
     }
   }
   journey: {
@@ -299,6 +317,8 @@ export type Dictionary = {
     chassisHint: string
     turntableHint: string
     turntableLabel: string
+    studioLoading: string
+    studioFallback: string
     specsTitle: string
     narrativeTitle: string
     extremeForcesTitle: string
@@ -352,10 +372,16 @@ export type Dictionary = {
   }
   contact: {
     title: string
+    headline: string
+    headlineBefore: string
+    headlineAfter: string
     pitchLead: string
     pitch: string
     proof: string
-    valuesTitle: string
+    ctaPrimary: string
+    ctaSecondary: string
+    rosterTitle: string
+    valuesScrub: string
     values: {
       exposure: { title: string; body: string }
       beast: { title: string; body: string }

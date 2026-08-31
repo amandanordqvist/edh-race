@@ -1,3 +1,6 @@
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { useRef } from 'react'
 import { sponsors } from '../../data/sponsors'
 import { useLocale, useT } from '../../i18n'
 import { localePath } from '../../lib/paths'
@@ -6,9 +9,30 @@ import { Reveal } from '../ui/Reveal'
 import { Section } from '../ui/Section'
 import './SponsorStrip.css'
 
+gsap.registerPlugin(useGSAP)
+
 export function SponsorStrip() {
   const t = useT()
   const locale = useLocale()
+  const trackRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      const track = trackRef.current
+      if (!track) return
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+      gsap.to(track, {
+        xPercent: -50,
+        duration: 32,
+        ease: 'none',
+        repeat: -1,
+      })
+    },
+    { scope: trackRef },
+  )
+
+  const logos = [...sponsors, ...sponsors]
 
   return (
     <Section className="sponsor-strip" id="partners" wide>
@@ -20,22 +44,20 @@ export function SponsorStrip() {
           <Button to={localePath(locale, 'contact')} icon>
             {t.home.sponsorsCta}
           </Button>
-          <Button to={`${localePath(locale, 'home')}#partner-logos`} variant="ghost">
-            {t.home.sponsorsCtaSecondary}
-          </Button>
         </div>
       </Reveal>
 
-      <div id="partner-logos">
-        <Reveal className="sponsor-strip__grid" pace="settle" delay={0.08} stagger={0.08}>
-          {sponsors.map((sponsor) => (
+      <div id="partner-logos" className="sponsor-strip__marquee">
+        <div ref={trackRef} className="sponsor-strip__track">
+          {logos.map((sponsor, index) => (
             <div
-              className={`sponsor-strip__logo${sponsor.id === 'aine' ? ' sponsor-strip__logo--lead' : ''}`}
-              key={sponsor.id}
+              className="sponsor-strip__logo"
+              key={`${sponsor.id}-${index}`}
+              aria-hidden={index >= sponsors.length}
             >
               <img
                 src={sponsor.logo}
-                alt={sponsor.name}
+                alt={index >= sponsors.length ? '' : sponsor.name}
                 width={220}
                 height={88}
                 loading="lazy"
@@ -43,7 +65,7 @@ export function SponsorStrip() {
               />
             </div>
           ))}
-        </Reveal>
+        </div>
       </div>
     </Section>
   )

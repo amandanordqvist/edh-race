@@ -45,3 +45,12 @@ export const SHUTDOWN_LENGTH = 44
 export const CHANNEL_WIDTH = 1.55
 
 export const BARRIER_Z = TRACK_WIDTH / 2 + CHANNEL_WIDTH + 0.35
+
+/** Racing asphalt box — PlayCanvas boxes are centred, so the driving surface is the top face. */
+export const TRACK_SURFACE_CENTER_Y = -0.22
+export const TRACK_SURFACE_HEIGHT = 0.18
+export const STRIP_TOP_Y = TRACK_SURFACE_CENTER_Y + TRACK_SURFACE_HEIGHT / 2
+/** Sit tires into the asphalt so round GLB slicks meet the strip in a low chase cam. */
+export const VEHICLE_GROUND_Y = STRIP_TOP_Y - 0.05
+/** Family-wagon origin sits above the tire bottoms (wheel radius ~0.26 m). */
+export const STREET_CAR_Y = VEHICLE_GROUND_Y - 0.02

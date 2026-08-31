@@ -8,6 +8,7 @@ import {
   hideSphericalMeshes,
 } from './camaroRig'
 import { loadContainerAsset } from './loadGlbAsset'
+import { VEHICLE_GROUND_Y } from './passLayout'
 import { shadowsEnabled, type PlayCanvasNamespace } from './scenePrimitives'
 import type { PassQuality } from './types'
 
@@ -56,7 +57,7 @@ export async function loadFittedGlb(opts: LoadFittedGlbOptions): Promise<Entity>
     url,
     name,
     target,
-    groundClearance = 0.02,
+    groundClearance = VEHICLE_GROUND_Y,
     yawFlipDeg = 0,
     maxFittedHeight = MAX_LENGTH_FIT_HEIGHT,
     maxFittedExtent = MAX_FITTED_EXTENT,
@@ -140,6 +141,7 @@ export async function loadFittedGlb(opts: LoadFittedGlbOptions): Promise<Entity>
     entity.setLocalPosition(-pos.x, pos.y, -pos.z)
   }
 
+  entity.syncHierarchy()
   const grounded = collectModelBounds(modelRoot)
   if (grounded) {
     const pos = entity.getLocalPosition()

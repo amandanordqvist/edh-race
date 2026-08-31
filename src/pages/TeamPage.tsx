@@ -16,14 +16,17 @@ export function TeamPage() {
           <p className="team-page__lead">{t.team.intro}</p>
         </Reveal>
         <Reveal className="team-page__photo" as="figure" delay={0.08} y={24} variant="media">
-          <img
-            src="/images/team2.JPG"
-            alt={t.team.groupPhotoAlt}
-            width={1500}
-            height={865}
-            loading="eager"
-            decoding="async"
-          />
+          <picture>
+            <source srcSet="/images/team2.webp" type="image/webp" />
+            <img
+              src="/images/team2.JPG"
+              alt={t.team.groupPhotoAlt}
+              width={1500}
+              height={865}
+              loading="eager"
+              decoding="async"
+            />
+          </picture>
         </Reveal>
       </Section>
       <SkewDivider />

@@ -12,12 +12,11 @@ import './HomeStory.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-/** Garage → 6.80 → plate record → rebuild → Santa Pod */
 const TEASER_IDS = [
-  '2010-nitrous',
+  '2005-license',
   '2016-680',
+  '2019-champion',
   '2021-record',
-  '2023-beast',
   '2024-santapod',
 ] as const
 
@@ -120,9 +119,7 @@ export function HomeStory() {
   return (
     <Section className="home-story" wide>
       <Reveal className="home-story__intro">
-        <p className="home-story__label">{t.home.storyLabel}</p>
         <h2 className="home-story__title">{t.home.storyTitle}</h2>
-        <p className="home-story__body">{t.home.storyBody}</p>
       </Reveal>
 
       <div ref={pinRef} className="home-story__pin">
@@ -138,7 +135,6 @@ export function HomeStory() {
                 key={beat.id}
                 year={beat.year}
                 weight={beat.weight}
-                mark={t.journey.marks[beat.id]}
                 caption={t.home.storyCaptions[beat.id] ?? ''}
                 media={beat.media}
                 fallback={t.home.imageFallback}
@@ -154,7 +150,7 @@ export function HomeStory() {
       </div>
 
       <Reveal className="home-story__cta" delay={0.06} y={20}>
-        <Button to={localePath(locale, 'journey')} icon>
+        <Button to={localePath(locale, 'journey')} variant="ghost" icon>
           {t.home.storyCta}
         </Button>
       </Reveal>
@@ -165,7 +161,6 @@ export function HomeStory() {
 function StoryBeat({
   year,
   weight,
-  mark,
   caption,
   media,
   fallback,
@@ -173,7 +168,6 @@ function StoryBeat({
 }: {
   year: string
   weight: TimelineWeight
-  mark?: string
   caption: string
   media?: JourneyMedia
   fallback: string
@@ -183,10 +177,7 @@ function StoryBeat({
 
   return (
     <article className={`home-story__beat home-story__beat--${weight}`}>
-      <header className="home-story__meta">
-        <p className="home-story__year">{year}</p>
-        {mark ? <p className="home-story__mark">{mark}</p> : null}
-      </header>
+      <p className="home-story__year">{year}</p>
 
       <figure className="home-story__media">
         {media && !failed ? (
@@ -194,7 +185,7 @@ function StoryBeat({
             className="home-story__img"
             src={media.src}
             srcSet={media.srcSet}
-            sizes="(min-width: 900px) 26rem, 80vw"
+            sizes="(min-width: 900px) 36rem, 88vw"
             alt=""
             width={media.width}
             height={media.height}

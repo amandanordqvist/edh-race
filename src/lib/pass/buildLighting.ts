@@ -1,4 +1,4 @@
-import type { Application, Entity } from 'playcanvas'
+import type { Application, CameraComponent, Entity } from 'playcanvas'
 
 import type { PlayCanvasNamespace } from './scenePrimitives'
 import type { PassQuality } from './types'
@@ -77,7 +77,7 @@ export function attachPassSunLights(opts: SunLightsOptions): void {
   sceneRoot.addChild(rimLight)
 }
 
-type BloomFrame = {
+type PassCameraFrame = {
   bloom: { intensity: number; blurLevel: number; enabled?: boolean }
   motionBlur?: { intensity?: number; enabled?: boolean }
   grading?: {
@@ -96,21 +96,25 @@ export type PassSpeedFeel = {
 }
 
 /**
- * Restrained bloom so tree lenses read as lights. Motion blur ramps with
- * speed so the strip streaks while the chase car stays relatively sharp.
+ * Restrained bloom so tree lenses read as lights. No TAA, chromatic fringe,
+ * or speed-fog — those smeared the Camaro into ghost boxes and crushed the strip.
  */
 export function attachPassBloom(opts: BloomOptions): PassSpeedFeel {
   const { app, pc, camera, quality } = opts
   const cameraComponent = camera.camera
+  const noop = { setSpeed01: () => undefined }
+
   if (!cameraComponent || quality !== 'high') {
-    return { setSpeed01: () => undefined }
+    return noop
   }
 
   const CameraFrame = (
-    pc as unknown as { CameraFrame?: new (application: Application, cam: typeof cameraComponent) => BloomFrame }
+    pc as unknown as {
+      CameraFrame?: new (application: Application, cam: CameraComponent) => PassCameraFrame
+    }
   ).CameraFrame
   if (!CameraFrame) {
-    return { setSpeed01: () => undefined }
+    return noop
   }
 
   try {
@@ -122,7 +126,6 @@ export function attachPassBloom(opts: BloomOptions): PassSpeedFeel {
       frame.motionBlur.enabled = false
       frame.motionBlur.intensity = 0
     }
-    // Neutral keeps the PureSky HDRI blue; ACES2 crushed it to overcast grey.
     if ('TONEMAP_NEUTRAL' in pc) {
       frame.rendering.toneMapping = (pc as unknown as { TONEMAP_NEUTRAL: number }).TONEMAP_NEUTRAL
     }
@@ -138,17 +141,9 @@ export function attachPassBloom(opts: BloomOptions): PassSpeedFeel {
     }
     frame.update()
 
-    return {
-      setSpeed01: (speed01: number) => {
-        if (!frame.motionBlur) return
-        const feel = Math.max(0, (speed01 - 0.18) / 0.82)
-        frame.motionBlur.enabled = feel > 0.04
-        frame.motionBlur.intensity = feel * 0.28
-        frame.update()
-      },
-    }
+    return noop
   } catch (error) {
     console.warn('[pass] CameraFrame bloom unavailable', error)
-    return { setSpeed01: () => undefined }
+    return noop
   }
 }

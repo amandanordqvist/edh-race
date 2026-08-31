@@ -12,6 +12,7 @@ const BOARD_W = 9.6
 const BOARD_H = 2.45
 
 const OPPONENT_TAG: Record<PassOpponentId, string> = {
+  none: '',
   f1: 'F1',
   jet: 'JET',
 }
@@ -113,6 +114,19 @@ function paint(canvas: HTMLCanvasElement, state: ScoreboardState): void {
   ctx.fillRect(0, CANVAS_H - 6, CANVAS_W, 6)
 
   const mid = CANVAS_W / 2
+  if (state.opponentId === 'none') {
+    drawLane(
+      ctx,
+      0,
+      CANVAS_W,
+      'EDH',
+      formatEt(state.heroEt),
+      formatTrap(state.heroTrap),
+      state.heroWin,
+    )
+    return
+  }
+
   ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
   ctx.fillRect(mid - 1, 18, 2, CANVAS_H - 36)
 
@@ -162,7 +176,7 @@ export function createScoreboard(
     flipY: false,
   }) as Texture
 
-  let state = idleState('f1')
+  let state = idleState('none')
   let lastPrint = ''
 
   const screenMat = new pc.StandardMaterial() as StandardMaterial
