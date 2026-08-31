@@ -1,67 +1,53 @@
-import { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { team } from '../../data/team'
 import { useLocale, useT } from '../../i18n'
 import { localePath } from '../../lib/paths'
+import { Button } from '../ui/Button'
 import { Reveal } from '../ui/Reveal'
 import { Section } from '../ui/Section'
-import { useCinematicMedia } from './useCinematicMedia'
 import './HomeTeam.css'
 
 export function HomeTeam() {
   const t = useT()
   const locale = useLocale()
-  const [photoFailed, setPhotoFailed] = useState(false)
-  const members = team.filter((member) => member.group === 'crew')
-  const stageRef = useRef<HTMLDivElement>(null)
-  useCinematicMedia(stageRef, { media: '.home-team__photo img' })
+  const members = team.filter((member) => member.group === 'crew' && member.image)
 
   return (
     <Section className="home-team" wide>
       <Reveal className="home-team__intro">
         <h2 className="home-team__title">{t.home.teamTitle}</h2>
         <p className="home-team__body">{t.home.teamBody}</p>
+        <Button to={localePath(locale, 'team')} icon>
+          {t.home.teamCta}
+        </Button>
       </Reveal>
 
-      <div ref={stageRef} className="home-team__stage">
-        <Link
-          className="home-team__photo-link"
-          to={localePath(locale, 'team')}
-          aria-label={t.home.teamCta}
-        >
-          <figure className="home-team__photo">
-            {photoFailed ? (
-              <div className="home-team__fallback" role="img" aria-label={t.home.imageFallback}>
-                <span>{t.home.imageFallback}</span>
-              </div>
-            ) : (
-              <picture>
-                <source srcSet="/images/team2.webp" type="image/webp" />
+      <ul className="home-team__roster">
+        {members.map((member, index) => {
+          const role = t.team.members[member.id]?.role ?? ''
+          return (
+            <Reveal
+              as="li"
+              className="home-team__member"
+              delay={0.06 * index}
+              y={24}
+              key={member.id}
+            >
+              <figure className="home-team__portrait">
                 <img
-                  src="/images/team2.JPG"
-                  alt={t.home.teamPhotoAlt}
-                  width={1600}
-                  height={1000}
+                  src={member.image}
+                  alt={member.name}
+                  width={640}
+                  height={800}
                   loading="lazy"
                   decoding="async"
-                  onError={() => setPhotoFailed(true)}
                 />
-              </picture>
-            )}
-          </figure>
-        </Link>
-        <ul className="home-team__roster">
-          {members.map((member) => {
-            const role = t.team.members[member.id]?.role ?? ''
-            return (
-              <li key={member.id}>
-                <span className="home-team__name">{member.name}</span>
-                {role ? <span className="home-team__role">{role}</span> : null}
-              </li>
-            )
-          })}
-        </ul>
-      </div>
+              </figure>
+              <p className="home-team__name">{member.name}</p>
+              {role ? <p className="home-team__role">{role}</p> : null}
+            </Reveal>
+          )
+        })}
+      </ul>
     </Section>
   )
 }

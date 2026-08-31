@@ -3,25 +3,63 @@ export type SpecRow = {
   value: string
 }
 
+/** Team spec card — Camaro / Top Doorslammer. */
 export const machineSpecs: SpecRow[] = [
-  { key: 'model', value: 'Chevrolet Camaro' },
+  { key: 'brand', value: 'Camaro' },
   { key: 'class', value: 'Top Doorslammer' },
-  { key: 'body', value: 'Five Star carbon fibre body (USA)' },
-  { key: 'chassis', value: 'Chromoly tube chassis by Mats Brag (MB)' },
-  { key: 'engine', value: 'BAE 521 Hemi V8 (Brad Anderson Engineering)' },
-  { key: 'displacement', value: '521 ci (8.5 L)' },
-  { key: 'blower', value: 'PSI screw blower' },
-  { key: 'power', value: '~3,500–4,000+ hp' },
-  { key: 'transmission', value: 'Coan 400 3-speed racing automatic' },
+  { key: 'builtIn', value: '2023' },
+  { key: 'builtBy', value: 'Anders Edh' },
+  { key: 'chassis', value: 'Mats Brag' },
+  { key: 'body', value: 'Five Star' },
+  { key: 'paintedBy', value: 'P.Jons' },
+  { key: 'fuel', value: 'Metanol' },
+  { key: 'poweradder', value: 'Blower' },
+  { key: 'engine', value: 'BAE' },
+  { key: 'displacement', value: '521' },
   { key: 'crankshaft', value: 'Sonny' },
-  { key: 'rear', value: 'MB rear axle, four-link suspension' },
-  { key: 'fuel', value: 'Methanol' },
-  { key: 'weight', value: '1140 kg (incl. driver and 25 L methanol)' },
-  { key: 'safety', value: 'Dual parachutes' },
+  { key: 'transmission', value: 'Coan 400' },
+  { key: 'rear', value: 'MB' },
 ]
 
-export const hotspotIds = ['engine', 'compressor', 'chassis', 'fourLink'] as const
-export type HotspotId = (typeof hotspotIds)[number]
+export const specHighlightKeys = ['bestEt', 'bestSpeed', 'class'] as const
 
-/** 3/4 still used if WebGL is unavailable. */
-export const studioPosterSrc = '/images/images-car/showcase/13.webp'
+export type MachinePhotoId = 'front' | 'engine' | 'side'
+
+export type MachinePhoto = {
+  id: MachinePhotoId
+  src: string
+  webp: string
+  webpSrcSet?: string
+  width: number
+  height: number
+  credit?: string
+}
+
+export const machineHeroPhoto: MachinePhoto = {
+  id: 'front',
+  src: '/images/2023-camaro.JPG',
+  webp: '/images/journey/webp/2023-camaro-1600.webp',
+  webpSrcSet:
+    '/images/journey/webp/2023-camaro-960.webp 960w, /images/journey/webp/2023-camaro-1600.webp 1600w',
+  width: 1600,
+  height: 1061,
+}
+
+export const machinePairPhotos: MachinePhoto[] = [
+  {
+    id: 'engine',
+    src: '/images/behind.JPG',
+    webp: '/images/behind.webp',
+    width: 1500,
+    height: 701,
+  },
+  {
+    id: 'side',
+    src: '/images/camaros14.jpg',
+    webp: '/images/camaros14.webp',
+    width: 2048,
+    height: 1152,
+    credit: 'Patrik Jacobsson / racebilder.nu',
+  },
+]
+

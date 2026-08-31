@@ -1,3 +1,11 @@
+/** Home headline bests — quarter mile / eighth mile, rounded for the strip. */
+export const homeHeadlineBests = {
+  quarterEt: 5.74,
+  eighthEt: 3.8,
+  quarterSpeedKmh: 415,
+  eighthSpeedKmh: 330,
+} as const
+
 export type Standing = {
   year: number
   place: number
@@ -12,6 +20,27 @@ export type BestTime = {
   highlight?: 'best' | 'latest'
   image?: string
 }
+
+/** Official timing sources — outbound, not a local database. */
+export const timesSources = [
+  {
+    id: 'results',
+    href: 'https://www.dragracing.eu/results.asp',
+    host: 'dragracing.eu',
+  },
+  {
+    id: 'timeslips',
+    href: 'https://www.nitroz.se/tidskort.asp',
+    host: 'nitroz.se',
+  },
+  {
+    id: 'personalBests',
+    href: 'https://www.drdb.eu/pbcls.asp?cls=9#V',
+    host: 'drdb.eu',
+  },
+] as const
+
+export type TimesSourceId = (typeof timesSources)[number]['id']
 
 export const standings: Standing[] = [
   { year: 2019, place: 1, medal: 'gold' },

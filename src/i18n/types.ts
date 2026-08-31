@@ -1,3 +1,5 @@
+import type { MachinePhotoId } from '../data/machine'
+import type { TimesSourceId } from '../data/results'
 import type { TimelineBookendId, TimelineId } from '../data/timeline'
 
 export type Locale = 'sv' | 'en'
@@ -56,6 +58,8 @@ export type Dictionary = {
     ctaTeam: string
     ctaMachine: string
     statsTitle: string
+    statsBestEt: string
+    statsBestSpeed: string
     driverLabel: string
     driverTitle: string
     driverBody: string
@@ -113,8 +117,6 @@ export type Dictionary = {
   pass: {
     title: string
     lead: string
-    promptHeadline: string
-    promptSub: string
     viewDriver: string
     viewTrack: string
     startPass: string
@@ -312,13 +314,6 @@ export type Dictionary = {
   machine: {
     title: string
     intro: string
-    chassisTitle: string
-    chassisBody: string
-    chassisHint: string
-    turntableHint: string
-    turntableLabel: string
-    studioLoading: string
-    studioFallback: string
     specsTitle: string
     narrativeTitle: string
     extremeForcesTitle: string
@@ -329,12 +324,7 @@ export type Dictionary = {
     logistics: string
     compareCamaro: string
     compareJet: string
-    hotspots: {
-      engine: { title: string; body: string }
-      compressor: { title: string; body: string }
-      chassis: { title: string; body: string }
-      fourLink: { title: string; body: string }
-    }
+    photoAlts: Record<MachinePhotoId, string>
     specLabels: Record<string, string>
   }
   results: {
@@ -352,6 +342,9 @@ export type Dictionary = {
     standingsTitle: string
     standingsLead: string
     final: string
+    sourcesTitle: string
+    sourcesLead: string
+    sourceLabels: Record<TimesSourceId, string>
   }
   team: {
     title: string

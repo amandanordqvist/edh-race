@@ -4,7 +4,7 @@
 
 .home-team__intro {
   max-width: 40rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
 }
 
 .home-team__title {
@@ -16,67 +16,49 @@
 }
 
 .home-team__body {
-  margin: 0;
+  margin: 0 0 1.35rem;
   font-size: var(--body-size);
   line-height: 1.55;
   color: rgba(243, 245, 248, 0.88);
   max-width: 36ch;
 }
 
-.home-team__stage {
-  position: relative;
+.home-team__roster {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.25rem, 3vw, 1.75rem) 1rem;
+  list-style: none;
   margin: 0;
+  padding: 0;
 }
 
-.home-team__photo-link {
-  display: block;
-  color: inherit;
-  text-decoration: none;
+.home-team__member {
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+  align-content: start;
+  min-width: 0;
 }
 
-.home-team__photo {
+.home-team__portrait {
   margin: 0;
   overflow: hidden;
   border-radius: var(--radius-md);
+  background: var(--color-supporting-navy);
+  aspect-ratio: 4 / 5;
 }
 
-.home-team__photo img {
+.home-team__portrait img {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  min-height: 18rem;
-  max-height: 42rem;
+  height: 100%;
   object-fit: cover;
-  object-position: center 42%;
+  object-position: center 18%;
   display: block;
   transform-origin: center center;
 }
 
-.home-team__fallback {
-  aspect-ratio: 16 / 9;
-  min-height: 18rem;
-  display: grid;
-  place-items: center;
-  padding: 2rem;
-  color: var(--color-silver-gray);
-  background: var(--color-surface-raised);
-  font-size: 1rem;
-}
-
-.home-team__roster {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem 1.25rem;
-  margin: 0;
-  padding: 1rem 0 0;
-}
-
-.home-team__roster li {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
 .home-team__name {
+  margin: 0;
   font-family: var(--font-ui);
   font-size: 0.95rem;
   letter-spacing: 0.08em;
@@ -85,51 +67,34 @@
 }
 
 .home-team__role {
-  font-size: 0.88rem;
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-primary-blue);
   line-height: 1.3;
-  color: var(--color-silver-gray);
 }
 
-.home-team__cta {
-  display: block;
+@media (hover: hover) and (pointer: fine) {
+  .home-team__portrait img {
+    transition: transform var(--duration-slow) var(--ease-out-expo);
+  }
+
+  .home-team__member:hover .home-team__portrait img {
+    transform: scale(1.03);
+  }
 }
 
 @media (min-width: 900px) {
-  .home-team__photo img {
-    min-height: 28rem;
-    aspect-ratio: 21 / 9;
-  }
-
   .home-team__roster {
-    position: absolute;
-    inset: auto 0 0;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    padding: 1.25rem 1.4rem 1.35rem;
-    background: linear-gradient(180deg, transparent, rgba(10, 12, 16, 0.82));
-    opacity: 0;
-    transform: translateY(0.35rem);
-    transition:
-      opacity var(--duration-med) var(--ease-out),
-      transform var(--duration-med) var(--ease-out);
-    pointer-events: none;
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
-  }
-
-  .home-team__stage:hover .home-team__roster,
-  .home-team__stage:focus-within .home-team__roster {
-    opacity: 1;
-    transform: none;
+    gap: 1.5rem 1.15rem;
   }
 }
 
-@media (hover: none), (pointer: coarse) {
-  .home-team__roster {
-    position: static;
-    opacity: 1;
-    transform: none;
-    background: none;
-    pointer-events: auto;
-    padding: 1rem 0 0;
-    border-radius: 0;
+@media (prefers-reduced-motion: reduce) {
+  .home-team__portrait img {
+    transition: none;
   }
 }

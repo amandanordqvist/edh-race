@@ -32,7 +32,7 @@ export const en: Dictionary = {
     madeBy: 'Site by',
     ctaTitle: 'Be part of the journey',
     ctaBody:
-      'Questions about the team, sponsorship, or booking Anders and the car for an event? Get in touch.',
+      'Questions about the team, want to talk sponsorship, or just curious to know more? Get in touch.',
   },
   common: {
     comingSoon: 'Coming soon',
@@ -47,14 +47,16 @@ export const en: Dictionary = {
   },
   home: {
     brand: 'EDH Racing',
-    headline: 'From Hudiksvall to the European sharp end',
+    headline: 'Top Doorslammer Camaro',
     heroKicker: 'Top Doorslammer · Hudiksvall',
     lead: '',
     ctaPass: 'Experience the record pass',
     ctaJourney: 'Follow the journey',
     ctaTeam: 'Meet the team',
     ctaMachine: 'Explore the car',
-    statsTitle: 'Splits from the record pass',
+    statsTitle: 'Personal bests',
+    statsBestEt: 'Best ET',
+    statsBestSpeed: 'Best speed',
     driverLabel: 'The driver',
     driverTitle: 'Anders Edh',
     driverBody:
@@ -67,16 +69,17 @@ export const en: Dictionary = {
     machineCta: 'Explore the car',
     machineAlt:
       'The EDH Racing blue Top Doorslammer Camaro with the engine exposed in the pits',
-    machineSpecs: ['BAE 521 HEMI', 'PSI BLOWER', 'METHANOL', '1140 KG'],
+    machineSpecs: ['BAE 521', 'BLOWER', 'METHANOL', 'FIVE STAR'],
     teamLabel: 'The team',
-    teamTitle: 'Nobody runs 415 km/h alone.',
-    teamBody: 'This is not Anders and a car. This is a team.',
+    teamTitle: 'The team behind the car',
+    teamBody:
+      'Behind every pass is a tight-knit team with one shared focus: getting the car to perform at the edge of what is possible.',
     teamCta: 'Meet the team',
     teamPhotoAlt: 'EDH Racing working on the Camaro during a race weekend',
     storyLabel: 'The journey',
     storyTitle: 'From a street car to 5.74 seconds',
     storyBody:
-      'It started a long way from Europe’s big drag strips. Year by year the street car became a race car, the times got quicker, and the ambitions grew. The next build led to the next. The next pass to the next hundredth. Today EDH Racing runs a Camaro built for Top Doorslammer, and the hunt continues.',
+      'It started a long way from Europe’s big drag strips. Year by year the street car became a race car, the times got quicker, and the ambitions grew. The next build led to the next. The next pass to the next hundredth. Today EDH Racing runs a Camaro built for Top Doorslammer, and the hunt to cut hundredths continues.',
     storyCta: 'Follow the full journey',
     storyCaptions: {
       '2005-license': 'First time on the strip.',
@@ -87,7 +90,7 @@ export const en: Dictionary = {
     },
     nextRaceLabel: 'Next start',
     nextRaceTitle: 'See you on the strip',
-    nextRaceClassLabel: 'Class',
+    nextRaceClassLabel: 'Class:',
     nextRaceClass: 'Top Doorslammer',
     nextRaceStatus: 'Upcoming',
     nextRaceStatusLabel: 'Status',
@@ -110,7 +113,7 @@ export const en: Dictionary = {
     facebookLabel: 'Behind the scenes',
     facebookTitle: 'Behind the scenes',
     facebookBody:
-      'Race weekends, testing, garage nights, and the work that never shows up on a timeslip.',
+      'Race weekends, testing, garage nights, and the work behind the scenes.',
     facebookCta: 'Follow EDH Racing on Facebook',
     facebookAlt: 'The EDH Racing blue Top Doorslammer Camaro on the strip',
     passTeaserLabel: 'The record pass',
@@ -126,10 +129,8 @@ export const en: Dictionary = {
   pass: {
     title: 'Feel 5.7451 seconds.',
     lead: '402 metres. From a standstill to 415 km/h.',
-    promptHeadline: 'Can you feel how fast 5.7451 seconds is?',
-    promptSub: '402 metres · 0 → 415 km/h',
-    viewDriver: 'Driver view',
-    viewTrack: 'Track view',
+    viewDriver: 'Driver',
+    viewTrack: 'Track',
     startPass: 'Start the pass',
     treeCue: {
       preStage: 'Pre-stage',
@@ -195,8 +196,8 @@ export const en: Dictionary = {
     compare: {
       none: 'None',
       camaro: 'The Beast',
-      f1: 'Formula 1',
-      jet: 'Passenger jet',
+      f1: 'F1',
+      jet: 'Jet',
     },
     compareMeaning: {
       camaro:
@@ -320,7 +321,7 @@ export const en: Dictionary = {
   journey: {
     title: 'The Journey',
     intro:
-      'It started with a mini moped in Hudiksvall. Then came a Camaro that was never meant to be a race car. One button in Sundsvall changed the rest.',
+      'It started with a mini moped in Hudiksvall. Then came a Camaro that was never meant to be a race car. A day in Sundsvall would change the rest.',
     heroAlt: 'Anders Edh as a child on a mini moped in Hudiksvall',
     beatChildhood: 'Where it started',
     beatPhilosophy: 'The hunt continues',
@@ -339,7 +340,7 @@ export const en: Dictionary = {
       '2004-ebay':
         'Almost thirty years later Anders was really looking for a boat in the US. Freight got too expensive and the search took another turn. New Year’s Eve 2004 he was in Vemdalen, walked down to the hotel computer and found he was the highest bidder on a dark-blue 1970 Camaro from New Jersey. The idea was simple: a car to cruise in and something to work on.',
       '2005-license':
-        'A comment to Kjell Åke Kring from Norrbo changed the direction. It might be fun to try the car on a track. A few weeks later Anders was in Söderhamn taking a drag racing licence. The engine he had ordered from the US never arrived. The nitrous system did. It went onto the engine already in the car. Then they went to Sundsvall.',
+        'A comment from Kjell Åke Kring from Norrbo changed the direction. It might be fun to try the car on a track. A few weeks later Anders was in Söderhamn taking a drag racing licence. The engine he had ordered from the US never arrived. The nitrous system did. It went onto the engine already in the car. Then they went to Sundsvall.',
       '2006-10s':
         'Martin Ekstedt started looking into the garage. First out of curiosity, then more and more often. In 2006 he came along to the races. That year Anders ran ten flat on 402 metres. The Camaro was still a street car at heart. But the direction was no longer the same.',
       '2010-nitrous':
@@ -410,7 +411,7 @@ export const en: Dictionary = {
       'bookend-2011': {
         label: '2011–2012',
         caption:
-          'Two winters without racing. The old construction goes and a new tube chassis takes shape.',
+          'The old construction goes and a new tube chassis takes shape.',
       },
       'bookend-2022': {
         label: '2022',
@@ -423,14 +424,6 @@ export const en: Dictionary = {
     title: 'The Machine',
     intro:
       'The Beast looks like a Chevrolet Camaro. Under the carbon body is something else entirely. A race car built from the ground up for a few seconds of extreme acceleration.',
-    chassisTitle: 'Under the skin',
-    chassisBody:
-      'Explore the car and see how the engine, blower, chassis and rear end work together.',
-    chassisHint: 'Explore the car · pick a component',
-    turntableHint: 'Drag to rotate the car',
-    turntableLabel: 'The Beast in 3D. Drag to rotate, or use the arrow keys.',
-    studioLoading: 'Loading The Beast…',
-    studioFallback: 'The 3D view needs WebGL. Here is The Beast as a still.',
     specsTitle: 'Technical specifications',
     narrativeTitle: 'Behind the numbers',
     extremeForcesTitle: '415 km/h changes everything',
@@ -444,43 +437,29 @@ export const en: Dictionary = {
       'A pass on the strip is over in less than six seconds. Around it sit transport, service, spare parts, fuel, analysis and hours of work in the pits. Even in a burnout and a full pass the engine uses large amounts of methanol.',
     compareCamaro: 'The Beast',
     compareJet: 'Passenger jet at takeoff',
-    hotspots: {
-      engine: {
-        title: 'BAE 521 Hemi V8',
-        body:
-          'A 521 cubic-inch Hemi from Brad Anderson Engineering. 8.5 litres, built for methanol and several thousand horsepower.',
-      },
-      compressor: {
-        title: 'PSI screw blower',
-        body:
-          'The blower pushes large amounts of air through the engine and gives the power needed to move more than a tonne from a standstill to over 400 kilometres an hour.',
-      },
-      chassis: {
-        title: 'MB tube chassis',
-        body:
-          'A purpose-built chassis from Mats Brag. Made to handle the power, put it into the track, and keep the car stable through the pass.',
-      },
-      fourLink: {
-        title: 'Four-link suspension',
-        body:
-          'The rear-end geometry controls how power reaches the tyres. Small changes can decide whether the car leaves the start line clean or the tyres lose grip.',
-      },
+    photoAlts: {
+      front: 'The Beast, a blue Top Doorslammer Camaro, on the strip',
+      engine:
+        'The Beast with the body off. Engine, blower and tube chassis in the pits',
+      side: 'The Beast in profile on the strip',
     },
     specLabels: {
-      model: 'Model',
+      brand: 'Brand',
       class: 'Class',
-      body: 'Body',
+      builtIn: 'Built in',
+      builtBy: 'Built by',
       chassis: 'Chassis',
-      engine: 'Engine',
-      displacement: 'Displacement',
-      blower: 'Blower',
-      power: 'Power',
-      transmission: 'Transmission',
-      crankshaft: 'Crankshaft',
-      rear: 'Rear end',
+      body: 'Body',
+      paintedBy: 'Painted by',
       fuel: 'Fuel',
-      weight: 'Weight',
-      safety: 'Safety',
+      poweradder: 'Poweradder',
+      engine: 'Engine',
+      displacement: 'Volume',
+      crankshaft: 'Crankshaft',
+      transmission: 'Gearbox',
+      rear: 'Rear end',
+      bestEt: 'Best ET',
+      bestSpeed: 'Best speed',
     },
   },
   results: {
@@ -499,12 +478,19 @@ export const en: Dictionary = {
     standingsTitle: 'EDRS Top Doorslammer',
     standingsLead: 'Championship finishing place. First in 2019.',
     final: 'Season finale',
+    sourcesTitle: 'Official times',
+    sourcesLead: 'Results, timeslips and personal bests — on Nitroz and DRDB.',
+    sourceLabels: {
+      results: 'Results',
+      timeslips: 'Timeslips',
+      personalBests: 'TDS personal bests',
+    },
   },
   team: {
     title: 'The Team',
     intro:
-      'Drag racing is a team sport. The crew looks after the car. Family and support keep the team rolling across Europe.',
-    crewTitle: 'The crew',
+      'Drag racing is a team sport. The team services, repairs, analyses and builds the car. Family and support keep the team rolling across Europe.',
+    crewTitle: 'The team',
     supportTitle: 'Support & family',
     memorial:
       'We also always race in memory of our missed friend and teammate Tomas “Oma” Landin.',
@@ -512,7 +498,7 @@ export const en: Dictionary = {
     members: {
       anders: {
         role: 'Driver & team owner',
-        bio: 'Born 1964 in Hudiksvall. Club: SHRA Sundsvall. Number 3944. The well-known Scandinavian style — holding it flat and not lifting, even when the car slides near the wall. Builds, tunes and drives.',
+        bio: 'Born 1964 in Hudiksvall. Anders has lived with engines and American cars for most of his life. He does not just build the car — he develops it, tunes the details, and sits behind the wheel when it is put to the test. The drive has always been the same: to understand the car better, find the next improvement, and keep moving the limit of what the car and team can do.',
       },
       martin: {
         role: 'Mechanic',
@@ -520,11 +506,11 @@ export const en: Dictionary = {
       },
       andreas: {
         role: 'Mechanic',
-        bio: 'Joined in 2025. Quickly became a real asset with how fast he learns.',
+        bio: 'Joined in 2025. Quickly became a real asset with how fast he learns, and with his ability to solve problems in the garage and at the races.',
       },
       john: {
         role: 'Mechanic',
-        bio: 'Came in 2024. Mechanical know-how, and he always lifts the mood in the pits.',
+        bio: 'Joined the team in 2024. Mechanical know-how, and he always lifts the mood in the pits.',
       },
       olle: {
         role: 'Technical advisor',
@@ -538,16 +524,12 @@ export const en: Dictionary = {
         role: 'Media & web',
         bio: 'Anders’ daughter. Runs the team’s social media and digital presence so fans can follow the drama.',
       },
-      siggi: {
-        role: 'Documentary filmmaker',
-        bio: 'Follows the team and films the journey.',
-      },
     },
   },
   media: {
     title: 'Media',
     intro:
-      'Photos and clips from the strip and the pits. Santa Pod 5.74 s @ 415 km/h, then burnout, launch, pits and archive.',
+      'Photos and clips from the strip and the pits.',
     feedTitle: 'Latest on Facebook',
     feedLead: 'Updates from the strip, the pits and the team — straight from EDH Racing.',
     feedCta: 'Open on Facebook',
@@ -608,49 +590,51 @@ export const en: Dictionary = {
   },
   contact: {
     title: 'Partners',
-    headline: 'Stand beside a garage-built Camaro.',
-    headlineBefore: 'Stand beside',
-    headlineAfter: 'a garage-built Camaro.',
-    pitchLead: 'A small team from Hudiksvall.',
+    headline: 'Come with us all the way to the start line.',
+    headlineBefore: 'Come with us all the way',
+    headlineAfter: 'to the start line.',
+    pitchLead: 'A small team from Hudiksvall. A Camaro built for 400+ km/h.',
     pitch:
-      'EDH Racing runs at some of Europe’s biggest motorsport venues — Tierp Arena, Mantorp Park and Santa Pod Raceway. Precision, craft and family. If you want to stand beside a Camaro that runs 5.74 s @ 415 km/h: get in touch.',
-    proof: '5.74 s · 415 km/h · Santa Pod',
-    ctaPrimary: 'Get in touch',
-    ctaSecondary: 'Current partners',
-    rosterTitle: 'Already on the line.',
+      'EDH Racing races at some of Europe’s biggest drag racing arenas, from Tierp Arena to Santa Pod Raceway. Behind the car is a small team with big ambitions, years of experience, and one shared goal: to go faster. As a partner you become part of the journey — on the strip and off it.',
+    proof: '5.74 s · 415 km/h · 3.80 s on the 1/8 mile',
+    ctaPrimary: 'Become a partner',
+    ctaSecondary: 'Our partners',
+    rosterTitle: 'The companies already on the journey.',
     valuesScrub:
-      'You show up where the passes run. The car can live in your own communication. You get a team that works the details, with family at the core.',
+      'A partnership with EDH Racing is more than a logo on the car. You become part of the team, the races, and the story around the programme.',
     values: {
       exposure: {
-        title: 'Visibility at the track',
-        body: 'Your brand in front of crowds and TV viewers around the Nordics and Europe, in Top Doorslammer.',
+        title: 'Visibility where it happens',
+        body: 'Your brand travels with the car to races and motorsport events in Sweden and Europe, seen both on site and in EDH Racing’s digital channels.',
       },
       beast: {
-        title: 'The car in your story',
-        body: 'The Beast and the team can appear in your own communication, if it fits.',
+        title: 'A car people stop for',
+        body: 'The Camaro is built for extreme performance and draws attention on the strip and in the pits. As a partner you can become a natural part of the story around the car and the team.',
       },
       precision: {
-        title: 'An honest partnership',
-        body: 'You get a team that works the details, with family at the core — not a ready-made ad product.',
+        title: 'A partnership that is real',
+        body: 'EDH Racing is a close team where partners become part of the programme. We build relationships that feel genuine, and together we find ways to create value off the track as well.',
       },
     },
-    formTitle: 'Get in touch',
-    formHint: 'Opens your email app with a ready message. No account required.',
+    formTitle: 'Want to come along?',
+    formHint:
+      'Tell us briefly about your company and what you are interested in, and we will take the conversation from there.',
     name: 'Name',
     company: 'Company',
     email: 'Email',
     phone: 'Phone',
     message: 'Message',
-    interest: 'Interest',
+    interest: 'I am interested in',
     interestOptions: {
-      main: 'Title sponsor',
+      main: 'Title partner',
       gold: 'Gold partner',
       silver: 'Silver partner',
-      material: 'Material partner',
+      material: 'Product or material partner',
     },
-    submit: 'Send via email',
-    afterSend: 'If your mail app did not open, write to edhracing@gmail.com.',
-    mailtoSubject: 'Partnership enquiry: EDH Racing',
-    pitchAlt: 'The Camaro on the strip, partners on the body',
+    submit: 'Send enquiry',
+    afterSend:
+      'If your mail app does not open, you can reach us directly at edhracing@gmail.com.',
+    mailtoSubject: 'Partnership with EDH Racing',
+    pitchAlt: 'EDH Racing’s Camaro on the start line with the team’s partners',
   },
 }

@@ -1,6 +1,5 @@
-import { CamaroStudio } from '../components/machine/CamaroStudio'
-import { InteractiveChassis } from '../components/machine/InteractiveChassis'
 import { MachineNarrative } from '../components/machine/MachineNarrative'
+import { MachinePhotos } from '../components/machine/MachinePhotos'
 import { SpecTable } from '../components/machine/SpecTable'
 import { Reveal } from '../components/ui/Reveal'
 import { Section } from '../components/ui/Section'
@@ -20,11 +19,7 @@ export function MachinePage() {
         </Reveal>
       </Section>
 
-      <CamaroStudio />
-
-      <SkewDivider />
-      <InteractiveChassis />
-      <SkewDivider />
+      <MachinePhotos />
       <SpecTable />
       <SkewDivider />
       <MachineNarrative />

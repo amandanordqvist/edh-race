@@ -1,15 +1,26 @@
-import { machineSpecs } from '../../data/machine'
-import { useT } from '../../i18n'
+import { machineSpecs, specHighlightKeys } from '../../data/machine'
+import { homeHeadlineBests } from '../../data/results'
+import { useLocale, useT } from '../../i18n'
+import { formatLocaleNumber } from '../../lib/formatLocaleNumber'
 import { Reveal } from '../ui/Reveal'
 import { Section } from '../ui/Section'
 import './SpecTable.css'
 
-const HIGHLIGHT_KEYS = new Set(['power', 'engine', 'weight'])
-
 export function SpecTable() {
   const t = useT()
-  const highlights = machineSpecs.filter((row) => HIGHLIGHT_KEYS.has(row.key))
-  const rest = machineSpecs.filter((row) => !HIGHLIGHT_KEYS.has(row.key))
+  const locale = useLocale()
+
+  const et = `${formatLocaleNumber(homeHeadlineBests.quarterEt, locale, 2)} / ${formatLocaleNumber(homeHeadlineBests.eighthEt, locale, 2)}`
+  const speed = `${formatLocaleNumber(homeHeadlineBests.quarterSpeedKmh, locale, 0)} / ${formatLocaleNumber(homeHeadlineBests.eighthSpeedKmh, locale, 0)}`
+
+  const byKey = Object.fromEntries(machineSpecs.map((row) => [row.key, row.value]))
+  const highlightValues: Record<(typeof specHighlightKeys)[number], string> = {
+    bestEt: et,
+    bestSpeed: speed,
+    class: byKey.class,
+  }
+
+  const rest = machineSpecs.filter((row) => row.key !== 'class')
 
   return (
     <Section wide className="spec-table">
@@ -18,16 +29,16 @@ export function SpecTable() {
       </Reveal>
 
       <ul className="spec-table__highlights">
-        {highlights.map((row, i) => (
+        {specHighlightKeys.map((key, i) => (
           <Reveal
             as="li"
-            key={row.key}
+            key={key}
             className={`spec-table__stat ${i === 0 ? 'spec-table__stat--lead' : ''}`}
             delay={0.05 * i}
             y={28}
           >
-            <p className="spec-table__stat-label">{t.machine.specLabels[row.key]}</p>
-            <p className="spec-table__stat-value">{row.value}</p>
+            <p className="spec-table__stat-label">{t.machine.specLabels[key]}</p>
+            <p className="spec-table__stat-value">{highlightValues[key]}</p>
           </Reveal>
         ))}
       </ul>

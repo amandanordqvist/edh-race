@@ -4,7 +4,7 @@ export const sv: Dictionary = {
   meta: {
     siteName: 'EDH Racing',
     tagline: 'Top Doorslammer från Hudiksvall',
-    homeTitle: 'EDH Racing | Från Hudiksvall till Europatoppen',
+    homeTitle: 'EDH Racing | Top Doorslammer Camaro',
     homeDescription:
       'EDH Racing — Top Doorslammer från Hudiksvall. 3500+ hästkrafter. 5,74 sekunder. 415 km/h. Följ Anders Edh, Camaron, teamet och jakten på nästa rekord.',
   },
@@ -32,7 +32,7 @@ export const sv: Dictionary = {
     madeBy: 'Sida av',
     ctaTitle: 'Bli en del av resan',
     ctaBody:
-      'Har du frågor om teamet, vill diskutera sponsring eller boka Anders och bilen till ett event? Hör av dig.',
+      'Har du frågor om teamet, vill diskutera sponsring eller bara nyfiken på att veta mer? Hör av dig.',
   },
   common: {
     comingSoon: 'Kommer snart',
@@ -47,14 +47,16 @@ export const sv: Dictionary = {
   },
   home: {
     brand: 'EDH Racing',
-    headline: 'Från Hudiksvall till Europatoppen',
+    headline: 'Top Doorslammer Camaro',
     heroKicker: 'Top Doorslammer · Hudiksvall',
     lead: '',
     ctaPass: 'Upplev rekordpasset',
     ctaJourney: 'Följ resan',
     ctaTeam: 'Möt teamet',
     ctaMachine: 'Utforska bilen',
-    statsTitle: 'Splits från rekordpasset',
+    statsTitle: 'Personbästa',
+    statsBestEt: 'Best ET',
+    statsBestSpeed: 'Best speed',
     driverLabel: 'Föraren',
     driverTitle: 'Anders Edh',
     driverBody:
@@ -67,16 +69,16 @@ export const sv: Dictionary = {
     machineCta: 'Utforska bilen',
     machineAlt:
       'EDH Racings blå Top Doorslammer Camaro med motorn öppen i depån',
-    machineSpecs: ['BAE 521 HEMI', 'PSI KOMPRESSOR', 'METANOL', '1140 KG'],
+    machineSpecs: ['BAE 521', 'BLOWER', 'METANOL', 'FIVE STAR'],
     teamLabel: 'Teamet',
-    teamTitle: 'Ingen kör 415 km/h ensam.',
-    teamBody: 'Det här är inte Anders och en bil. Det här är ett team.',
+    teamTitle: 'Teamet bakom bilen',
+    teamBody: 'Bakom varje pass står ett sammansvetsat team med  ett gemensamt fokus: att få bilen att prestera på gränsen av vad som är möjligt.',
     teamCta: 'Möt teamet',
     teamPhotoAlt: 'EDH Racing arbetar med Camaron under en tävlingshelg',
     storyLabel: 'Resan',
     storyTitle: 'Från gatbil till 5,74 sekunder',
     storyBody:
-      'Det började långt från Europas stora dragracingbanor. Genom åren blev gatbil till tävlingsbil, tiderna blev snabbare och ambitionerna större. Nästa bygge ledde till nästa. Nästa pass till nästa hundradel. I dag kör EDH Racing en Camaro byggd för Top Doorslammer och jakten fortsätter.',
+      'Det började långt från Europas stora dragracingbanor. Genom åren blev gatbil till tävlingsbil, tiderna blev snabbare och ambitionerna större. Nästa bygge ledde till nästa. Nästa pass till nästa hundradel. I dag kör EDH Racing en Camaro byggd för Top Doorslammer och jakten på att kapa hundradelar fortsätter.',
     storyCta: 'Följ hela resan',
     storyCaptions: {
       '2005-license': 'Första gången på strippen.',
@@ -87,7 +89,7 @@ export const sv: Dictionary = {
     },
     nextRaceLabel: 'Nästa start',
     nextRaceTitle: 'Vi ses på strippen',
-    nextRaceClassLabel: 'Klass',
+    nextRaceClassLabel: 'Klass:',
     nextRaceClass: 'Top Doorslammer',
     nextRaceStatus: 'Kommande',
     nextRaceStatusLabel: 'Status',
@@ -110,7 +112,7 @@ export const sv: Dictionary = {
     facebookLabel: 'Bakom kulisserna',
     facebookTitle: 'Bakom kulisserna',
     facebookBody:
-      'Racehelger, tester, garagekvällar och arbetet som aldrig syns på en timeslip.',
+      'Racehelger, tester, garagekvällar och arbetet bakom kulisserna.',
     facebookCta: 'Följ EDH Racing på Facebook',
     facebookAlt: 'EDH Racings blå Top Doorslammer Camaro på strippen',
     passTeaserLabel: 'Rekordpasset',
@@ -126,10 +128,8 @@ export const sv: Dictionary = {
   pass: {
     title: 'Upplev 5,7451 sekunder.',
     lead: '402 meter. Från stillastående till 415 km/h.',
-    promptHeadline: 'Kan du förstå hur snabbt 5,7451 sekunder är?',
-    promptSub: '402 meter · 0 → 415 km/h',
-    viewDriver: 'Förarvy',
-    viewTrack: 'Banförlopp',
+    viewDriver: 'Förare',
+    viewTrack: 'Bana',
     startPass: 'Starta passet',
     treeCue: {
       preStage: 'Pre-stage',
@@ -195,8 +195,8 @@ export const sv: Dictionary = {
     compare: {
       none: 'Ingen',
       camaro: 'The Beast',
-      f1: 'Formel 1',
-      jet: 'Passagerarflyg',
+      f1: 'F1',
+      jet: 'Flyg',
     },
     compareMeaning: {
       camaro:
@@ -321,7 +321,7 @@ export const sv: Dictionary = {
   journey: {
     title: 'Resan',
     intro:
-      'Det började med en minimoppe i Hudiksvall. Sedan kom en Camaro som aldrig var tänkt att bli tävlingsbil. Ett knapptryck i Sundsvall förändrade resten.',
+      'Det började med en minimoppe i Hudiksvall. Sedan kom en Camaro som aldrig var tänkt att bli tävlingsbil. En dag i Sundsvall skulle förändra resten.',
     heroAlt: 'Anders Edh som barn på minimoppe i Hudiksvall',
     beatChildhood: 'Där det började',
     beatPhilosophy: 'Jakten fortsätter',
@@ -341,7 +341,7 @@ export const sv: Dictionary = {
       '2004-ebay':
         'Nästan trettio år senare letade Anders egentligen efter en båt i USA. Frakten blev för dyr och sökandet tog en annan riktning. På nyårsafton 2004 satt han i Vemdalen, gick ner till hotellets dator och upptäckte att han var högsta budgivare på en mörkblå Camaro från 1970 i New Jersey. Tanken var enkel: en bil att glida runt i och ha något att skruva med.',
       '2005-license':
-        'En kommentar till Kjell Åke Kring från Norrbo förändrade riktningen. Det kanske skulle vara kul att prova bilen på bana. Några veckor senare stod Anders i Söderhamn och tog dragracinglicens. Motorn han beställt från USA kom aldrig. Lustgassystemet gjorde det. Det monterades på motorn som redan satt i bilen. Sedan åkte de till Sundsvall.',
+        'En kommentar från Kjell Åke Kring från Norrbo förändrade riktningen. Det kanske skulle vara kul att prova bilen på bana. Några veckor senare stod Anders i Söderhamn och tog dragracinglicens. Motorn han beställt från USA kom aldrig. Lustgassystemet gjorde det. Det monterades på motorn som redan satt i bilen. Sedan åkte de till Sundsvall.',
       '2006-10s':
         'Martin Ekstedt började titta in i garaget. Först av nyfikenhet, sedan allt oftare. 2006 följde han med på tävlingarna. Samma år körde Anders 10 blankt på 402 meter. Camaron var fortfarande i grunden en gatbil. Men riktningen var inte längre densamma.',
       '2010-nitrous':
@@ -412,7 +412,7 @@ export const sv: Dictionary = {
       'bookend-2011': {
         label: '2011–2012',
         caption:
-          'Två vintrar utan tävling. Den gamla konstruktionen försvinner och ett nytt rörchassi tar form.',
+          'Den gamla konstruktionen försvinner och ett nytt rörchassi tar form.',
       },
       'bookend-2022': {
         label: '2022',
@@ -425,14 +425,6 @@ export const sv: Dictionary = {
     title: 'Bilen',
     intro:
       'The Beast ser ut som en Chevrolet Camaro. Under kolfiberkarossen finns något helt annat. En tävlingsbil byggd från grunden för några få sekunder av extrem acceleration.',
-    chassisTitle: 'Under skalet',
-    chassisBody:
-      'Utforska bilen och se hur motor, kompressor, chassi och bakvagn arbetar tillsammans.',
-    chassisHint: 'Utforska bilen · välj en komponent',
-    turntableHint: 'Dra för att rotera bilen',
-    turntableLabel: 'The Beast i 3D. Dra för att rotera, eller använd piltangenterna.',
-    studioLoading: 'Laddar The Beast…',
-    studioFallback: '3D-visningen kräver WebGL. Här är The Beast i stillbild.',
     specsTitle: 'Tekniska specifikationer',
     narrativeTitle: 'Bakom siffrorna',
     extremeForcesTitle: '415 km/h förändrar allt',
@@ -446,43 +438,29 @@ export const sv: Dictionary = {
       'Ett pass på banan är över på mindre än sex sekunder. Runt det finns transporter, service, reservdelar, bränsle, analyser och timmar av arbete i depån. Bara under burnout och ett fullt pass förbrukar motorn stora mängder metanol.',
     compareCamaro: 'The Beast',
     compareJet: 'Passagerarflygplan vid start',
-    hotspots: {
-      engine: {
-        title: 'BAE 521 Hemi V8',
-        body:
-          'En 521 kubiktums Hemi från Brad Anderson Engineering. 8,5 liter, byggd för metanol och flera tusen hästkrafter.',
-      },
-      compressor: {
-        title: 'PSI skruvkompressor',
-        body:
-          'Kompressorn pressar stora mängder luft genom motorn och ger den effekt som krävs för att flytta över ett ton från stillastående till över 400 kilometer i timmen.',
-      },
-      chassis: {
-        title: 'MB rörchassi',
-        body:
-          'Ett specialbyggt chassi från Mats Brag. Konstruerat för att hantera effekten, överföra kraften till banan och samtidigt hålla bilen stabil genom passet.',
-      },
-      fourLink: {
-        title: 'Fyrlänksupphängning',
-        body:
-          'Bakvagnens geometri styr hur kraften överförs till däcken. Små förändringar kan avgöra om bilen lämnar startlinjen rent eller om däcken tappar greppet.',
-      },
+    photoAlts: {
+      front: 'The Beast, blå Top Doorslammer Camaro, på strippen',
+      engine:
+        'The Beast med huven av. Motor, kompressor och rörchassi syns i depån',
+      side: 'The Beast i profil på strippen',
     },
     specLabels: {
-      model: 'Modell',
+      brand: 'Märke',
       class: 'Klass',
-      body: 'Kaross',
+      builtIn: 'Byggd',
+      builtBy: 'Byggd av',
       chassis: 'Chassi',
-      engine: 'Motor',
-      displacement: 'Slagvolym',
-      blower: 'Kompressor',
-      power: 'Effekt',
-      transmission: 'Växellåda',
-      crankshaft: 'Vevaxel',
-      rear: 'Bakvagn',
+      body: 'Kaross',
+      paintedBy: 'Lackad av',
       fuel: 'Bränsle',
-      weight: 'Vikt',
-      safety: 'Säkerhet',
+      poweradder: 'Poweradder',
+      engine: 'Motor',
+      displacement: 'Volym',
+      crankshaft: 'Vevaxel',
+      transmission: 'Växellåda',
+      rear: 'Bakvagn',
+      bestEt: 'Best ET',
+      bestSpeed: 'Best speed',
     },
   },
   results: {
@@ -501,12 +479,19 @@ export const sv: Dictionary = {
     standingsTitle: 'EDRS Top Doorslammer',
     standingsLead: 'Slutplacering i serien. Ettan 2019.',
     final: 'Säsongens sista',
+    sourcesTitle: 'Officiella tider',
+    sourcesLead: 'Resultat, tidskort och personbästa — hos Nitroz och DRDB.',
+    sourceLabels: {
+      results: 'Resultat',
+      timeslips: 'Tidskort',
+      personalBests: 'Personbästa TDS',
+    },
   },
   team: {
     title: 'Teamet',
     intro:
-      'Dragracing är en lagsport. Crewet sköter bilen. Familj och stöd håller laget rullande genom Europa.',
-    crewTitle: 'Crewet',
+      'Dragracing är en lagsport. Teamet servar, reparerar, analyserar och bygger bilen. Familj och stöd håller laget rullande genom Europa.',
+    crewTitle: 'Teamet',
     supportTitle: 'Stöd & familj',
     memorial:
       'Vi kör också alltid i minnet av vår saknade vän och teammedlem Tomas "Oma" Landin.',
@@ -514,7 +499,7 @@ export const sv: Dictionary = {
     members: {
       anders: {
         role: 'Förare & teamägare',
-        bio: 'Född 1964 i Hudiksvall. Klubb: SHRA Sundsvall. Startnummer 3944. Den kända skandinaviska körstilen — att hålla stumt och inte lyfta på gasen, även när bilen sladdar nära muren. Bygger, finjusterar och kör.',
+        bio: 'Född 1964 i Hudiksvall. Anders har levt med motorer och amerikanska bilar större delen av livet. Han bygger inte bara bilen, han utvecklar den, finjusterar detaljerna och sitter själv bakom ratten när allt sätts på prov. Drivkraften har alltid varit densamma: att förstå bilen bättre, hitta nästa förbättring och hela tiden flytta gränsen för vad ekipaget kan prestera.',
       },
       martin: {
         role: 'Mekaniker',
@@ -522,11 +507,11 @@ export const sv: Dictionary = {
       },
       andreas: {
         role: 'Mekaniker',
-        bio: 'Anslöt 2025. Har snabbt blivit en stor tillgång med sin snabba inlärningsförmåga.',
+        bio: 'Anslöt 2025. Har snabbt blivit en stor tillgång med sin snabba inlärningsförmåga och förmåga att lösa problem i garaget och på tävlingarna.',
       },
       john: {
         role: 'Mekaniker',
-        bio: 'Kom med 2024. Bidrar med mekanisk expertis och sprider alltid en fantastisk stämning i depån.',
+        bio: 'Anslöt till teamet 2024. Bidrar med mekanisk expertis och sprider alltid en fantastisk stämning i depån.',
       },
       olle: {
         role: 'Teknisk rådgivare',
@@ -540,16 +525,12 @@ export const sv: Dictionary = {
         role: 'Media & webb',
         bio: 'Anders dotter. Sköter teamets sociala medier och digitala närvaro så att fansen kan följa dramatiken.',
       },
-      siggi: {
-        role: 'Dokumentärfilmare',
-        bio: 'Följer teamet och filmar resan.',
-      },
     },
   },
   media: {
     title: 'Media',
     intro:
-      'Bilder och klipp från banan och depån. Santa Pod 5,74 s @ 415 km/h, sedan burnout, launch, depå och arkiv.',
+      'Bilder och klipp från banan och depån.',
     feedTitle: 'Senaste från Facebook',
     feedLead: 'Uppdateringar från banan, depån och teamet — direkt från EDH Racing.',
     feedCta: 'Öppna på Facebook',
@@ -610,49 +591,51 @@ export const sv: Dictionary = {
   },
   contact: {
     title: 'Partners',
-    headline: 'Stå bredvid en garagebyggd Camaro.',
-    headlineBefore: 'Stå bredvid',
-    headlineAfter: 'en garagebyggd Camaro.',
-    pitchLead: 'Ett litet team från Hudiksvall.',
+    headline: 'Följ med hela vägen till startlinjen.',
+    headlineBefore: 'Följ med hela vägen',
+    headlineAfter: 'till startlinjen.',
+    pitchLead: 'Ett litet team från Hudiksvall. En Camaro byggd för 400+ km/h.',
     pitch:
-      'EDH Racing syns på några av Europas största motorsportarenor — Tierp Arena, Mantorp Park och Santa Pod Raceway. Precision, teknik och familjekänsla. Vill ni stå bredvid en Camaro som kör 5,74 s @ 415 km/h: hör av er.',
-    proof: '5,74 s · 415 km/h · Santa Pod',
-    ctaPrimary: 'Hör av er',
-    ctaSecondary: 'Nuvarande partners',
-    rosterTitle: 'De som redan står vid linjen.',
+      'EDH Racing tävlar på några av Europas största dragracingarenor, från Tierp Arena till Santa Pod Raceway. Bakom bilen står ett litet team med stora ambitioner, många års erfarenhet och ett gemensamt mål: att bli snabbare. Som partner blir ni en del av resan, både på banan och utanför den.',
+    proof: '5,74 s · 415 km/h · 3,80 s på 1/8 mile',
+    ctaPrimary: 'Bli partner',
+    ctaSecondary: 'Våra partners',
+    rosterTitle: 'Företagen som redan är med på resan.',
     valuesScrub:
-      'Ni syns där passen körs. Bilen kan leva i er egen kommunikation. Ni får ett team som jobbar i detaljerna, med familjekänsla.',
+      'Ett partnerskap med EDH Racing handlar om mer än en logotyp på bilen. Ni blir en del av teamet, tävlingarna och berättelsen runt satsningen.',
     values: {
       exposure: {
-        title: 'Synlighet på arenan',
-        body: 'Varumärket syns inför publik och tv-tittare runt Norden och Europa, i Top Doorslammer.',
+        title: 'Synlighet där det händer',
+        body: 'Ert varumärke följer med bilen till tävlingar och motorsportevenemang i Sverige och Europa och syns både på plats och i EDH Racings digitala kanaler.',
       },
       beast: {
-        title: 'Bilen i er story',
-        body: 'The Beast och teamet kan användas i er egen kommunikation, om det passar.',
+        title: 'En bil människor stannar för',
+        body: 'Camaron är byggd för extrem prestanda och väcker uppmärksamhet både på banan och i depån. Som partner kan ni bli en naturlig del av berättelsen runt bilen och teamet.',
       },
       precision: {
-        title: 'Ett ärligt partnerskap',
-        body: 'Ni får ett team som jobbar i detaljerna, med familjekänsla — inte en färdig reklamprodukt.',
+        title: 'Ett partnerskap på riktigt',
+        body: 'EDH Racing är ett nära team där partners blir en del av satsningen. Vi bygger relationer som känns genuina och hittar tillsammans sätt att skapa värde även utanför tävlingsbanan.',
       },
     },
-    formTitle: 'Hör av er',
-    formHint: 'Öppnar din e-postapp med ett färdigt meddelande. Inget konto behövs.',
+    formTitle: 'Vill ni följa med?',
+    formHint:
+      'Berätta kort om ert företag och vad ni är intresserade av, så tar vi kontakten vidare därifrån.',
     name: 'Namn',
     company: 'Företag',
     email: 'E-post',
     phone: 'Telefon',
     message: 'Meddelande',
-    interest: 'Intresseområde',
+    interest: 'Jag är intresserad av',
     interestOptions: {
-      main: 'Huvudsponsor',
+      main: 'Huvudpartner',
       gold: 'Guldpartner',
       silver: 'Silverpartner',
-      material: 'Materialpartner',
+      material: 'Produkt- eller materialpartner',
     },
-    submit: 'Skicka via e-post',
-    afterSend: 'Om e-postappen inte öppnades, skriv till edhracing@gmail.com.',
-    mailtoSubject: 'Intresseanmälan: EDH Racing partnerskap',
-    pitchAlt: 'Camaron på stripen, med partners på karossen',
+    submit: 'Skicka intresseanmälan',
+    afterSend:
+      'Om e-postappen inte öppnas kan ni kontakta oss direkt på edhracing@gmail.com.',
+    mailtoSubject: 'Partnerskap med EDH Racing',
+    pitchAlt: 'EDH Racings Camaro på startlinjen tillsammans med teamets partners',
   },
 }

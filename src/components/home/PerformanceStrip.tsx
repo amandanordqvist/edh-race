@@ -2,7 +2,7 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useRef } from 'react'
-import { edhTimeslipRows, type TimeslipSplitId } from '../../data/simulator'
+import { homeHeadlineBests } from '../../data/results'
 import { useLocale, useT } from '../../i18n'
 import { formatLocaleNumber } from '../../lib/formatLocaleNumber'
 import { Section } from '../ui/Section'
@@ -10,24 +10,44 @@ import './PerformanceStrip.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-const SPLIT_IDS = ['sixty', 'threeThirty', 'eighth', 'thousand'] as const satisfies readonly TimeslipSplitId[]
-
 export function PerformanceStrip() {
   const t = useT()
   const locale = useLocale()
   const boardRef = useRef<HTMLDivElement>(null)
+  const kmh = t.pass.racingHud.speedUnit
+  const quarter = t.pass.timeslipSplits.quarter.meters
+  const eighth = t.pass.timeslipSplits.eighth.meters
 
-  const cards = SPLIT_IDS.map((id) => {
-    const row = edhTimeslipRows.find((item) => item.id === id)
-    const et = row?.et
-    if (et == null) throw new Error(`Missing ET for split ${id}`)
-    return {
-      id,
-      value: formatLocaleNumber(et, locale, 4),
-      label: t.pass.timeslipSplits[id].label,
-      meters: t.pass.timeslipSplits[id].meters,
-    }
-  })
+  const cards = [
+    {
+      id: 'quarterEt',
+      value: formatLocaleNumber(homeHeadlineBests.quarterEt, locale, 2),
+      metric: t.home.statsBestEt,
+      detail: quarter,
+      spokenUnit: 's',
+    },
+    {
+      id: 'eighthEt',
+      value: formatLocaleNumber(homeHeadlineBests.eighthEt, locale, 2),
+      metric: t.home.statsBestEt,
+      detail: eighth,
+      spokenUnit: 's',
+    },
+    {
+      id: 'quarterSpeed',
+      value: formatLocaleNumber(homeHeadlineBests.quarterSpeedKmh, locale, 0),
+      metric: t.home.statsBestSpeed,
+      detail: `${quarter} · ${kmh}`,
+      spokenUnit: kmh,
+    },
+    {
+      id: 'eighthSpeed',
+      value: formatLocaleNumber(homeHeadlineBests.eighthSpeedKmh, locale, 0),
+      metric: t.home.statsBestSpeed,
+      detail: `${eighth} · ${kmh}`,
+      spokenUnit: kmh,
+    },
+  ]
 
   useGSAP(
     () => {
@@ -64,17 +84,17 @@ export function PerformanceStrip() {
           <article className="perf-strip__cell" key={card.id}>
             <p className="perf-strip__readout">
               <span className="sr-only">
-                {card.label}. {card.value} s. {card.meters}.
+                {card.metric}. {card.value} {card.spokenUnit}. {card.detail}.
               </span>
               <span className="perf-strip__value" aria-hidden="true">
                 {card.value}
               </span>
               <span className="perf-strip__unit" aria-hidden="true">
-                {card.label}
+                {card.metric}
               </span>
             </p>
             <p className="perf-strip__label" aria-hidden="true">
-              {card.meters}
+              {card.detail}
             </p>
           </article>
         ))}

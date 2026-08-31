@@ -83,6 +83,10 @@ function applyEdhBodyPaint(material: StandardMaterial, quality: PassQuality): vo
   material.useSkybox = true
   material.diffuseMap = null
   material.emissiveMap = null
+  material.normalMap = null
+  material.metalnessMap = null
+  material.glossMap = null
+  material.aoMap = null
   const coat = material as StandardMaterial & { clearCoat?: number; clearCoatGloss?: number }
   coat.clearCoat = quality === 'high' ? 0.88 : 0.55
   coat.clearCoatGloss = 0.94
@@ -108,8 +112,9 @@ function applyNeutralGlass(material: StandardMaterial, pc: PlayCanvasNamespace):
 
 /**
  * Clone every mesh material so body / glass / tires never share instances
- * with each other or with the strip. Blue paint only on explicitly named
- * body/paint meshes.
+ * with each other or with the strip. Named body panels get EDH blue; a
+ * single unnamed Tripo/scan mesh gets the same paint so baked albedo
+ * (blown-out glass, noisy livery) never stays on the car.
  */
 function prepareCamaroMaterials(
   root: Entity,
@@ -118,7 +123,7 @@ function prepareCamaroMaterials(
 ): { bodyMaterial: StandardMaterial; hasTextures: boolean } {
   const cast = shadowsEnabled(quality)
   let bodyMaterial: StandardMaterial | null = null
-  let hasTextures = false
+  const unclassified: StandardMaterial[] = []
 
   forEachEntity(root, (entity) => {
     const render = entity.render
@@ -130,8 +135,6 @@ function prepareCamaroMaterials(
       const source = instance.material as StandardMaterial
       const materialName = source.name ?? ''
       const label = `${entityName} ${materialName}`
-      const textured = Boolean(source.diffuseMap)
-      if (textured) hasTextures = true
 
       // Always clone — mutating shared GLB materials bleeds paint onto glass/track.
       const material = source.clone()
@@ -159,10 +162,9 @@ function prepareCamaroMaterials(
         material.gloss = 0.9
         material.emissiveIntensity = 0
         material.update()
-      } else if (textured) {
-        // Keep scan albedo on non-body parts — do not force blue.
-        material.useMetalness = true
-        material.update()
+      } else {
+        // Tripo / unnamed scan mesh — paint later if no body panels were named.
+        unclassified.push(material)
       }
 
       instance.castShadow = cast
@@ -170,8 +172,13 @@ function prepareCamaroMaterials(
     })
   })
 
+  if (!bodyMaterial && unclassified.length > 0) {
+    unclassified.forEach((material) => applyEdhBodyPaint(material, quality))
+    bodyMaterial = unclassified[0]
+  }
+
   if (bodyMaterial) {
-    return { bodyMaterial, hasTextures }
+    return { bodyMaterial, hasTextures: false }
   }
 
   return {
@@ -182,7 +189,7 @@ function prepareCamaroMaterials(
       clearCoat: quality === 'high' ? 0.88 : 0.55,
       clearCoatGloss: 0.94,
     }),
-    hasTextures,
+    hasTextures: false,
   }
 }
 
