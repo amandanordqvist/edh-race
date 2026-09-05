@@ -4,6 +4,7 @@ import { Layout } from './components/layout/Layout'
 import { isLocale } from './lib/paths'
 import { ContactPage } from './pages/ContactPage'
 import { HomePage } from './pages/HomePage'
+import { HomeScrollPreviewPage } from './pages/HomeScrollPreviewPage'
 import { JourneyPage } from './pages/JourneyPage'
 import { MachinePage } from './pages/MachinePage'
 import { MediaPage } from './pages/MediaPage'
@@ -26,6 +27,8 @@ export default function App() {
       <Route path="/" element={<Navigate to="/sv" replace />} />
       <Route path="/:lang" element={<LocaleLayout />}>
         <Route index element={<HomePage />} />
+        <Route path="exempel" element={<HomeScrollPreviewPage />} />
+        <Route path="example" element={<HomeScrollPreviewPage />} />
         <Route path="resa" element={<JourneyPage />} />
         <Route path="journey" element={<JourneyPage />} />
         <Route path="maskinen" element={<MachinePage />} />

@@ -61,7 +61,7 @@ export const sv: Dictionary = {
     driverTitle: 'Anders Edh',
     driverBody:
       'Från Hudiksvall till Europas snabbaste dragracingbanor. Bakom 415 km/h finns årtionden av byggande, testande och en ständig jakt på nästa hundradel.',
-    driverAlt: 'Anders Edh, helfigur, framför Camaron',
+    driverAlt: 'Anders Edh i depån, med Camaron i bakgrunden',
     machineLabel: 'Bilen',
     machineTitle: 'The Beast',
     machineBody:

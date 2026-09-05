@@ -1,0 +1,233 @@
+.hero-scroll {
+  background: var(--color-almost-black);
+  color: var(--color-almost-white);
+  overflow-x: hidden;
+}
+
+.hero-scroll .pin-spacer {
+  background: var(--color-almost-black);
+}
+
+.hero-scroll__panel {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.15rem;
+  padding: calc(var(--header-height) + 1.5rem) 1.25rem 2.5rem;
+}
+
+.hero-scroll__brand {
+  margin: 0;
+  width: min(58vw, 16rem);
+}
+
+.hero-scroll__logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2134 / 984;
+}
+
+.hero-scroll__kicker {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-silver-gray);
+}
+
+.hero-scroll__display {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-size: clamp(2.15rem, 7.2vw, 5.8rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+  color: var(--color-almost-white);
+}
+
+.hero-scroll__benefit {
+  width: min(100%, 52rem);
+  margin-inline: auto;
+  padding: 5rem 1.25rem 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.75rem;
+}
+
+.hero-scroll__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5.4vw, 4.4rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.hero-scroll__tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 40rem;
+}
+
+.hero-scroll__tag {
+  margin: 0;
+  padding: 0.7rem 1.05rem;
+  font-family: var(--font-ui);
+  font-size: clamp(0.82rem, 1.6vw, 1.05rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+  will-change: clip-path, opacity;
+}
+
+.hero-scroll__tag--blue {
+  background: var(--color-primary-blue);
+  color: var(--color-almost-white);
+}
+
+.hero-scroll__tag--navy {
+  background: var(--color-supporting-navy);
+  color: var(--color-almost-white);
+}
+
+.hero-scroll__tag--steel {
+  background: var(--color-silver-gray);
+  color: var(--color-almost-black);
+}
+
+.hero-scroll__tag--ink {
+  background: transparent;
+  color: var(--color-almost-white);
+  border: 1px solid var(--color-hairline-strong);
+}
+
+.hero-scroll__sub {
+  margin: 0;
+  max-width: 36ch;
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  line-height: 1.5;
+  color: var(--color-silver-gray);
+}
+
+.hero-scroll__pin {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--color-almost-black);
+}
+
+.hero-scroll__frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-almost-black);
+  will-change: clip-path;
+}
+
+.hero-scroll__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 34%;
+  filter: saturate(1.18) contrast(1.05) brightness(1.1) hue-rotate(-4deg);
+}
+
+.hero-scroll__mark {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.hero-scroll__mark img {
+  width: clamp(4.5rem, 10vw, 7.5rem);
+  height: clamp(4.5rem, 10vw, 7.5rem);
+  object-fit: contain;
+}
+
+.hero-scroll__cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.hero-scroll__cta .btn {
+  padding: 1.05rem 1.55rem 1.05rem 1.75rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+}
+
+.hero-scroll__cta .btn--icon {
+  padding-right: 0.65rem;
+}
+
+@media (min-width: 900px) {
+  .hero-scroll__brand {
+    width: min(36vw, 18rem);
+  }
+
+  .hero-scroll__benefit {
+    padding: 7rem 1.5rem 5.5rem;
+    gap: 2.1rem;
+  }
+
+  .hero-scroll__tag {
+    padding: 0.85rem 1.25rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero-scroll__cta {
+    width: 100%;
+  }
+
+  .hero-scroll__cta .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+.hero-scroll--reduced .hero-scroll__frame {
+  clip-path: none;
+}
+
+.hero-scroll--reduced .hero-scroll__mark {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-scroll__cta .btn:hover {
+    transform: translateY(-1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll__tag,
+  .hero-scroll__frame {
+    will-change: auto;
+  }
+}

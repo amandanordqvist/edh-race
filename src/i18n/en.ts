@@ -61,7 +61,7 @@ export const en: Dictionary = {
     driverTitle: 'Anders Edh',
     driverBody:
       'From Hudiksvall to Europe’s fastest drag strips. Behind 415 km/h sit decades of building, testing, and a constant hunt for the next hundredth.',
-    driverAlt: 'Anders Edh, full figure, standing in front of the Camaro',
+    driverAlt: 'Anders Edh in the paddock, with the Camaro behind him',
     machineLabel: 'The car',
     machineTitle: 'The Beast',
     machineBody:

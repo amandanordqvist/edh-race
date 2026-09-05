@@ -40,6 +40,7 @@
   padding-top: calc(var(--header-height) + 1rem);
 }
 
-.site-main:has(.hero) {
+.site-main:has(.hero),
+.site-main:has(.hero-scroll) {
   padding-top: 0;
 }
