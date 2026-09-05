@@ -23,7 +23,7 @@ export const STRIP_SPLITS = [
 /** Low rail sits just outside the asphalt, inside the safety channel. */
 export const RAIL_Z = TRACK_WIDTH / 2 + 0.3
 
-export const CHRISTMAS_TREE_X = 5.4
+export const CHRISTMAS_TREE_X = 9.2
 
 /** Family wagon in the near channel, well down-strip so inspect stays clear. */
 export const STREET_CAR_Z = 6.5

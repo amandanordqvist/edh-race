@@ -16,13 +16,14 @@ const CAMARO_GLB_URL = '/models/pass/camaro.glb'
 /** Target length along the strip (meters). */
 const CAMARO_TARGET_LENGTH = 4.2
 
+/** Nose sits on the start line; origin is behind so the tree stays clear. */
+const CAMARO_STAGING_X = -0.6
+
 /**
  * Extra yaw after auto-aligning longest axis to +X.
  * Flip to 180 if the nose points toward the water box instead of the traps.
  */
 const CAMARO_YAW_FLIP_DEG: 0 | 180 = 0
-
-const EDH_BLUE: [number, number, number] = [48 / 255, 82 / 255, 168 / 255]
 
 type LoadCamaroOptions = {
   app: Application
@@ -36,85 +37,9 @@ export type LoadedCamaro = {
   hasTextures: boolean
 }
 
-function isBodyPaintName(name: string): boolean {
-  const n = name.toLowerCase()
-  return (
-    n.includes('bodywork') ||
-    n.includes('paint') ||
-    n.includes('carpaint') ||
-    (n.includes('body') && !n.includes('nobody'))
-  )
-}
-
-function isGlassName(name: string): boolean {
-  const n = name.toLowerCase()
-  return (
-    n.includes('glass') ||
-    n.includes('window') ||
-    n.includes('windscreen') ||
-    n.includes('windshield') ||
-    n.includes('canopy')
-  )
-}
-
-function isTireName(name: string): boolean {
-  const n = name.toLowerCase()
-  return n.includes('tire') || n.includes('tyre') || n.includes('rubber') || n.includes('wheel')
-}
-
-function isChromeName(name: string): boolean {
-  const n = name.toLowerCase()
-  return (
-    n.includes('chrome') ||
-    n.includes('exhaust') ||
-    n.includes('chassis') ||
-    (n.includes('metal') && !n.includes('body'))
-  )
-}
-
-function applyEdhBodyPaint(material: StandardMaterial, quality: PassQuality): void {
-  material.name = 'edh-bodywork'
-  material.diffuse.set(...EDH_BLUE)
-  material.emissive.set(0, 0, 0)
-  material.emissiveIntensity = 0
-  material.useMetalness = true
-  material.metalness = 0.08
-  material.gloss = 0.9
-  material.useSkybox = true
-  material.diffuseMap = null
-  material.emissiveMap = null
-  material.normalMap = null
-  material.metalnessMap = null
-  material.glossMap = null
-  material.aoMap = null
-  const coat = material as StandardMaterial & { clearCoat?: number; clearCoatGloss?: number }
-  coat.clearCoat = quality === 'high' ? 0.88 : 0.55
-  coat.clearCoatGloss = 0.94
-  material.update()
-}
-
-function applyNeutralGlass(material: StandardMaterial, pc: PlayCanvasNamespace): void {
-  material.name = 'edh-glass'
-  material.diffuse.set(0.04, 0.05, 0.06)
-  material.emissive.set(0, 0, 0)
-  material.emissiveIntensity = 0
-  material.useMetalness = true
-  material.metalness = 0
-  material.gloss = 0.72
-  material.opacity = 0.42
-  material.blendType = pc.BLEND_NORMAL
-  material.depthWrite = false
-  material.cull = pc.CULLFACE_NONE
-  material.diffuseMap = null
-  material.emissiveMap = null
-  material.update()
-}
-
 /**
- * Clone every mesh material so body / glass / tires never share instances
- * with each other or with the strip. Named body panels get EDH blue; a
- * single unnamed Tripo/scan mesh gets the same paint so baked albedo
- * (blown-out glass, noisy livery) never stays on the car.
+ * Keep camaro.glb materials as authored. Clone so we never mutate shared
+ * GLB instances (that bled paint onto the strip).
  */
 function prepareCamaroMaterials(
   root: Entity,
@@ -123,71 +48,33 @@ function prepareCamaroMaterials(
 ): { bodyMaterial: StandardMaterial; hasTextures: boolean } {
   const cast = shadowsEnabled(quality)
   let bodyMaterial: StandardMaterial | null = null
-  const unclassified: StandardMaterial[] = []
+  let hasTextures = false
 
   forEachEntity(root, (entity) => {
     const render = entity.render
     if (!render) return
 
-    const entityName = entity.name ?? ''
-
     render.meshInstances.forEach((instance) => {
       const source = instance.material as StandardMaterial
-      const materialName = source.name ?? ''
-      const label = `${entityName} ${materialName}`
-
-      // Always clone — mutating shared GLB materials bleeds paint onto glass/track.
       const material = source.clone()
       instance.material = material
-
-      if (isGlassName(label)) {
-        applyNeutralGlass(material, pc)
-      } else if (isBodyPaintName(label)) {
-        applyEdhBodyPaint(material, quality)
-        bodyMaterial = material
-      } else if (isTireName(label)) {
-        material.name = 'edh-tire'
-        material.diffuse.set(0.045, 0.045, 0.05)
-        material.emissive.set(0, 0, 0)
-        material.emissiveIntensity = 0
-        material.useMetalness = true
-        material.metalness = 0.02
-        material.gloss = 0.1
-        material.update()
-      } else if (isChromeName(label) && !isBodyPaintName(label)) {
-        material.name = 'edh-chrome'
-        material.diffuse.set(0.72, 0.74, 0.78)
-        material.useMetalness = true
-        material.metalness = 0.94
-        material.gloss = 0.9
-        material.emissiveIntensity = 0
-        material.update()
-      } else {
-        // Tripo / unnamed scan mesh — paint later if no body panels were named.
-        unclassified.push(material)
-      }
-
       instance.castShadow = cast
       instance.receiveShadow = cast
+
+      if (material.diffuseMap) hasTextures = true
+      if (!bodyMaterial) bodyMaterial = material
     })
   })
 
-  if (!bodyMaterial && unclassified.length > 0) {
-    unclassified.forEach((material) => applyEdhBodyPaint(material, quality))
-    bodyMaterial = unclassified[0]
-  }
-
   if (bodyMaterial) {
-    return { bodyMaterial, hasTextures: false }
+    return { bodyMaterial, hasTextures }
   }
 
   return {
     bodyMaterial: createMaterial(pc, {
-      diffuse: EDH_BLUE,
-      metalness: 0.08,
-      gloss: 0.9,
-      clearCoat: quality === 'high' ? 0.88 : 0.55,
-      clearCoatGloss: 0.94,
+      diffuse: [48 / 255, 82 / 255, 168 / 255],
+      metalness: 0.12,
+      gloss: 0.78,
     }),
     hasTextures: false,
   }
@@ -206,7 +93,7 @@ function fitCamaroToStrip(camaro: Entity, modelRoot: Entity): void {
 
   const bounds = collectModelBounds(modelRoot)
   if (!bounds) {
-    camaro.setLocalPosition(0.4, VEHICLE_GROUND_Y, 0)
+    camaro.setLocalPosition(CAMARO_STAGING_X, VEHICLE_GROUND_Y, 0)
     return
   }
 
@@ -226,14 +113,14 @@ function fitCamaroToStrip(camaro: Entity, modelRoot: Entity): void {
   camaro.setLocalScale(scale, scale, scale)
 
   if (alignYaw === 0) {
-    camaro.setLocalPosition(0.4 - centerX * scale, 0, -centerZ * scale)
+    camaro.setLocalPosition(CAMARO_STAGING_X - centerX * scale, 0, -centerZ * scale)
   } else {
-    camaro.setLocalPosition(0.4 - centerZ * scale, 0, centerX * scale)
+    camaro.setLocalPosition(CAMARO_STAGING_X - centerZ * scale, 0, centerX * scale)
   }
 
   if (CAMARO_YAW_FLIP_DEG === 180) {
     const pos = camaro.getLocalPosition()
-    camaro.setLocalPosition(0.4 - (pos.x - 0.4), pos.y, -pos.z)
+    camaro.setLocalPosition(CAMARO_STAGING_X - (pos.x - CAMARO_STAGING_X), pos.y, -pos.z)
   }
 
   camaro.syncHierarchy()

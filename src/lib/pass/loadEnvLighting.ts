@@ -43,7 +43,7 @@ export async function applyPassEnvLighting(
     app.scene.skyboxMip = 0
     app.scene.skyboxIntensity = 1.42
     app.scene.skyboxRotation = new pc.Quat().setFromEulerAngles(0, -42, 0)
-    app.scene.ambientLight = new pc.Color(0.32, 0.4, 0.52)
+    app.scene.ambientLight = new pc.Color(0.34, 0.42, 0.54)
 
     return true
   } catch (error) {

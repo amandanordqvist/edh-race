@@ -19,11 +19,11 @@ const CAMERA_LERP = 8.5
 const ZOOM_LERP = 5.5
 const SLOW_MO_MIN_SCALE = 0.32
 
-/** Idle: tight rear 3/4 so the Camaro is the hero, not the poles. */
-export const PASS_INSPECT_YAW_DEG = -22
-export const PASS_INSPECT_PITCH_DEG = 7
-export const PASS_INSPECT_RADIUS = 5.05
-export const PASS_INSPECT_LOOK_Y = 0.5
+/** Idle: rear 3/4 so the Camaro is the hero — tree stays beside, not through the nose. */
+export const PASS_INSPECT_YAW_DEG = -40
+export const PASS_INSPECT_PITCH_DEG = 9
+export const PASS_INSPECT_RADIUS = 5.6
+export const PASS_INSPECT_LOOK_Y = 0.58
 
 const INSPECT_RADIUS_DEFAULT = PASS_INSPECT_RADIUS
 const INSPECT_RADIUS_MIN = 3.6

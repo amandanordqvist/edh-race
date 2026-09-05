@@ -71,9 +71,9 @@ export async function buildPassScene(
 
   const ibl = await applyPassEnvLighting(app, pc, quality)
   if (ibl) {
-    app.scene.fog.start = quality === 'high' ? 180 : 120
-    app.scene.fog.end = quality === 'high' ? 480 : 300
-    app.scene.fog.color = new pc.Color(0.22, 0.24, 0.26)
+    app.scene.fog.start = quality === 'high' ? 220 : 140
+    app.scene.fog.end = quality === 'high' ? 520 : 320
+    app.scene.fog.color = new pc.Color(0.58, 0.7, 0.86)
   }
 
   // Barrier boards stay tone-only — skip logo fetches until body-mapped decals exist.
@@ -127,7 +127,7 @@ export async function buildPassScene(
     asphaltRough,
     asphaltDiffuse,
     christmasTreeMesh,
-    hideSkyPlanes: ibl,
+    hideSkyPlanes: false,
     app,
   })
   const vehicles = buildPassVehicles(pc, quality)
@@ -146,8 +146,9 @@ export async function buildPassScene(
     camaroUsesGlb = true
     camaroHasTextures = loaded.hasTextures
 
-    // Always brand the car — scan textures alone read as a generic prototype.
-    await attachCamaroDecals({ app, pc, camaro, quality })
+    if (!loaded.hasTextures) {
+      await attachCamaroDecals({ app, pc, camaro, quality })
+    }
   } catch (error) {
     console.warn('[pass] Camaro GLB unavailable — using primitive fallback', error)
   }
@@ -205,7 +206,7 @@ export async function buildPassScene(
     entity.setLocalPosition(x, pos.y, z)
   }
 
-  placeOnLane(racers.camaro, racers.camaro.getLocalPosition().x || 0.4, LANE_NEAR_Z)
+  placeOnLane(racers.camaro, racers.camaro.getLocalPosition().x, LANE_NEAR_Z)
   placeOnLane(racers.f1, 1.85, LANE_FAR_Z - 0.55)
   racers.jet.setLocalPosition(1.6, JET_ALTITUDE, JET_Z)
   applyGhostLook(pc, racers.f1, [0.58, 0.66, 0.8])
@@ -258,7 +259,7 @@ export async function buildPassScene(
     PASS_INSPECT_LOOK_Y + Math.sin(inspectPitch) * inspectRadius,
     heroZ + Math.cos(inspectYaw) * cosPitch * inspectRadius,
   )
-  camera.lookAt(heroX + 1.8, PASS_INSPECT_LOOK_Y + 0.08, heroZ)
+  camera.lookAt(heroX + 0.3, PASS_INSPECT_LOOK_Y + 0.08, heroZ)
   sceneRoot.addChild(camera)
 
   attachPassSunLights({

@@ -1,4 +1,4 @@
-import type { Application, CameraComponent, Entity } from 'playcanvas'
+import type { Application, Entity } from 'playcanvas'
 
 import type { PlayCanvasNamespace } from './scenePrimitives'
 import type { PassQuality } from './types'
@@ -77,73 +77,16 @@ export function attachPassSunLights(opts: SunLightsOptions): void {
   sceneRoot.addChild(rimLight)
 }
 
-type PassCameraFrame = {
-  bloom: { intensity: number; blurLevel: number; enabled?: boolean }
-  motionBlur?: { intensity?: number; enabled?: boolean }
-  grading?: {
-    enabled: boolean
-    brightness: number
-    contrast: number
-    saturation: number
-  }
-  colorEnhance?: { enabled: boolean; vibrance: number }
-  rendering: { samples: number; toneMapping?: number }
-  update: () => void
-}
-
 export type PassSpeedFeel = {
   setSpeed01: (speed01: number) => void
 }
 
 /**
- * Restrained bloom so tree lenses read as lights. No TAA, chromatic fringe,
- * or speed-fog — those smeared the Camaro into ghost boxes and crushed the strip.
+ * CameraFrame HDR crushed the PureSky skybox to black on some GPUs and
+ * flattened the Camaro paint. Skip it — the key light and IBL already
+ * carry the strip.
  */
 export function attachPassBloom(opts: BloomOptions): PassSpeedFeel {
-  const { app, pc, camera, quality } = opts
-  const cameraComponent = camera.camera
-  const noop = { setSpeed01: () => undefined }
-
-  if (!cameraComponent || quality !== 'high') {
-    return noop
-  }
-
-  const CameraFrame = (
-    pc as unknown as {
-      CameraFrame?: new (application: Application, cam: CameraComponent) => PassCameraFrame
-    }
-  ).CameraFrame
-  if (!CameraFrame) {
-    return noop
-  }
-
-  try {
-    const frame = new CameraFrame(app, cameraComponent)
-    frame.rendering.samples = 4
-    frame.bloom.intensity = 0.028
-    frame.bloom.blurLevel = 4
-    if (frame.motionBlur) {
-      frame.motionBlur.enabled = false
-      frame.motionBlur.intensity = 0
-    }
-    if ('TONEMAP_NEUTRAL' in pc) {
-      frame.rendering.toneMapping = (pc as unknown as { TONEMAP_NEUTRAL: number }).TONEMAP_NEUTRAL
-    }
-    if (frame.grading) {
-      frame.grading.enabled = true
-      frame.grading.brightness = 1.16
-      frame.grading.contrast = 1.04
-      frame.grading.saturation = 1.08
-    }
-    if (frame.colorEnhance) {
-      frame.colorEnhance.enabled = true
-      frame.colorEnhance.vibrance = 0.12
-    }
-    frame.update()
-
-    return noop
-  } catch (error) {
-    console.warn('[pass] CameraFrame bloom unavailable', error)
-    return noop
-  }
+  void opts
+  return { setSpeed01: () => undefined }
 }

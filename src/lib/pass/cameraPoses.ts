@@ -52,7 +52,7 @@ export function inspectPose(
       lookY + Math.sin(pitch) * radius,
       heroZ + Math.cos(yaw) * cosPitch * radius,
     ],
-    look: [heroX + 0.85, lookY + 0.04, heroZ],
+    look: [heroX + 0.25, lookY + 0.04, heroZ],
     fov: 38,
   }
 }

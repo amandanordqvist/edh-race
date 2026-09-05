@@ -95,23 +95,26 @@ export function buildGrandstandsAndSky(opts: GrandstandOptions): void {
     const skyZenith = createMaterial(pc, {
       diffuse: [0.28, 0.52, 0.92],
       emissive: [0.42, 0.64, 0.98],
-      emissiveIntensity: 0.95,
+      emissiveIntensity: 1.15,
       metalness: 0,
       gloss: 0.02,
+      useSkybox: false,
     })
     const skyHorizon = createMaterial(pc, {
       diffuse: [0.78, 0.88, 0.98],
       emissive: [0.72, 0.84, 0.98],
-      emissiveIntensity: 0.7,
+      emissiveIntensity: 0.88,
       metalness: 0,
       gloss: 0.02,
+      useSkybox: false,
     })
     const skyHorizonCool = createMaterial(pc, {
       diffuse: [0.58, 0.76, 0.96],
       emissive: [0.52, 0.72, 0.96],
-      emissiveIntensity: 0.72,
+      emissiveIntensity: 0.9,
       metalness: 0,
       gloss: 0.02,
+      useSkybox: false,
     })
     ;[skyZenith, skyHorizon, skyHorizonCool].forEach((material) => {
       material.useLighting = false
