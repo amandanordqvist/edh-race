@@ -80,7 +80,6 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   let inspectYaw = INSPECT_START_YAW
   let inspectPitch = INSPECT_START_PITCH
   let inspectRadius = INSPECT_RADIUS_DEFAULT
-  let inspectDragging = false
   let raceProgress = 0
 
   /** 0 = follow car, 1 = zoomed out to full strip */
@@ -229,13 +228,12 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
   const onIdleLook = (dx: number, dy: number) => {
     if (reducedMotion || currentPhase !== 'idle') return
 
-    inspectDragging = true
     inspectYaw -= dx * INSPECT_YAW_SENS
     inspectPitch = clamp(inspectPitch + dy * INSPECT_PITCH_SENS, INSPECT_PITCH_MIN, INSPECT_PITCH_MAX)
   }
 
   const onIdleLookEnd = () => {
-    inspectDragging = false
+    // Inspect is position-driven; releasing a drag has no inertia to clear.
   }
 
   /** Scroll: idle = orbit zoom; race/finish = follow↔wide. */
@@ -295,7 +293,6 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
       inspectYaw = INSPECT_START_YAW
       inspectPitch = INSPECT_START_PITCH
       inspectRadius = INSPECT_RADIUS_DEFAULT
-      inspectDragging = false
       raceSpeed = 0
       raceProgress = 0
       prevRaceSpeed = 0
@@ -356,7 +353,6 @@ export function createCameraDirector(opts: CameraDirectorOptions) {
     inspectYaw = INSPECT_START_YAW
     inspectPitch = INSPECT_START_PITCH
     inspectRadius = INSPECT_RADIUS_DEFAULT
-    inspectDragging = false
     zoomTarget = 0
     zoomCurrent = 0
     view = 'follow'

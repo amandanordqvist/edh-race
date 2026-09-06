@@ -9,28 +9,29 @@ type WheelSpinOptions = {
 }
 
 /**
- * Only primitive Camaro wheels have hub pivots.
- * The GLB wheels share a car-origin pivot with baked mesh offsets — rotating them
- * flings the tires across the strip.
+ * The refined EDH GLB has four hub-centred nodes with Z axles. The primitive
+ * fallback uses cylinders with a 90° roll. Legacy Tripo meshes have no safe
+ * wheel pivots and must never be rotated.
  */
 function isSpinnableWheel(name: string): boolean {
-  return name.toLowerCase().includes('camaro-wheel-')
-}
-
-function isRearPrimitiveWheel(name: string): boolean {
   const lower = name.toLowerCase()
-  return lower.includes('camaro-wheel-rl') || lower.includes('camaro-wheel-rr')
+  return lower.startsWith('edh-wheel-') || lower.includes('camaro-wheel-')
 }
 
-function resetPrimitiveWheel(wheel: Entity): void {
-  wheel.setLocalEulerAngles(0, 0, 90)
+function isRearWheel(name: string): boolean {
+  const lower = name.toLowerCase()
+  return /(?:camaro|edh)-wheel-r[lr]/.test(lower)
+}
+
+function resetWheel(wheel: Entity): void {
+  wheel.setLocalEulerAngles(0, 0, wheel.name.startsWith('edh-wheel-') ? 0 : 90)
 }
 
 export function createCamaroWheelSpin(opts: WheelSpinOptions) {
   const { app, wheels, reducedMotion } = opts
 
   const spinnable = wheels.filter((wheel) => isSpinnableWheel(wheel.name))
-  const rearWheels = spinnable.filter((wheel) => isRearPrimitiveWheel(wheel.name))
+  const rearWheels = spinnable.filter((wheel) => isRearWheel(wheel.name))
   const spinTargets = rearWheels.length > 0 ? rearWheels : spinnable
 
   let phase: PassPhase = 'idle'
@@ -39,6 +40,11 @@ export function createCamaroWheelSpin(opts: WheelSpinOptions) {
 
   const spinWheels = (targets: Entity[], rate: number, dt: number) => {
     targets.forEach((wheel) => {
+      if (wheel.name.startsWith('edh-wheel-')) {
+        // +X travel with a Z axle requires negative Z rotation on both sides.
+        wheel.rotateLocal(0, 0, -rate * dt)
+        return
+      }
       const angles = wheel.getLocalEulerAngles()
       // Primitive cylinders are laid on Z with 90° roll; spin around local X.
       wheel.setLocalEulerAngles(angles.x + rate * dt, angles.y, angles.z)
@@ -82,10 +88,10 @@ export function createCamaroWheelSpin(opts: WheelSpinOptions) {
   const reset = () => {
     phase = 'idle'
     raceSpeed = 0
-    spinnable.forEach(resetPrimitiveWheel)
+    spinnable.forEach(resetWheel)
   }
 
-  /** World-space rear tire anchors for burnout smoke (empty when only GLB wheels exist). */
+  /** World-space rear hub anchors; legacy unrigged GLBs return no anchors. */
   const getRearAnchors = (): [number, number, number][] => {
     if (spinTargets.length === 0) return []
 
@@ -108,7 +114,7 @@ export function createCamaroWheelSpin(opts: WheelSpinOptions) {
     }
   }
 
-  spinnable.forEach(resetPrimitiveWheel)
+  spinnable.forEach(resetWheel)
   start()
 
   return { onPhase, onRaceFrame, reset, getRearAnchors, destroy }

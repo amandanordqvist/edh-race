@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="sv">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Camaro · modellgranskning</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#11151c;color:#f1f4f8;font:14px system-ui}canvas{width:100%;height:100%;display:block}main{height:100dvh}header{position:fixed;top:24px;left:28px;right:28px;display:flex;justify-content:space-between;gap:20px;z-index:2}h1{font-size:20px;margin:0 0 6px}p{margin:0;color:#a4afc0}nav{display:flex;gap:6px;flex-wrap:wrap}button{border:1px solid #475365;background:#1d2632;color:white;padding:10px 16px;border-radius:3px;cursor:pointer}button[aria-pressed=true]{background:#185ec0;border-color:#4386e8}footer{position:fixed;bottom:24px;left:28px;right:28px;display:flex;justify-content:space-between;gap:12px;color:#a4afc0;pointer-events:none}@media(max-width:700px){header{flex-direction:column;top:16px;left:16px}footer{font-size:12px;left:16px}button{padding:8px 10px}}
+</style>
+<main><canvas id="scene" aria-label="Interaktiv 3D-granskning av Camaro"></canvas></main>
+<header><div><h1>EDH / Camaro</h1><p id="status">Laddar modell…</p></div><nav aria-label="Modell"><button id="new" aria-pressed="true">Bearbetad</button><button id="old" aria-pressed="false">Original</button><button id="spin" aria-pressed="false">Hjulrotation</button></nav></header>
+<footer><nav aria-label="Kameravinkel" style="pointer-events:auto"><button data-view="front">Framifrån</button><button data-view="side">Sida</button><button data-view="rear">Bakifrån</button><button data-view="three">3/4</button></nav><span>Dra för att rotera · scrolla för zoom</span></footer>
+<script type="module" src="./camaro-preview.js"></script>
+</html>
