@@ -1,7 +1,6 @@
 import type { Application, Entity, Texture, Vec3 } from 'playcanvas'
 
 import { buildPassEnvironment, type TreeMode } from './buildEnvironment'
-import { attachCamaroDecals } from './attachCamaroDecals'
 import { attachPassBloom, attachPassSunLights } from './buildLighting'
 import { buildPassVehicles, type VehicleId } from './buildVehicles'
 import { buildStreetCar } from './buildStreetCar'
@@ -146,9 +145,8 @@ export async function buildPassScene(
     camaroUsesGlb = true
     camaroHasTextures = loaded.hasTextures
 
-    if (!loaded.hasTextures) {
-      await attachCamaroDecals({ app, pc, camaro, quality })
-    }
+    // An authored GLB already contains its wing and finish, including models
+    // with entirely geometric details and texture-free PBR paint.
   } catch (error) {
     console.warn('[pass] Camaro GLB unavailable — using primitive fallback', error)
   }

@@ -31,3 +31,7 @@ dist-ssr
 # Heavy 3D source backups (runtime uses optimized camaro.glb)
 public/models/pass/camaro.source.glb
 
+# Generated Python caches and temporary model comparisons
+__pycache__/
+*.blend1
+.tmp-verify/camaro-v*.glb

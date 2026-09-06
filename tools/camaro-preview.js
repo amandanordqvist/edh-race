@@ -56,7 +56,8 @@ async function load(key, url) {
   models[key] = root
   document.querySelector('#status').textContent = 'Fotoreferens: camaros10 / 11 / 13 / 14'
 }
-await load('new', '/models/pass/camaro.glb')
+const reviewParams = new URLSearchParams(window.location.search)
+await load('new', reviewParams.get('candidate') === 'v2' ? '/.tmp-verify/camaro-v2.glb' : '/models/pass/camaro.glb')
 const wheelSpin = createCamaroWheelSpin({ app,
   wheels: ['fl', 'fr', 'rl', 'rr'].map(label => models.new.findByName(`edh-wheel-${label}`)).filter(Boolean),
   reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -68,12 +69,13 @@ document.querySelector('#spin').onclick = () => {
   wheelSpin.onRaceFrame(0, .035)
   document.querySelector('#spin').setAttribute('aria-pressed', String(spinning))
 }
-try { await load('old', '/.tmp-verify/camaro-original.glb') } catch { document.querySelector('#old').disabled = true }
+try { await load('old', reviewParams.get('baseline') === 'v1' ? '/.tmp-verify/camaro-v1.glb' : '/.tmp-verify/camaro-original.glb') } catch { document.querySelector('#old').disabled = true }
 try {
   const hdr = await asset('/models/kloofendal_48d_partly_cloudy_puresky_2k.hdr', 'texture')
   const lighting = pc.EnvLighting.generateLightingSource(hdr.resource, { size: 128 })
   app.scene.envAtlas = pc.EnvLighting.generateAtlas(lighting, { size: 512 })
   app.scene.skyboxIntensity = .65
+  app.scene.layers.getLayerById(pc.LAYERID_SKYBOX).enabled = false
   lighting.destroy()
 } catch (error) { console.warn('IBL unavailable', error) }
 for (const key of ['new', 'old']) document.querySelector(`#${key}`).onclick = () => {

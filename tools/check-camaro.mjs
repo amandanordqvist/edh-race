@@ -40,6 +40,10 @@ for (const mesh of doc.meshes) {
 assert(triangleCount < 100_000, 'Geometry budget exceeded')
 assert(file.length < 3 * 1024 * 1024, 'Asset budget exceeded')
 const wheelNodes = doc.nodes.filter(n => n.name.startsWith('edh-wheel-'))
+assert(!doc.images?.length, 'Clean-shell model should not depend on the old raster atlas')
+for (const name of ['body-paint', 'body-front', 'cabin-glazing', 'grille-honeycomb', 'headlamp-projectors', 'intake-hat']) {
+  assert(doc.nodes.some(n => n.name === name), `Missing authored part: ${name}`)
+}
 assert.deepEqual(wheelNodes.map(n => n.name).sort(), ['edh-wheel-fl', 'edh-wheel-fr', 'edh-wheel-rl', 'edh-wheel-rr'])
 assert(wheelNodes.every(n => n.translation.some(Math.abs)), 'Missing hub translation')
 

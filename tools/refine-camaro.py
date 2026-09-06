@@ -17,6 +17,8 @@ from pathlib import Path
 import fast_simplification
 import numpy as np
 from PIL import Image
+from scipy.spatial import cKDTree
+from scipy.interpolate import CubicSpline, PchipInterpolator
 
 
 def read_glb(path):
@@ -89,9 +91,272 @@ def split_hood(points, faces):
     return {key:np.concatenate(parts).reshape(-1,3) for key,parts in groups.items()}
 
 
+def fair_surface(points, faces):
+    """Local quadratic surface fits suppress scan ripples, retaining curvature."""
+    result=points.copy()
+    ns=normals(points,faces)
+    tree=cKDTree(points)
+    # Fair only the outer shell, not the bars, tires or induction hardware.
+    selection=np.flatnonzero((points[:,1]>-.072)&(points[:,0]>-.39)&(points[:,0]<.44))
+    for start in range(0,len(selection),512):
+        ids=selection[start:start+512]
+        distances,neighbours=tree.query(points[ids],k=360)
+        n=ns[ids]
+        neighbour_normals=ns[neighbours]
+        weights=np.exp(-3*(distances/np.maximum(distances[:,-1:],1e-5))**2)
+        weights*=np.clip(np.einsum('nki,ni->nk',neighbour_normals,n),0,1)**4
+        n=np.sum(neighbour_normals*weights[:,:,None],axis=1)
+        n/=np.maximum(np.linalg.norm(n,axis=1,keepdims=True),1e-9)
+        helper=np.tile([0,1,0],(len(ids),1))
+        helper[abs(n[:,1])>.9]=[0,0,1]
+        u=np.cross(n,helper);u/=np.maximum(np.linalg.norm(u,axis=1,keepdims=True),1e-9)
+        v=np.cross(n,u)
+        delta=(points[neighbours]-points[ids,None,:])/.02
+        xx=np.einsum('nki,ni->nk',delta,u)
+        yy=np.einsum('nki,ni->nk',delta,v)
+        zz=np.einsum('nki,ni->nk',delta,n)
+        basis=np.stack([np.ones_like(xx),xx,yy,xx*xx,xx*yy,yy*yy],axis=-1)
+        lhs=np.einsum('nki,nk,nkj->nij',basis,weights,basis)
+        rhs=np.einsum('nki,nk,nk->ni',basis,weights,zz)
+        lhs+=np.eye(6)[None]*1e-6
+        solution=np.linalg.solve(lhs,rhs[:,:,None])[:,:,0]
+        displacement=np.clip(solution[:,0]*.02,-.0035,.0035)
+        result[ids]+=n*displacement[:,None]*.85
+    return result
+
+
+def front_x(y,z):
+    return .500-.070*(np.abs(z)/.135)**1.6-.09*np.abs(y+.055)
+
+
+def front_polygon(model,group,material,polygon,depth=.002):
+    # Polygon coordinates are (Z,Y); the surface follows the Camaro nose crown.
+    polygon=np.asarray(polygon)
+    pending=[np.asarray([polygon[0],polygon[i],polygon[i+1]]) for i in range(1,len(polygon)-1)]
+    triangles=[]
+    while pending:
+        tri=pending.pop()
+        lengths=[np.linalg.norm(tri[i]-tri[(i+1)%3]) for i in range(3)]
+        edge=int(np.argmax(lengths))
+        if lengths[edge]>.005:
+            a,b,c=tri[edge],tri[(edge+1)%3],tri[(edge+2)%3]
+            mid=(a+b)/2
+            pending.extend([np.asarray([a,mid,c]),np.asarray([mid,b,c])])
+        else: triangles.append(tri)
+    yz=np.concatenate(triangles)
+    p=np.asarray([[front_x(y,z)+depth,y,z] for z,y in yz])
+    f=np.arange(len(p)).reshape(-1,3)
+    n=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]])
+    f[n[:,0]<0]=f[n[:,0]<0,::-1]
+    p,f=weld(p,f)
+    model.add(group,material,p,f)
+
+
+def front_border(model,group,material,polygon,width=.0008,depth=.0024):
+    p=np.asarray(polygon,float)
+    center=p.mean(axis=0)
+    offset=p-center
+    inner=center+offset*(1-width/np.maximum(np.linalg.norm(offset,axis=1,keepdims=True),1e-6))
+    for i in range(len(p)):
+        j=(i+1)%len(p)
+        front_polygon(model,group,material,[p[i],p[j],inner[j],inner[i]],depth)
+
+
+def honeycomb(model,polygon,metal):
+    p=np.asarray(polygon)
+    def inside(point):
+        signs=[]
+        for i in range(len(p)):
+            a,b=p[i],p[(i+1)%len(p)]
+            signs.append((b[0]-a[0])*(point[1]-a[1])-(b[1]-a[1])*(point[0]-a[0]))
+        return min(signs)>=-1e-9 or max(signs)<=1e-9
+    radius=.0054
+    for row,yy in enumerate(np.arange(p[:,1].min(),p[:,1].max()+.008,.0081)):
+        for zz in np.arange(p[:,0].min(),p[:,0].max()+.01,.0094):
+            center=[zz+(row%2)*.0047,yy]
+            hexagon=[[center[0]+radius*math.sin(j*math.tau/6),center[1]+radius*math.cos(j*math.tau/6)] for j in range(6)]
+            if all(inside(v) for v in hexagon):
+                front_border(model,'grille-honeycomb',metal,hexagon,.00055,.0031)
+
+
+def forged_spoke(model,group,material,center,rim,outer,side,angle):
+    p,f=[],[]
+    for radius,width,twist,depth in [(.19,.15,0,0),(.34,.14,.04,-.001),(.60,.105,.09,-.004),(.87,.08,.14,-.006),(.98,.07,.15,-.005)]:
+        a=angle+twist
+        c=np.asarray(center)+[rim*radius*math.cos(a),rim*radius*math.sin(a),outer+side*depth]
+        tangent=np.array([-math.sin(a),math.cos(a),0])
+        for k in range(8):
+            q=k*math.tau/8
+            # Chamfered elliptical section produces the flat forged blade highlight.
+            p.append(c+tangent*(math.copysign(abs(math.cos(q))**.45,math.cos(q))*rim*width)
+                     +np.array([0,0,math.copysign(abs(math.sin(q))**.6,math.sin(q))*.0016]))
+    for i in range(4):
+        for j in range(8):
+            a,b=i*8+j,i*8+(j+1)%8
+            f.extend([[a,b,a+8],[b,b+8,a+8]])
+    model.add(group,material,p,f)
+
+
+def intake_hat(model,material):
+    p,f=[],[]
+    stations=[(.190,.084,.004,.014),(.196,.090,.012,.033),(.209,.096,.017,.044),
+              (.237,.096,.017,.0455),(.288,.096,.0165,.0455),(.3045,.096,.0165,.0455)]
+    segments=48
+    for x,cy,h,w in stations:
+        for j in range(segments):
+            a=j/segments*math.tau
+            y=cy+h*math.copysign(abs(math.cos(a))**.36,math.cos(a))
+            z=w*math.copysign(abs(math.sin(a))**.36,math.sin(a))
+            p.append([x,y,z])
+    for i in range(len(stations)-1):
+        for j in range(segments):
+            a,b=i*segments+j,i*segments+(j+1)%segments
+            f.extend([[a,b,a+segments],[b,b+segments,a+segments]])
+    for j in range(1,segments-1): f.append([0,j+1,j])
+    model.add('intake-hat',material,p,f)
+
+
+def partition_triangles(triangles,field):
+    """Split a triangle soup on an implicit boundary, sharing exact crossings."""
+    flat=triangles.reshape(-1,3)
+    signs=field(flat).reshape(-1,3)
+    inside=np.all(signs>=0,axis=1)
+    outside=np.all(signs<=0,axis=1)
+    groups={True:[triangles[inside]],False:[triangles[outside]]}
+    for tri,values in zip(triangles[~inside&~outside],signs[~inside&~outside]):
+        for positive in [False,True]:
+            polygon=[]
+            for i in range(3):
+                a,b=tri[i],tri[(i+1)%3]
+                da,db=values[i],values[(i+1)%3]
+                ka,kb=(da>=0,db>=0) if positive else (da<=0,db<=0)
+                if ka: polygon.append(a)
+                if ka!=kb: polygon.append(a+(b-a)*da/(da-db))
+            for i in range(1,len(polygon)-1):
+                groups[positive].append(np.asarray([[polygon[0],polygon[i],polygon[i+1]]]))
+    return {key:np.concatenate(parts) for key,parts in groups.items()}
+
+
+def lofted_shell(model,paint,carbon,glass,black,wheel_specs):
+    """Photo-proportioned clean shell: longitudinal loft with real arch cutouts.
+
+    These stations are editable artistic dimensions in the source coordinate
+    system, not measurements of the physical Five Star body.
+    """
+    # X, half width, roof/hood centre height, shoulder height.
+    stations=np.array([
+        [-.423,.139,.026,.024],[-.377,.153,.030,.027],[-.305,.158,.034,.029],
+        [-.265,.160,.054,.031],[-.212,.163,.089,.033],[-.145,.157,.109,.035],
+        [-.060,.153,.113,.034],[.020,.152,.110,.034],[.065,.153,.093,.035],
+        [.110,.157,.061,.036],[.150,.161,.043,.036],[.218,.165,.041,.035],
+        [.290,.161,.034,.029],[.355,.153,.023,.018],[.407,.143,.010,.006],
+        [.495,.134,.001,-.003],
+    ])
+    width=PchipInterpolator(stations[:,0],stations[:,1])
+    roof=PchipInterpolator(stations[:,0],stations[:,2])
+    belt=PchipInterpolator(stations[:,0],stations[:,3])
+    rings=196
+    circumference=96
+    positions=[]
+    for xx in np.linspace(stations[0,0],stations[-1,0],rings):
+        w,h,b=width(xx),roof(xx),belt(xx)
+        # Rounded crown, narrow roof rails, tucked waist and a straight sill.
+        half=[[0,h],[.30*w,h-.0007],[.56*w,h-.003],[.79*w,b+.006],
+              [.92*w,b+.003],[w,b-.007],[.995*w,-.026],[.973*w,-.052],
+              [.986*w,-.085],[.960*w,-.095],[0,-.095]]
+        ring=np.asarray(half+[[ -z,y] for z,y in half[-2:0:-1]]+[half[0]])
+        t=np.linspace(0,1,len(ring))
+        samples=CubicSpline(t,ring,bc_type='periodic')(np.arange(circumference)/circumference)
+        for zz,yy in samples:
+            x_actual=xx
+            if xx>.39:
+                blend=(xx-.39)/(.495-.39)
+                x_actual=.39+blend*(front_x(yy,zz)-.39)
+            positions.append([x_actual,yy,zz])
+    positions=np.asarray(positions)
+    faces=[]
+    for i in range(rings-1):
+        for j in range(circumference):
+            a,b=i*circumference+j,i*circumference+(j+1)%circumference
+            faces.extend([[a,b,a+circumference],[b,b+circumference,a+circumference]])
+    triangles=positions[np.asarray(faces)]
+    for label,cx,cy,cz,radius,_ in wheel_specs:
+        def arch(p,cx=cx,cy=cy,cz=cz,radius=radius):
+            return np.maximum(np.hypot(p[:,0]-cx,p[:,1]-cy)-(radius+.0035),.087-p[:,2]*np.sign(cz))
+        triangles=partition_triangles(triangles,arch)[True]
+    def window_field(p):
+        x,y,z=p.T
+        roof_y=roof(np.clip(x,stations[0,0],stations[-1,0]))
+        a_pillar=.087+.033*np.clip((x-.062)/.080,0,1)
+        side=np.minimum.reduce([x+.124,.128-x,y-.041,roof_y-.007-y,abs(z)-a_pillar-.005])
+        quarter=np.minimum.reduce([x+.275,-.137-x,y-.042,roof_y-.009-y,abs(z)-.100])
+        windshield=np.minimum.reduce([x-.062,.142-x,y-.043,a_pillar-.005-abs(z)])
+        rear=np.minimum.reduce([x+.281,-.180-x,y-.044,.087-abs(z)])
+        return np.maximum.reduce([side,quarter,windshield,rear])
+    pieces=partition_triangles(triangles,window_field)
+    glass_triangles=pieces[True]
+    shell_points=pieces[False].reshape(-1,3)
+    shell_faces=np.arange(len(shell_points)).reshape(-1,3)
+    panels=split_hood(shell_points,shell_faces)
+    for name,mat,p in [('body-paint',paint,panels[False]),('hood-carbon',carbon,panels[True]),
+                       ('cabin-glazing',glass,glass_triangles.reshape(-1,3))]:
+        f=np.arange(len(p)).reshape(-1,3)
+        p,f=weld(p,f)
+        model.add(name,mat,p,f)
+    # Crowned front closure; the grille and lamps sit on this same surface.
+    last=positions[-circumference:]
+    front_polygon(model,'body-front',paint,[[p[2],p[1]] for p in last],0)
+    first=positions[:circumference]
+    center=np.mean(first,axis=0)
+    rear_p=np.vstack([center,first])
+    rear_f=[]
+    for i in range(circumference):
+        tri=[0,i+1,(i+1)%circumference+1]
+        if np.cross(rear_p[tri[1]]-rear_p[0],rear_p[tri[2]]-rear_p[0])[0]>0: tri=tri[::-1]
+        rear_f.append(tri)
+    model.add('body-rear',paint,rear_p,rear_f)
+    # Low rear spoiler and two swept end plates, as in the side reference.
+    p=[[-.373,.029,-.151],[-.373,.029,.151],[-.435,.040,.151],[-.435,.040,-.151]]
+    model.add('rear-spoiler',paint,p,[[0,2,1],[0,3,2]])
+    for s in [-1,1]:
+        p=[[-.385,.026,s*.151],[-.435,.033,s*.151],[-.432,.058,s*.151],[-.391,.042,s*.151]]
+        p=np.asarray(p)
+        solid=np.vstack([p-[0,0,.0006],p+[0,0,.0006]])
+        f=[[0,1,2],[0,2,3],[4,6,5],[4,7,6]]
+        for i in range(4):
+            j=(i+1)%4
+            f.extend([[i,i+4,j],[j,i+4,j+4]])
+        model.add('spoiler-endplates',paint,solid,f)
+    # Quiet sill seam follows the body width rather than the old scan dents.
+    for s in [-1,1]:
+        path=[]
+        for xx in np.linspace(-.085,.221,40):
+            path.append([xx,-.079,s*float(width(xx))*.995])
+        tube(model,'sill-trim',black,path,.00055,6)
+    # Door and front-clip gaps, projected onto the smooth side skin.
+    skin=positions[positions[:,2]>.09]
+    skin_tree=cKDTree(skin[:,[0,1]])
+    def side_path(xy,sign,steps=10):
+        result=[]
+        for a,b in zip(xy[:-1],xy[1:]):
+            for t in np.linspace(0,1,steps,endpoint=False):
+                q=np.asarray(a)*(1-t)+np.asarray(b)*t
+                d,ids=skin_tree.query(q,k=8)
+                weights=1/np.maximum(d,1e-5)**2
+                z=np.sum(skin[ids,2]*weights)/weights.sum()+.0007
+                result.append([q[0],q[1],sign*z])
+        return result
+    door=[[-.108,.034],[-.096,-.024],[-.080,-.085],[-.064,-.091],[.103,-.091],
+          [.126,-.082],[.130,-.030],[.132,.034]]
+    for s in [-1,1]:
+        tube(model,'door-panel-gaps',black,side_path(door,s),.00045,6)
+        handle=[[-.071+.011*math.cos(a),.021+.0038*math.sin(a)] for a in np.linspace(0,math.tau,33)]
+        tube(model,'door-handle-recess',black,side_path(handle,s,steps=1),.0005,6)
+
+
 class Model:
     def __init__(self):
-        self.doc = {'asset': {'version': '2.0', 'generator': 'EDH photo-reference refinement v1'},
+        self.doc = {'asset': {'version': '2.0', 'generator': 'EDH photo-reference clean-shell v2'},
                     'scene': 0, 'scenes': [{'nodes': []}], 'nodes': [], 'meshes': [],
                     'materials': [], 'accessors': [], 'bufferViews': [], 'buffers': [],
                     'extensionsUsed': ['KHR_materials_clearcoat']}
@@ -228,7 +493,7 @@ def box(model, group, mat, center, dimensions, bevel=.001, open_front=False):
     model.add(group,mat,points,faces)
 
 
-def build(source, output):
+def build(source, output, retained_shell=False):
     doc, binary = read_glb(source)
     if len(doc['meshes']) != 1 or 'tripo' not in doc['meshes'][0]['name']:
         raise ValueError('Use the original Tripo GLB as source; refusing to refine an already refined asset.')
@@ -248,22 +513,23 @@ def build(source, output):
     r,g,b = colors.T
     blue = (b > r*1.30) & (b > g*1.42)
     model = Model()
-    paint = model.material('EDH / metallic cobalt clearcoat', [.004,.065,.255], .65,.28,1)
-    carbon = model.material('Carbon / satin hood and intake', [.016,.020,.027], .28,.32,.4)
-    glass = model.material('Polycarbonate / smoked glazing', [.028,.050,.075], .05,.18,.5)
-    model.doc['materials'][glass]['pbrMetallicRoughness']['baseColorFactor'][3] = .52
+    paint = model.material('EDH / metallic cobalt clearcoat', [.002,.038,.195], .45,.26,1)
+    carbon = model.material('Carbon / satin hood and intake', [.007,.008,.011], .06,.35,.35)
+    glass = model.material('Polycarbonate / smoked glazing', [.007,.015,.025], 0,.15,.15)
+    model.doc['materials'][glass]['pbrMetallicRoughness']['baseColorFactor'][3] = .35
     model.doc['materials'][glass]['alphaMode'] = 'BLEND'
-    rubber = model.material('Drag slick / rubber', [.012,.014,.017],0,.83)
+    rubber = model.material('Drag slick / rubber', [.004,.005,.007],0,.86)
     metal = model.material('Machined aluminium', [.56,.61,.67], .92,.22)
     darkmetal = model.material('Anodised graphite', [.033,.043,.056], .75,.34)
     black = model.material('Intake / interior shadow', [.003,.004,.006],0,.94)
     steel = model.material('Exhaust / heat-tinted stainless', [.32,.27,.20],.85,.32)
     red = model.material('Fuel fittings / red anodised', [.42,.015,.008],.7,.25)
     blue_metal = model.material('Fuel fittings / blue anodised', [.016,.09,.32],.75,.24)
+    lens = model.material('Headlamp / smoked projector glass', [.025,.065,.105],.45,.13,.8)
+    led = model.material('Headlamp / silver-white LED', [.72,.84,.95],.45,.2)
+    grille_metal = model.material('Grille / graphite aluminium', [.14,.16,.18],.75,.38)
+    model.doc['materials'][led]['emissiveFactor']=[.10,.14,.18]
     detail = model.material('Retained fascia / reference albedo', [1,1,1],.25,.42)
-    model.doc['images'] = [{'mimeType':image_info['mimeType'],'bufferView':model.view(image_bytes)}]
-    model.doc['textures'] = [{'source':0}]
-    model.doc['materials'][detail]['pbrMetallicRoughness']['baseColorTexture'] = {'index':0}
 
     wheel_specs = [('rl',-.177,-.0345,.117,.0695,.073), ('rr',-.177,-.0345,-.117,.0695,.073),
                    ('fl',.298,-.0545,.132,.0495,.025), ('fr',.298,-.0545,-.132,.0495,.025)]
@@ -289,7 +555,6 @@ def build(source, output):
     # Use clean authored paint across the shell; only the front fascia needs
     # its original image for the Camaro lamp / grille graphics.
     material_ids = np.full(len(faces),paint)
-    material_ids[(x>.425)&(y<.014)] = detail
     material_ids[blue] = paint
     material_ids[(b>g*1.25)&(r>g*1.2)&(b>.30)] = paint
     # Current car has clean blue sides, no purple stripe or old rear sponsor sheet.
@@ -312,7 +577,14 @@ def build(source, output):
     welded, ids, inverse = np.unique(np.round(points,6),axis=0,return_index=True,return_inverse=True)
     del welded
     positions = smooth(points[ids].astype(float), inverse[faces], 20)
+    if retained_shell:
+        for _ in range(3): positions=fair_surface(positions,inverse[faces])
     points = positions[inverse]
+    # Replace the scan's rippled front surface with a continuous crowned fascia.
+    front=(points[:,0]>.398)&(points[:,1]<.003)&(points[:,1]>-.099)
+    yy,zz=points[front,1],points[front,2]
+    weight=np.clip((points[front,0]-.398)/.028,0,1)
+    points[front,0]+=(front_x(yy,zz)-points[front,0])*weight
     # Keep the original continuous fender edge. Recess the old tire surface
     # behind the clean new wheels rather than cutting holes through the shell.
     recess_z = np.sign(points[:,2])*np.minimum(abs(points[:,2]),.109)
@@ -320,6 +592,7 @@ def build(source, output):
     shell_faces=faces[((material_ids==paint)|(material_ids==carbon))&(~remove)]
     shell=split_hood(points,shell_faces)
     for mat in sorted(set(material_ids[~remove])):
+        if not retained_shell and mat!=darkmetal: continue
         selected = faces[(material_ids==mat)&(~remove)]
         ids, inverse = np.unique(selected,return_inverse=True)
         p, f = points[ids], inverse.reshape(-1,3)
@@ -333,6 +606,9 @@ def build(source, output):
             model.add(material_names[mat],mat,p,f)
         else:
             model.add(material_names[mat],mat,p,f,uv[ids])
+
+    if not retained_shell:
+        lofted_shell(model,paint,carbon,glass,black,wheel_specs)
 
     pivots = {}
     for label,cx,cy,cz,radius,width in wheel_specs:
@@ -356,9 +632,7 @@ def build(source, output):
         lathe(model,name,metal,center,[(0,outer-s*.006),(rim*.22,outer-s*.006),(rim*.24,outer),(0,outer)],48)
         for j in range(5):
             a = j*math.tau/5
-            start = [cx+rim*.18*math.cos(a),cy+rim*.18*math.sin(a),cz+outer]
-            end = [cx+rim*.92*math.cos(a+.13),cy+rim*.92*math.sin(a+.13),cz+outer-s*.007]
-            tube(model,name,metal if label.startswith('f') else darkmetal,[start,end],rim*.07,8)
+            forged_spoke(model,name,metal if label.startswith('f') else darkmetal,center,rim,outer,s,a)
         bolt_count = 16 if label.startswith('r') else 5
         for j in range(bolt_count):
             a = j*math.tau/bolt_count
@@ -373,7 +647,7 @@ def build(source, output):
         xx = .211+i*.0094
         box(model,'blower-fins',darkmetal,[xx,.054,0],[.0018,.023,.070],.0005)
     box(model,'intake-neck',darkmetal,[.237,.072,0],[.062,.018,.054],.003)
-    box(model,'intake-hat',carbon,[.249,.096,0],[.111,.033,.091],.005,open_front=True)
+    intake_hat(model,carbon)
     # Inset black throat + thin metal rim and the 4 x 2 aperture dividers.
     box(model,'intake-throat',black,[.296,.096,0],[.001,.026,.081],.002)
     for zz in [-.042,.042]:
@@ -400,7 +674,7 @@ def build(source, output):
         # Four swept open-ended exhaust primaries per side.
         for i in range(4):
             xx=.155+i*.017
-            path=[[xx,-.058,s*.080],[xx,-.073,s*.104],[xx-.003,-.084,s*.137],[xx-.010,-.079,s*.154]]
+            path=[[xx,-.058,s*.080],[xx,-.073,s*.104],[xx-.003,-.084,s*.145],[xx-.012,-.077,s*.167]]
             tube(model,'exhaust-zoomies',steel,path,.0057,16)
             end=np.array(path[-1]); direction=end-np.array(path[-2]);direction/=np.linalg.norm(direction)
             tube(model,'exhaust-ports',black,[end-direction*.003,end+direction*.0002],.0046,16)
@@ -413,6 +687,39 @@ def build(source, output):
         tube(model,'cabin-rollcage',metal,[[-.11,-.041,s*.112],[.075,.025,s*.114]],.0023,10)
     tube(model,'cabin-rollcage',metal,[[-.11,-.04,-.110],[-.11,.069,.105]],.0025,10)
     box(model,'cabin-interior',black,[-.045,-.031,0],[.19,.055,.15],.009)
+    # Camaro fascia: crowned grille panels, fine honeycomb and projector lenses.
+    upper=[[-.077,-.007],[.077,-.007],[.083,-.020],[-.083,-.020]]
+    front_polygon(model,'grille-upper',black,upper)
+    front_border(model,'grille-trim',darkmetal,upper,.0011)
+    for yy in [-.010,-.017]:
+        front_polygon(model,'upper-grille-bars',grille_metal,[[-.074,yy],[.074,yy],[.074,yy+.0007],[-.074,yy+.0007]],.003)
+    for s in [-1,1]:
+        lower=[[s*.004,-.049],[s*.069,-.049],[s*.082,-.087],[s*.004,-.089]]
+        front_polygon(model,'grille-lower',black,lower)
+        front_border(model,'grille-trim',metal,lower,.00075)
+        honeycomb(model,lower,grille_metal)
+        light=[[s*.080,-.007],[s*.126,-.008],[s*.124,-.016],[s*.111,-.021],[s*.085,-.020]]
+        front_polygon(model,'headlamp-housings',black,light,.0028)
+        front_border(model,'headlamp-bezels',metal,light,.0010,.0031)
+        running=[[s*.084,-.017],[s*.111,-.018],[s*.120,-.014]]
+        path=[[front_x(y,z)+.0036,y,z] for z,y in running]
+        tube(model,'headlamp-led',led,path,.0009,8)
+        for zz in [.092,.104,.116]:
+            ring=[[s*(zz+.0032*math.cos(i*math.tau/24)),-.012+.0031*math.sin(i*math.tau/24)] for i in range(24)]
+            front_polygon(model,'headlamp-projectors',lens,ring,.0034)
+            front_border(model,'headlamp-projectors',metal,ring,.00042,.0036)
+            pupil=[[s*(zz+.0014*math.cos(i*math.tau/16)),-.012+.0014*math.sin(i*math.tau/16)] for i in range(16)]
+            front_polygon(model,'headlamp-optics',led,pupil,.0038)
+        duct=[[s*.092,-.053],[s*.122,-.054],[s*.125,-.083],[s*.090,-.083]]
+        front_polygon(model,'brake-ducts',black,duct)
+        for yy in [-.068,-.074,-.080]:
+            front_polygon(model,'brake-duct-louvres',darkmetal,[[s*.094,yy],[s*.122,yy],[s*.122,yy+.0015],[s*.094,yy+.0015]],.003)
+        front_polygon(model,'running-lamps',led,[[s*.095,-.059],[s*.120,-.059],[s*.120,-.061],[s*.095,-.061]],.0031)
+    bowtie=[[-.014,-.002],[-.006,-.002],[-.006,-.004],[.006,-.004],[.006,-.002],[.014,-.002],
+            [.014,.002],[.006,.002],[.006,.004],[-.006,.004],[-.006,.002],[-.014,.002]]
+    bowtie=[[z,y-.0135] for z,y in bowtie]
+    front_border(model,'chevrolet-bowtie',metal,bowtie,.0010,.004)
+    front_polygon(model,'front-splitter',carbon,[[-.129,-.0915],[.129,-.0915],[.131,-.095],[-.131,-.095]],.0026)
     model.finish(output,pivots)
 
 
@@ -420,5 +727,6 @@ if __name__ == '__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source',required=True)
     parser.add_argument('--output',default='public/models/pass/camaro.glb')
+    parser.add_argument('--retained-shell',action='store_true',help='Use the old smoothed reconstruction instead of the new clean loft.')
     args=parser.parse_args()
-    build(args.source,args.output)
+    build(args.source,args.output,args.retained_shell)

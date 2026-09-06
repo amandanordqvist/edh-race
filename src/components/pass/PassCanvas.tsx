@@ -162,7 +162,7 @@ export function PassCanvas(props: PassCanvasProps) {
           stripLightMaterials: scene.stripLightMaterials,
           camaro: scene.racers.camaro,
           camaroBodyMaterial: scene.camaroBodyMaterial,
-          camaroHasTextures: scene.camaroHasTextures,
+          preserveCamaroMaterials: scene.camaroUsesGlb,
           reducedMotion,
           isWideView: () => cameraDirector?.getView() === 'wide',
           setSpeedFeel: scene.setSpeedFeel,

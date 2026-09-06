@@ -16,8 +16,8 @@ type PassEffectsOptions = {
   stripLightMaterials: StandardMaterial[]
   camaro: Entity
   camaroBodyMaterial: StandardMaterial
-  /** When true, skip body emissive wash that ruins textured Tripo paint. */
-  camaroHasTextures: boolean
+  /** Preserve authored GLB paint, whether textured or purely PBR. */
+  preserveCamaroMaterials: boolean
   reducedMotion: boolean
   isWideView?: () => boolean
   setSpeedFeel?: (speed01: number) => void
@@ -32,7 +32,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
     stripLightMaterials,
     camaro,
     camaroBodyMaterial,
-    camaroHasTextures,
+    preserveCamaroMaterials,
     reducedMotion,
     setSpeedFeel,
   } = opts
@@ -88,7 +88,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
       const pos = camaro.getLocalPosition()
       camaro.setLocalPosition(pos.x, baseCamaroY, pos.z)
       camaro.setLocalEulerAngles(baseCamaroRotation)
-      if (!camaroHasTextures) {
+      if (!preserveCamaroMaterials) {
         camaroBodyMaterial.emissiveIntensity = baseEmissive
         camaroBodyMaterial.update()
       }
@@ -97,7 +97,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
       raceSpeed = 0
       chuteDeploy01 = 1
       setSpeedFeel?.(0)
-      if (!camaroHasTextures) {
+      if (!preserveCamaroMaterials) {
         camaroBodyMaterial.emissiveIntensity = baseEmissive
         camaroBodyMaterial.update()
       }
@@ -207,7 +207,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
         baseCamaroRotation.z + wheeliePitch + launchPitch + speedPitch + chuteSquat + vibe,
       )
 
-      if (!camaroHasTextures && (phase === 'racing' || phase === 'finished')) {
+      if (!preserveCamaroMaterials && (phase === 'racing' || phase === 'finished')) {
         const glow = baseEmissive + 0.12 + raceSpeed * 0.75 + raceProgress * 0.2
         camaroBodyMaterial.emissiveIntensity = glow
         camaroBodyMaterial.update()
@@ -237,7 +237,7 @@ export function createPassEffects(opts: PassEffectsOptions) {
     const pos = camaro.getLocalPosition()
     camaro.setLocalPosition(pos.x, baseCamaroY, pos.z)
     camaro.setLocalEulerAngles(baseCamaroRotation)
-    if (!camaroHasTextures) {
+    if (!preserveCamaroMaterials) {
       camaroBodyMaterial.emissiveIntensity = baseEmissive
       camaroBodyMaterial.update()
     }
