@@ -57,6 +57,69 @@ function prepareCamaroMaterials(
     render.meshInstances.forEach((instance) => {
       const source = instance.material as StandardMaterial
       const material = source.clone()
+
+      // Automotive PBR refinement: Ensure materials reflect the skybox environment
+      // and match the real EDH Top Doorslammer Camaro (deep metallic blue, high gloss,
+      // clearcoat, dark rubber slicks, smoked polycarbonate glass, polished aluminum).
+      const name = material.name || ''
+      if (name.includes('metallic cobalt') || name.includes('body-paint') || name.includes('EDH')) {
+        // Deep Scandinavian metallic cobalt blue with automotive gloss & clearcoat
+        material.diffuse.set(16 / 255, 52 / 255, 142 / 255)
+        material.metalness = 0.55
+        material.useMetalness = true
+        material.gloss = 0.88
+        material.clearCoat = 0.95
+        material.clearCoatGloss = 0.92
+        material.useSkybox = true
+        material.update()
+      } else if (name.includes('rubber') || name.includes('Drag slick')) {
+        // Dark matte drag slick rubber
+        material.diffuse.set(0.04, 0.042, 0.048)
+        material.metalness = 0.02
+        material.useMetalness = true
+        material.gloss = 0.28
+        material.update()
+      } else if (name.includes('glazing') || name.includes('Polycarbonate')) {
+        // Deep smoked racing polycarbonate with crisp reflections
+        material.diffuse.set(0.015, 0.02, 0.028)
+        material.metalness = 0.1
+        material.useMetalness = true
+        material.gloss = 0.94
+        material.clearCoat = 0.98
+        material.clearCoatGloss = 0.96
+        material.useSkybox = true
+        material.update()
+      } else if (name.includes('aluminium') || name.includes('Machined')) {
+        // High-polish forged drag rims & lip
+        material.diffuse.set(0.88, 0.9, 0.94)
+        material.metalness = 0.96
+        material.useMetalness = true
+        material.gloss = 0.88
+        material.useSkybox = true
+        material.update()
+      } else if (name.includes('Carbon') || name.includes('hood')) {
+        // Satin carbon fiber scoop / hat
+        material.diffuse.set(0.028, 0.03, 0.035)
+        material.metalness = 0.2
+        material.useMetalness = true
+        material.gloss = 0.62
+        material.clearCoat = 0.4
+        material.clearCoatGloss = 0.75
+        material.useSkybox = true
+        material.update()
+      } else if (name.includes('Anodised graphite') || name.includes('intake-grid')) {
+        material.diffuse.set(0.06, 0.07, 0.08)
+        material.metalness = 0.78
+        material.useMetalness = true
+        material.gloss = 0.45
+        material.update()
+      } else if (name.includes('LED') || name.includes('optics')) {
+        material.diffuse.set(0.92, 0.95, 1.0)
+        material.emissive.set(0.85, 0.92, 1.0)
+        material.emissiveIntensity = 0.8
+        material.update()
+      }
+
       instance.material = material
       instance.castShadow = cast
       instance.receiveShadow = cast

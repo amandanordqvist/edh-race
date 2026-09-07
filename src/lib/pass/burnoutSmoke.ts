@@ -17,9 +17,9 @@ const REAR_X = -2.55
 const REAR_Y = 0.38
 const REAR_Z = 0.88
 
-const IDLE_RATE = 0.018
-const STAGING_RATE = 0.014
-const AMBER_RATE = 0.012
+const IDLE_RATE = 0.08
+const STAGING_RATE = 0.04
+const AMBER_RATE = 0.02
 const LAUNCH_RATE = 0.014
 
 function createSmokeMap(app: Application, pc: PlayCanvasNamespace): Texture {

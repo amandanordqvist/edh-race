@@ -32,18 +32,17 @@ export async function applyPassEnvLighting(
     const skybox = pc.EnvLighting.generateSkyboxCubemap(source, 512)
     const lighting = pc.EnvLighting.generateLightingSource(source, { size: 128 })
     const envAtlas = pc.EnvLighting.generateAtlas(lighting, {
-      size: 256,
-      numReflectionSamples: 256,
-      numAmbientSamples: 512,
+      size: 512,
     })
     lighting.destroy()
 
     app.scene.skybox = skybox
     app.scene.envAtlas = envAtlas
     app.scene.skyboxMip = 0
-    app.scene.skyboxIntensity = 1.42
-    app.scene.skyboxRotation = new pc.Quat().setFromEulerAngles(0, -42, 0)
-    app.scene.ambientLight = new pc.Color(0.34, 0.42, 0.54)
+    app.scene.skyboxIntensity = 0.65
+    const skyboxLayer = app.scene.layers.getLayerById(pc.LAYERID_SKYBOX)
+    if (skyboxLayer) skyboxLayer.enabled = false
+    app.scene.ambientLight = new pc.Color(0.18, 0.20, 0.24)
 
     return true
   } catch (error) {

@@ -91,8 +91,8 @@ export function attachContactShadow(
   scale: [number, number, number] = [1.55, 0.008, 0.72],
 ): Entity {
   const material = createMaterial(pc, {
-    diffuse: [0.02, 0.02, 0.02],
-    opacity: 0.38,
+    diffuse: [0.01, 0.01, 0.01],
+    opacity: 0.85,
     metalness: 0,
     gloss: 0.02,
     useSkybox: false,

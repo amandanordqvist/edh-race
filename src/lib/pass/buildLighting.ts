@@ -31,28 +31,38 @@ export function attachPassSunLights(opts: SunLightsOptions): void {
   const keyLight = new pc.Entity('key-light')
   keyLight.addComponent('light', {
     type: 'directional',
-    color: new pc.Color(1.0, 0.94, 0.82),
-    intensity: ibl ? (high ? 1.55 : 1.25) : high ? 2.45 : 2.05,
+    color: new pc.Color(1.0, 0.96, 0.90),
+    intensity: ibl ? (high ? 1.4 : 1.2) : high ? 2.45 : 2.05,
     castShadows: true,
     shadowDistance: high ? 90 : 70,
     shadowResolution: high ? 2048 : 1024,
-    shadowBias: 0.022,
-    normalOffsetBias: 0.028,
-    shadowType: pc.SHADOW_PCF3_32F,
+    shadowBias: 0.02,
+    normalOffsetBias: 0.02,
+    shadowType: pc.SHADOW_PCF5_32F,
   })
-  keyLight.setEulerAngles(52, 48, 0)
+  keyLight.setEulerAngles(40, -35, 0)
   sceneRoot.addChild(keyLight)
 
   if (ibl) {
     const fillLight = new pc.Entity('sky-fill')
     fillLight.addComponent('light', {
       type: 'directional',
-      color: new pc.Color(0.55, 0.68, 0.9),
-      intensity: high ? 0.38 : 0.24,
+      color: new pc.Color(0.68, 0.79, 1.0),
+      intensity: high ? 0.7 : 0.45,
       castShadows: false,
     })
-    fillLight.setEulerAngles(28, -150, 0)
+    fillLight.setEulerAngles(55, 145, 0)
     sceneRoot.addChild(fillLight)
+
+    const frontFill = new pc.Entity('front-fill')
+    frontFill.addComponent('light', {
+      type: 'directional',
+      color: new pc.Color(1.0, 1.0, 1.0),
+      intensity: high ? 0.45 : 0.3,
+      castShadows: false,
+    })
+    frontFill.setEulerAngles(-20, 60, 0)
+    sceneRoot.addChild(frontFill)
     return
   }
 

@@ -27,7 +27,10 @@ export async function createPassApp(
   destroy: () => void
 }> {
   const pc = await import('playcanvas')
-  const app = new pc.Application(canvas)
+  const app = new pc.Application(canvas, {
+    graphicsDeviceOptions: { antialias: true, alpha: false },
+  })
+  app.scene.ambientLight = new pc.Color(0.18, 0.20, 0.24)
   const pixelRatioCap = quality === 'low' ? 1.25 : 2
 
   canvas.style.width = '100%'
